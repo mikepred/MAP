@@ -19,6 +19,9 @@ This lesson plan is divided into the following modules:
 
 - **[Module 1: Introduction & Setting the Stage](module1-introduction.md)** - Overview of text processing and project setup
 - **[Module 2: Core Python Concepts for Text Processing](module2-python-concepts.md)** - File handling, text cleaning, tokenization, and frequency counting
+  - **[Module 2A: Core Text Processing Pipeline](module2A-core-pipeline.md)** - Technical implementation skills for building a working text analyzer
+  - **[Module 2B: Code Design & Quality Practices](module2B-code-quality.md)** - Software engineering best practices for maintainable, professional-quality code
+  - **[Module 2C: Professional Development Practices](module2C-professional-dev.md)** - Production workflows and advanced practices for robust and scalable code
 - **[Module 3: Building the Script - Step-by-Step](module3-building-script.md)** - Implementation details and code examples
 - **[Module 4: Testing and Refinement](module4-testing.md)** - Running, debugging, and improving the script
 - **[Module 5: Connecting to the Bigger World of LLMs](module5-llm-connections.md)** - Understanding how this relates to LLM development
