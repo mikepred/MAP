@@ -476,6 +476,8 @@ A complete text processing pipeline that:
 
 Ready to test and refine your script? Continue to **[Module 4: Testing and Refinement](module4-testing.md)** where we'll run the script, handle edge cases, and explore potential improvements.
 
+*Note: The core implementation concepts in this module are covered in **[Module 2A: Core Text Processing Pipeline](../module2A-core-pipeline.md)**. For deeper insights into code quality and professional practices, refer to **[Module 2B: Code Design & Quality Practices](../module2B-code-quality.md)** and **[Module 2C: Professional Development Practices](../module2C-professional-dev.md)**.*
+
 ---
 
 ## Quick Debugging Tips

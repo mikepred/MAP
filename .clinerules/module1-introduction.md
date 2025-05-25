@@ -94,7 +94,7 @@ By the end of Module 1, you should understand:
 
 ## Next Steps
 
-Ready to dive deeper? Continue to **[Module 2: Core Python Concepts for Text Processing](module2-python-concepts.md)** where we'll explore the specific Python techniques needed for our text analysis pipeline.
+Ready to dive deeper? Continue to **[Module 2: Python for Text Processing - Core Concepts](module2-python-concepts.md)** where we'll explore the specific Python techniques needed for our text analysis pipeline.
 
 ---
 
