@@ -5,6 +5,26 @@
 
 **Overview:** This module covers the essential Python concepts and techniques needed to build our text processing pipeline.
 
+**Table of Contents**
+- [2.1 File Handling in Python 📁](#21-file-handling-in-python-️)
+- [2.2 Text Cleaning: The Janitor's Work 🧹](#22-text-cleaning-the-janitors-work-🧹)
+- [2.3 Tokenization: Breaking Down Words 🧩](#23-tokenization-breaking-down-words-🧩)
+- [2.4 Counting Frequencies: Who's Most Popular? 📊](#24-counting-frequencies-whos-most-popular-📊)
+- [2.5 Displaying Results: Show Me the Data! ✨](#25-displaying-results-show-me-the-data-✨)
+- [2.6 Modular Design with Functions 🧱](#26-modular-design-with-functions-🧱)
+- [2.7 Input Validation &amp; Error Handling 🛡️](#27-input-validation--error-handling-🛡️)
+- [2.8 Performance Considerations ⚡](#28-performance-considerations-⚡)
+- [2.9 Code Style &amp; Consistency 📏](#29-code-style--consistency-📏)
+- [2.10 Testing Mindset 🧪](#210-testing-mindset-🧪)
+- [2.11 Configuration &amp; Flexibility 🔧](#211-configuration--flexibility-🔧)
+- [2.12 Documentation Standards 📚](#212-documentation-standards-📚)
+- [2.13 Debugging Tips 🐛](#213-debugging-tips-🐛)
+- [2.14 Future-Proofing 🔮](#214-future-proofing-🔮)
+- [2.15 Code Organization 📁](#215-code-organization-📁)
+- [2.16 Real-World Considerations 🌍](#216-real-world-considerations-🌍)
+- [Module 2 Summary](#module-2-summary)
+- [Quick Reference](#quick-reference)
+
 ---
 
 ## 2.1 File Handling in Python 📁
@@ -240,6 +260,371 @@ Review the functions written so far. Ensure they are:
 1. Well-named and focused on a single task
 2. Properly documented with docstrings
 3. Following consistent coding style
+
+---
+
+## Additional Best Practices & Guidelines
+
+### 2.7 Input Validation & Error Handling 🛡️
+
+**File Operations:**
+```python
+def read_file(filepath):
+    """Reads a file and returns its content as a string."""
+    if not filepath:
+        raise ValueError("Filepath cannot be empty")
+
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            return f.read()
+    except FileNotFoundError:
+        print(f"Error: File '{filepath}' not found")
+        return ""
+    except UnicodeDecodeError:
+        print(f"Error: Cannot decode file '{filepath}'. Try different encoding")
+        return ""
+```
+
+**Input Type Checking:**
+```python
+def clean_text(text):
+    """Converts text to lowercase and removes punctuation."""
+    if not isinstance(text, str):
+        raise TypeError("Input must be a string")
+    if not text.strip():  # Handle empty or whitespace-only strings
+        return ""
+    # Rest of implementation...
+    # Convert to lowercase
+    text = text.lower()
+    # Remove punctuation using translation table
+    translator = str.maketrans('', '', string.punctuation)
+    text = text.translate(translator)
+    return text
+```
+
+### 2.8 Performance Considerations ⚡
+
+**Memory Efficiency:**
+- For large files, consider reading line-by-line instead of loading entire file
+- Use generators for processing large datasets
+
+**String Operations:**
+```python
+# ❌ Inefficient for large texts
+def clean_text_slow(text):
+    for char in string.punctuation:
+        text = text.replace(char, ' ')
+    return text.lower()
+
+# ✅ More efficient using translate
+def clean_text_fast(text):
+    translator = str.maketrans(string.punctuation, ' ' * len(string.punctuation))
+    return text.translate(translator).lower()
+```
+
+### 2.9 Code Style & Consistency 📏
+
+**Variable Naming Conventions:**
+```python
+# ✅ Good naming
+file_content = read_file(input_filepath)
+cleaned_text = clean_text(file_content)
+word_tokens = tokenize_text(cleaned_text)
+frequency_counter = count_frequencies(word_tokens)
+
+# ❌ Poor naming
+data = read_file(fp)
+x = clean_text(data)
+lst = tokenize_text(x)
+```
+
+**Function Length Guidelines:**
+- Keep functions under 20-25 lines when possible
+- If longer, consider breaking into smaller helper functions
+
+**Import Organization:**
+```python
+# Standard library imports first
+import string
+from collections import Counter
+from pathlib import Path
+
+# Third-party imports (if any)
+# import requests
+
+# Local imports (if any)
+# from utils import helper_function
+```
+
+### 2.10 Testing Mindset 🧪
+
+**Write Testable Functions:**
+```python
+def clean_text(text):
+    """
+    Example with edge cases to consider:
+    - Empty strings
+    - Strings with only punctuation
+    - Strings with mixed case
+    - Unicode characters
+    """
+    if not text: # Added basic check based on previous section
+        return ""
+    if not isinstance(text, str): # Added from 2.7
+        raise TypeError("Input must be a string")
+    if not text.strip():
+        return ""
+
+    # Remove punctuation and convert to lowercase
+    translator = str.maketrans('', '', string.punctuation)
+    return text.translate(translator).lower()
+
+# Test cases to think about:
+# clean_text("Hello, World!") → "hello world"
+# clean_text("") → ""
+# clean_text("!!!") → ""
+# clean_text("Hello123") → "hello123"
+```
+
+### 2.11 Configuration & Flexibility 🔧
+
+**Make Functions Configurable:**
+```python
+def display_most_common(frequencies, n=10, show_count=True):
+    """Displays the n most common words with optional count display."""
+    if not isinstance(frequencies, Counter): # Added type check
+        raise TypeError("Frequencies must be a Counter object")
+    if not isinstance(n, int) or n <= 0: # Enhanced n validation
+        raise ValueError("Number of words to display (n) must be a positive integer")
+
+    print(f"Top {n} most common words:")
+    for word, count in frequencies.most_common(n):
+        if show_count:
+            print(f"- {word}: {count}")
+        else:
+            print(f"- {word}")
+```
+
+**Use Constants for Magic Numbers:**
+```python
+# At the top of your file
+DEFAULT_TOP_WORDS = 10
+DEFAULT_ENCODING = 'utf-8'
+PUNCTUATION_REPLACEMENT = ' ' # This constant isn't used in clean_text_fast, consider if needed
+
+def read_file(filepath, encoding=DEFAULT_ENCODING):
+    # Implementation using the constant
+    if not filepath:
+        raise ValueError("Filepath cannot be empty")
+    try:
+        with open(filepath, 'r', encoding=encoding) as f: # Used encoding parameter
+            return f.read()
+    except FileNotFoundError:
+        print(f"Error: File '{filepath}' not found")
+        return ""
+    except UnicodeDecodeError:
+        print(f"Error: Cannot decode file '{filepath}' with encoding '{encoding}'.")
+        return ""
+    except Exception as e: # General exception for other open/read errors
+        print(f"An unexpected error occurred with '{filepath}' and encoding '{encoding}': {e}")
+        return ""
+```
+
+### 2.12 Documentation Standards 📚
+
+**Enhanced Docstring Format:**
+```python
+def count_frequencies(tokens):
+    """
+    Counts the frequency of each token in a list.
+
+    Args:
+        tokens (list[str]): List of word tokens to count.
+                            Expected to be a list of strings.
+
+    Returns:
+        collections.Counter: A Counter object mapping each word to its frequency.
+                             Returns an empty Counter if input is not a list
+                             or if the list is empty.
+
+    Raises:
+        TypeError: If tokens is not a list.
+
+    Example:
+        >>> from collections import Counter
+        >>> count_frequencies(['the', 'cat', 'the'])
+        Counter({'the': 2, 'cat': 1})
+        >>> count_frequencies([])
+        Counter()
+        >>> count_frequencies("not a list") # doctest: +IGNORE_EXCEPTION_DETAIL
+        Traceback (most recent call last):
+        TypeError: Input must be a list of strings
+    """
+    if not isinstance(tokens, list):
+        raise TypeError("Input must be a list of strings")
+    # Further validation could check if all elements are strings
+    return Counter(tokens)
+```
+
+### 2.13 Debugging Tips 🐛
+
+**Add Helpful Print Statements During Development:**
+```python
+def tokenize_text(text, debug=False):
+    """Splits text into a list of words (tokens)."""
+    if not isinstance(text, str): # Added type check
+        if debug:
+            print(f"Error: Input text is not a string. Received type: {type(text)}")
+        return [] # Or raise TypeError
+
+    if debug:
+        print(f"Input text length: {len(text)}")
+        print(f"First 50 chars: '{text[:50]}...'"
+
+    tokens = text.split()
+
+    if debug:
+        print(f"Number of tokens: {len(tokens)}")
+        print(f"First 5 tokens: {tokens[:5]}")
+
+    return tokens
+```
+
+### 2.14 Future-Proofing 🔮
+
+**Design for Extension:**
+```python
+def clean_text(text, remove_numbers=False, custom_punctuation=None):
+    """
+    Flexible text cleaning with optional features.
+
+    Args:
+        text (str): Input text to clean.
+        remove_numbers (bool): If True, removes digits from the text.
+                               Defaults to False.
+        custom_punctuation (str | None): A string of custom punctuation characters
+                                         to remove. If None, `string.punctuation`
+                                         is used. Defaults to None.
+
+    Returns:
+        str: The cleaned text.
+
+    Raises:
+        TypeError: If text is not a string.
+    """
+    if not isinstance(text, str):
+        raise TypeError("Input must be a string")
+    if not text.strip():
+        return ""
+
+    text = text.lower()
+
+    if remove_numbers:
+        text = ''.join(char for char in text if not char.isdigit())
+
+    punctuation_to_remove = custom_punctuation if custom_punctuation is not None else string.punctuation
+    translator = str.maketrans('', '', punctuation_to_remove)
+    text = text.translate(translator)
+
+    return text
+```
+
+### 2.15 Code Organization 📁
+
+**Suggested File Structure:**
+This section describes a potential project structure. It's good for context but doesn't directly modify the concepts within Module 2 itself. We can keep it as is.
+```
+text_analyzer/
+├── main.py              # Main script that ties everything together
+├── text_processor.py    # Core text processing functions
+├── file_utils.py        # File handling utilities
+├── display_utils.py     # Output formatting functions
+└── config.py           # Configuration constants
+```
+
+### 2.16 Real-World Considerations 🌍
+
+**Encoding Awareness:**
+```python
+def read_file_robust(filepath): # Renamed to avoid conflict with earlier simple read_file
+    """Reads file with fallback encoding options."""
+    if not filepath:
+        raise ValueError("Filepath cannot be empty")
+
+    encodings_to_try = ['utf-8', 'latin-1', 'cp1252'] # More descriptive name
+
+    for encoding in encodings_to_try:
+        try:
+            with open(filepath, 'r', encoding=encoding) as f:
+                print(f"Successfully read '{filepath}' with encoding '{encoding}'") # Added success message
+                return f.read()
+        except FileNotFoundError: # Moved FileNotFoundError outside loop
+            print(f"Error: File '{filepath}' not found.")
+            return "" # Or raise
+        except UnicodeDecodeError:
+            print(f"Warning: Could not decode '{filepath}' with encoding '{encoding}'. Trying next...")
+            continue
+        except Exception as e: # General exception for other open/read errors
+            print(f"An unexpected error occurred with '{filepath}' and encoding '{encoding}': {e}")
+            continue # Try next encoding
+
+    # If all encodings fail
+    print(f"Error: Could not decode file '{filepath}' with any of the attempted encodings: {encodings_to_try}")
+    return "" # Or raise a custom error
+```
+
+**Large File Handling:**
+```python
+from collections import Counter # Ensure Counter is imported
+
+def process_large_file(filepath, chunk_size=1024*1024): # Increased default chunk_size to 1MB
+    """
+    Process large files in chunks to manage memory usage.
+
+    Args:
+        filepath (str): Path to the large text file.
+        chunk_size (int): Size of chunks to read in bytes. Defaults to 1MB.
+
+    Returns:
+        collections.Counter: A Counter object with word frequencies from the file.
+
+    Raises:
+        ValueError: If filepath is empty.
+        FileNotFoundError: If the file does not exist.
+    """
+    if not filepath:
+        raise ValueError("Filepath cannot be empty")
+
+    word_counter = Counter()
+    processed_chunks = 0
+
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f: # Assuming utf-8, could be made more robust
+            while True:
+                chunk = f.read(chunk_size)
+                if not chunk:
+                    break # End of file
+
+                # Process chunk (ensure clean_text and tokenize_text are defined)
+                cleaned_chunk = clean_text(chunk) # Assuming clean_text is available
+                tokens_in_chunk = tokenize_text(cleaned_chunk) # Assuming tokenize_text is available
+                word_counter.update(tokens_in_chunk)
+                processed_chunks += 1
+                print(f"Processed chunk {processed_chunks}...") # Progress update
+
+    except FileNotFoundError:
+        print(f"Error: File '{filepath}' not found.")
+        raise # Re-raise the exception or handle as appropriate
+    except Exception as e:
+        print(f"An error occurred while processing '{filepath}': {e}")
+        raise # Re-raise or handle
+
+    if processed_chunks == 0:
+        print(f"Warning: File '{filepath}' was empty or could not be processed.")
+
+    print(f"Finished processing. Total chunks: {processed_chunks}")
+    return word_counter
+```
 
 ---
 
