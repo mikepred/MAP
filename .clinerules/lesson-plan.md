@@ -1,3 +1,6 @@
+---
+## File: `.clinerules/lesson-plan.md`
+---
 # Lesson Plan: Python for Text Processing - A Foundation for LLMs
 
 **Project Goal:** Write a Python script that reads a text file, cleans it, tokenizes it, counts word frequencies, displays the most common words, and is structured with functions.

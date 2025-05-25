@@ -10,3 +10,12 @@ The following files are included:
 *   `.clinerules/03-documentation-communication.md`: Documentation standards and communication guidelines.
 *   `.clinerules/04-dev-workflow-tooling.md`: Development environment and tools.
 *   `.clinerules/05-interaction-iteration.md`: Interaction model and iteration guidelines.
+
+## Folder Structure
+
+The recommended folder structure for Cline rules is as follows:
+
+- Global rules: `C:/Users/miken/OneDrive/Documents/Cline/Rules`
+  - The `File:` line in each global rule file should be: `../../Cline/Rules/<filename>`
+- Workspace rules: `c:/Users/miken/OneDrive/Documents/GitHub/MAP/.clinerules/`
+  - The `File:` line in each workspace rule file should be: `.clinerules/<filename>`
