@@ -4,11 +4,21 @@ This document is the foundation for the project and shapes all other Memory Bank
 
 ## Core Requirements
 
-*(To be filled in as the project develops)*
+*   The `analyzer.py` script must:
+    *   Read content from a text file (e.g., `sample.txt`).
+    *   Clean the text (e.g., convert to lowercase, remove punctuation).
+    *   Tokenize the text into individual words.
+    *   Count the frequency of each word.
+    *   Display the most common words and their counts in a user-friendly format.
+    *   Be structured with modular functions, each performing a single, well-defined task.
+    *   Handle potential errors gracefully (e.g., file not found).
 
 ## Project Goals
 
-*(To be filled in as the project develops)*
+*   Provide a functional Python script (`analyzer.py`) that performs basic text analysis.
+*   Serve as an educational tool for learners to understand fundamental NLP and LLM preprocessing steps.
+*   Demonstrate the connection between simple text processing techniques and the more complex data handling pipelines used in Large Language Models.
+*   Offer a clear and accessible entry point for beginners interested in Natural Language Processing and AI.
 
 ## Project: Python for Text Processing - A Foundation for LLMs (from .clinerules)
 
