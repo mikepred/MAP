@@ -1,38 +1,12 @@
-# Active Context
+## Active Context: .clinerules
 
-This document tracks the current work focus, recent changes, next steps, active decisions and considerations, important patterns and preferences, learnings, and project insights. This file is expected to be updated frequently.
+This directory contains a set of rules to guide the behavior of the coding assistant. The rules cover various aspects of code generation, including language specifics, code architecture, documentation standards, development workflow, and interaction model. The rules emphasize generating clean, maintainable, and idiomatic code, following best practices, and prioritizing clarity and simplicity.
 
-## Current Work Focus
+The following files are included:
 
-- Initializing the Cline's Memory Bank system.
-- Creating the core documentation files.
-
-## Recent Changes
-
-- Created `projectbrief.md`
-- Created `productContext.md`
-- Created `systemPatterns.md`
-- Created `techContext.md`
-- Created `activeContext.md`
-- Created `progress.md`
-
-## Next Steps
-
-- Complete the initial review and update of all Memory Bank files.
-- Await further project tasks or details to populate the Memory Bank.
-
-## Active Decisions and Considerations
-
-- Adhering to the specified Memory Bank structure and workflow.
-- Ensuring all core files are created as per the initial task.
-
-## Important Patterns and Preferences
-
-- The Memory Bank system itself is the primary pattern being established.
-- Markdown format for all documentation.
-- Hierarchical file structure as defined in the Memory Bank overview.
-
-## Learnings and Project Insights
-
-- The Memory Bank system is designed to provide complete context after a memory reset.
-- Strict adherence to reading and updating these files is critical for ongoing work.
+*   `.clinerules/00-primary-directive.md`: Core mission and primary directive.
+*   `.clinerules/01-language-excellence.md`: Language-specific best practices (Python) and general best practices.
+*   `.clinerules/02-code-architecture.md`: Code generation principles.
+*   `.clinerules/03-documentation-communication.md`: Documentation standards and communication guidelines.
+*   `.clinerules/04-dev-workflow-tooling.md`: Development environment and tools.
+*   `.clinerules/05-interaction-iteration.md`: Interaction model and iteration guidelines.

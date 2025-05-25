@@ -1,23 +1,12 @@
-# System Patterns
+## Active Context: .clinerules
 
-This document describes the system architecture, key technical decisions, design patterns in use, component relationships, and critical implementation paths.
+This directory contains a set of rules to guide the behavior of the coding assistant. The rules cover various aspects of code generation, including language specifics, code architecture, documentation standards, development workflow, and interaction model. The rules emphasize generating clean, maintainable, and idiomatic code, following best practices, and prioritizing clarity and simplicity.
 
-## System Architecture
+The following files are included:
 
-*(To be filled in as the project develops)*
-
-## Key Technical Decisions
-
-*(To be filled in as the project develops)*
-
-## Design Patterns
-
-*(To be filled in as the project develops)*
-
-## Component Relationships
-
-*(To be filled in as the project develops)*
-
-## Critical Implementation Paths
-
-*(To be filled in as the project develops)*
+*   `.clinerules/00-primary-directive.md`: Core mission and primary directive.
+*   `.clinerules/01-language-excellence.md`: Language-specific best practices (Python) and general best practices.
+*   `.clinerules/02-code-architecture.md`: Code generation principles.
+*   `.clinerules/03-documentation-communication.md`: Documentation standards and communication guidelines.
+*   `.clinerules/04-dev-workflow-tooling.md`: Development environment and tools.
+*   `.clinerules/05-interaction-iteration.md`: Interaction model and iteration guidelines.
