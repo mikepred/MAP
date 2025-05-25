@@ -25,7 +25,8 @@ By the end of this module, you will:
 ### Why Error Handling Matters
 
 When dealing with files, many things can go wrong:
-- File doesn't exist
+
+- File doesn\'t exist
 - No permission to read
 - File is too large
 - File is locked by another program
@@ -224,9 +225,7 @@ def load_text_file():
     return content
 ```
 
-## Step 5: Testing Your Implementation
-
-### Update your main() function:
+### Update your main() function
 
 ```python
 def main():
@@ -253,6 +252,7 @@ if __name__ == "__main__":
 Test your implementation with these scenarios:
 
 ### Positive Tests
+
 ```bash
 # Test 1: Valid file
 python analyzer.py
@@ -265,6 +265,7 @@ python analyzer.py
 ```
 
 ### Error Handling Tests
+
 ```bash
 # Test 3: Non-existent file
 python analyzer.py
@@ -287,6 +288,7 @@ python analyzer.py
 ## 🚧 Troubleshooting
 
 **Import Errors:**
+
 ```python
 # If you get import errors, check you have these at the top:
 import os
@@ -296,10 +298,12 @@ import string
 ```
 
 **Permission Issues:**
+
 - Make sure your text files are in the same directory as `analyzer.py`
 - Check file permissions (right-click → Properties → Security on Windows)
 
 **Unicode Errors:**
+
 - Save your text files with UTF-8 encoding
 - Avoid special characters for testing
 
@@ -335,6 +339,7 @@ Excellent! Your file I/O system is now bulletproof. Head to **[Module 3C: Text P
 ---
 
 📚 **Navigation:**
+
 - ⬅️ Previous: [Module 3A: Project Setup](module3A-setup.md)
 - ➡️ Next: [Module 3C: Text Processing Pipeline](module3C-text-processing.md)
 - 🏠 Home: [Module 3 Navigation Guide](module3-navigation.md)

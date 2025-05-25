@@ -744,6 +744,7 @@ if __name__ == "__main__":
 ### Test Scenarios
 
 1. **Normal Operation Test**
+
    ```bash
    python analyzer.py
    # Choose option 1
@@ -752,6 +753,7 @@ if __name__ == "__main__":
    ```
 
 2. **System Test**
+
    ```bash
    python analyzer.py
    # Choose option 2 (Run System Tests)
@@ -791,17 +793,19 @@ A comprehensive Python text analysis tool built through a modular learning appro
 - ✅ User-friendly interface
 
 ## Quick Start
+
 ```bash
 python analyzer.py
 ```
 
 ## System Requirements
+
 - Python 3.8+
 - UTF-8 text files
 - Files under 10MB
 
 ## Learning Journey
-This project was built through:
+
 - Module 3A: Project Setup & Architecture
 - Module 3B: File I/O & Error Handling
 - Module 3C: Text Processing Pipeline
@@ -809,12 +813,15 @@ This project was built through:
 - Module 3E: Integration & Testing
 
 ## Support
+
 For issues or questions, review the module documentation or run the built-in system tests.
-```
+
+```none
 
 ## ✅ Final Testing Checklist
 
 **Core Functionality:**
+
 - [ ] File loading works with valid files
 - [ ] Error handling works with invalid files
 - [ ] Text processing produces correct word counts
@@ -823,6 +830,7 @@ For issues or questions, review the module documentation or run the built-in sys
 - [ ] Menu system navigates properly
 
 **Edge Cases:**
+
 - [ ] Empty files handled gracefully
 - [ ] Very short texts (1-2 words) work
 - [ ] Files with special characters process correctly
@@ -830,6 +838,7 @@ For issues or questions, review the module documentation or run the built-in sys
 - [ ] Invalid menu choices handled appropriately
 
 **User Experience:**
+
 - [ ] Clear instructions and prompts
 - [ ] Professional output formatting
 - [ ] Helpful error messages
@@ -868,4 +877,5 @@ Your text analyzer is now complete! Consider these extensions:
 📚 **Navigation:**
 - ⬅️ Previous: [Module 3D: Analysis & Display Functions](module3D-analysis.md)
 - 🏠 Home: [Module 3 Navigation Guide](module3-navigation.md)
-- 🎉 **Series Complete!** You've mastered building complete Python applications!
+- 🎉 **Series Complete!** You\'ve mastered building complete Python applications!
+```

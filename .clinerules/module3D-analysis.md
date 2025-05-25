@@ -398,21 +398,25 @@ python analyzer.py
 ```
 
 Choose different display options to see:
+
 - Complete detailed report
 - Quick summary
 - Both formats together
 
 ## 🚧 Troubleshooting
 
-**Formatting Issues:**
+### Formatting Issues
+
 - Check that your terminal supports emojis
 - Adjust width parameters if text wraps oddly
 
-**Missing Data:**
+### Missing Data
+
 - Verify all analysis functions return proper dictionaries
 - Check for None values in results
 
-**Display Errors:**
+### Display Errors
+
 - Add try-except blocks around formatting code
 - Provide fallback displays for missing data
 
@@ -448,6 +452,7 @@ Outstanding! Your analysis and display system is now complete. Head to **[Module
 ---
 
 📚 **Navigation:**
+
 - ⬅️ Previous: [Module 3C: Text Processing Pipeline](module3C-text-processing.md)
 - ➡️ Next: [Module 3E: Integration & Testing](module3E-integration.md)
 - 🏠 Home: [Module 3 Navigation Guide](module3-navigation.md)

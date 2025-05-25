@@ -33,7 +33,7 @@ We'll build a **Text Analysis Script** that can:
 
 Let's create a well-organized project structure:
 
-```
+```none
 text_analyzer/
 ├── analyzer.py          # Main script file
 ├── sample.txt          # Sample text for testing
@@ -110,7 +110,7 @@ Our text analyzer will have these main components:
 
 ### Data Flow Architecture
 
-```
+```none
 Input File → Read & Validate → Clean Text → Process & Analyze → Display Results
 ```
 
@@ -153,23 +153,25 @@ if __name__ == "__main__":
 A Python script for analyzing text files and generating statistics.
 
 ## Features
+
 - File reading with error handling
 - Word frequency analysis
 - Text statistics generation
 - Professional output formatting
 
 ## Usage
+
 ```bash
 python analyzer.py
 ```
 
 ## Development Status
+
 - [x] Module 3A: Project Setup ✅
 - [ ] Module 3B: File I/O & Error Handling
 - [ ] Module 3C: Text Processing Pipeline
 - [ ] Module 3D: Analysis & Display Functions
 - [ ] Module 3E: Integration & Testing
-```
 
 ## Step 5: Test Your Setup
 
@@ -251,6 +253,7 @@ Ready to move forward? Head to **[Module 3B: File I/O & Error Handling](module3B
 ---
 
 📚 **Navigation:**
+
 - ⬅️ Previous: [Module 3 Overview](module3-overview.md)
 - ➡️ Next: [Module 3B: File I/O & Error Handling](module3B-file-io.md)
 - 🏠 Home: [Module 3 Navigation Guide](module3-navigation.md)

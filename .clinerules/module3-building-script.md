@@ -1,6 +1,7 @@
 ---
 ## File: `.clinerules/module3-building-script.md`
 ---
+
 # 🚀 Module 3: Building the Script - Step-by-Step
 
 **Overview:** This module provides complete implementations for each function and shows how to assemble them into a working text analysis script.
@@ -9,7 +10,8 @@
 
 ## 3.1 Structuring Your `analyzer.py`
 
-### Recommended File Layout
+### Recommended File Layout for `analyzer.py`
+
 ```python
 # analyzer.py - Text Processing Script
 
@@ -50,7 +52,8 @@ if __name__ == "__main__":
     # ... and so on
 ```
 
-### Why This Structure?
+### Why This Structure is Recommended
+
 - **Imports at top:** All dependencies clearly visible
 - **Functions before main:** Define tools before using them
 - **`if __name__ == "__main__"`:** Makes script runnable but also importable
@@ -60,10 +63,12 @@ if __name__ == "__main__":
 
 ## 3.2 Implementing `read_file(filepath)`
 
-### Goal
+### Goal for `read_file`
+
 Takes a filepath string, returns the content of the file as a string.
 
-### Complete Implementation
+### Complete `read_file` Implementation
+
 ```python
 def read_file(filepath):
     """
@@ -86,7 +91,8 @@ def read_file(filepath):
         return None
 ```
 
-### Key Features
+### Key Features of `read_file`
+
 - **Error handling:** Gracefully handles missing files and other errors
 - **UTF-8 encoding:** Handles international characters properly
 - **Return None on error:** Allows calling code to check for success
@@ -96,10 +102,12 @@ def read_file(filepath):
 
 ## 3.3 Implementing `clean_text(text)`
 
-### Goal
+### Goal for `clean_text`
+
 Takes a string, returns a cleaned string (lowercase, no punctuation).
 
-### Complete Implementation
+### Complete `clean_text` Implementation
+
 ```python
 def clean_text(text):
     """
@@ -124,26 +132,30 @@ def clean_text(text):
     return text
 ```
 
-### Why This Approach?
+### Why This Approach for `clean_text`?
+
 - **Null safety:** Handles None input gracefully
 - **Efficient punctuation removal:** `str.maketrans()` is faster than multiple `.replace()` calls
 - **Standard library:** Uses `string.punctuation` for comprehensive coverage
 
 ### What `string.punctuation` Includes
+
 ```python
 import string
 print(string.punctuation)
-# Output: !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
+# Output: !"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~
 ```
 
 ---
 
 ## 3.4 Implementing `tokenize_text(text)`
 
-### Goal
+### Goal for `tokenize_text`
+
 Takes a cleaned string, returns a list of words.
 
-### Complete Implementation
+### Complete `tokenize_text` Implementation
+
 ```python
 def tokenize_text(text):
     """
@@ -162,14 +174,16 @@ def tokenize_text(text):
     return text.split()
 ```
 
-### Why `.split()` Is Perfect Here
+### Why `.split()` Is Perfect Here for `tokenize_text`
+
 - **Handles whitespace:** Automatically deals with multiple spaces, tabs, newlines
 - **No empty strings:** Unlike `text.split(' ')`, it won't create empty list elements
 - **Simple and reliable:** Built-in method optimized for this exact use case
 
-### Example
+### `tokenize_text` Example Usage
+
 ```python
-text = "hello    world\n\tpython   programming"
+text = "hello    world\\n\\tpython   programming"
 tokens = tokenize_text(text)
 print(tokens)
 # Output: ['hello', 'world', 'python', 'programming']
@@ -179,10 +193,12 @@ print(tokens)
 
 ## 3.5 Implementing `count_frequencies(tokens)`
 
-### Goal
+### Goal for `count_frequencies`
+
 Takes a list of tokens, returns a `collections.Counter` of word frequencies.
 
-### Complete Implementation
+### Complete `count_frequencies` Implementation
+
 ```python
 def count_frequencies(tokens):
     """
@@ -197,13 +213,16 @@ def count_frequencies(tokens):
     return Counter(tokens)
 ```
 
-### Why So Simple?
+### Why `Counter` is Simple for `count_frequencies`?
+
 `Counter` is designed exactly for this purpose! It:
+
 - Counts all items in an iterable automatically
 - Handles missing keys gracefully
 - Provides useful methods like `.most_common()`
 
-### Example
+### `count_frequencies` Example Usage
+
 ```python
 tokens = ['apple', 'banana', 'apple', 'cherry', 'apple', 'banana']
 frequencies = count_frequencies(tokens)
@@ -215,10 +234,12 @@ print(frequencies)
 
 ## 3.6 Implementing `display_most_common(frequencies, n)`
 
-### Goal
+### Goal for `display_most_common`
+
 Takes a `Counter` object and an integer `n`, prints the `n` most common words.
 
-### Complete Implementation
+### Complete `display_most_common` Implementation
+
 ```python
 def display_most_common(frequencies, n):
     """
@@ -242,14 +263,16 @@ def display_most_common(frequencies, n):
     print(f"Total unique words: {len(frequencies)}")
 ```
 
-### Enhanced Features
+### Enhanced Features of `display_most_common`
+
 - **Empty check:** Handles case where no words were found
 - **Formatted output:** Nice alignment and visual separators
 - **Additional info:** Shows total unique word count
 - **Professional appearance:** Looks clean and informative
 
-### Example Output
-```
+### `display_most_common` Example Output
+
+```text
 Top 5 most common words:
 ------------------------------
 the             :  12
@@ -265,10 +288,12 @@ Total unique words: 45
 
 ## 3.7 The `if __name__ == "__main__":` Block
 
-### Concept
+### Concept of `__name__ == "__main__"`
+
 This Python idiom allows your script to be both runnable and importable.
 
-### Complete Main Block
+### Complete Main Block Implementation
+
 ```python
 if __name__ == "__main__":
     # Configuration
@@ -308,7 +333,8 @@ if __name__ == "__main__":
     print("\nAnalysis complete!")
 ```
 
-### Key Features
+### Key Features of the Main Block
+
 - **Progress updates:** Shows what's happening at each step
 - **Error handling:** Exits gracefully if file reading fails
 - **Informative output:** Shows statistics about the processing
@@ -319,6 +345,7 @@ if __name__ == "__main__":
 ## 3.8 Complete Script Assembly
 
 ### Your Final `analyzer.py`
+
 Here's how all the pieces fit together:
 
 ```python
@@ -419,15 +446,18 @@ if __name__ == "__main__":
 ## Testing Your Script
 
 ### Running the Script
+
 1. Save the complete code as `analyzer.py`
 2. Make sure `sample.txt` exists in the same directory
 3. Run from command line:
+
    ```bash
    python analyzer.py
    ```
 
-### Expected Output Format
-```
+### Expected Output Format from `analyzer.py`
+
+```text
 Text Analysis Script
 ==================================================
 Reading file: sample.txt
@@ -456,15 +486,18 @@ Analysis complete!
 
 ## Module 3 Summary
 
-### What You've Built
+### What You've Built in Module 3
+
 A complete text processing pipeline that:
+
 - ✅ Safely reads text files
 - ✅ Cleans and normalizes text data
 - ✅ Tokenizes text into words
 - ✅ Counts word frequencies
 - ✅ Displays results in a professional format
 
-### Key Programming Concepts Applied
+### Key Programming Concepts Applied in Module 3
+
 - **Error handling** with try/except blocks
 - **Modular design** with focused functions
 - **Professional output** formatting
@@ -483,6 +516,7 @@ Ready to test and refine your script? Continue to **[Module 4: Testing and Refin
 ## Quick Debugging Tips
 
 **Common Issues:**
+
 - **File not found:** Check that `sample.txt` exists in the same directory
 - **Import errors:** Make sure you have the imports at the top of your file
 - **Encoding issues:** The `encoding='utf-8'` parameter should handle most text files

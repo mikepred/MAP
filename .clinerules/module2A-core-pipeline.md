@@ -6,26 +6,26 @@ difficulty: "beginner"
 estimated_time: "1-1.5 hours"
 ---
 
-# 📚 Module 2A: Core Text Processing Pipeline
-
 > **Overview:** This module focuses on the technical implementation skills required to build the foundational components of a text processing pipeline. You will learn to read files, clean text, tokenize words, count frequencies, and display results.
 
 ## 📋 Table of Contents
 
-- [2.1 File Handling in Python 📁](#21-file-handling-in-python-📁)
-- [2.2 Text Cleaning: The Janitor's Work 🧹](#22-text-cleaning-the-janitors-work-🧹)
-- [2.3 Tokenization: Breaking Down Words 🧩](#23-tokenization-breaking-down-words-🧩)
-- [2.4 Counting Frequencies: Who's Most Popular? 📊](#24-counting-frequencies-whos-most-popular-📊)
-- [2.5 Displaying Results: Show Me the Data! ✨](#25-displaying-results-show-me-the-data-✨)
+- [2.1 File Handling in Python 📁](#21-file-handling-in-python-)
+- [2.2 Text Cleaning: The Janitor's Work 🧹](#22-text-cleaning-the-janitors-work-)
+- [2.3 Tokenization: Breaking Down Words 🧩](#23-tokenization-breaking-down-words-)
+- [2.4 Counting Frequencies: Who's Most Popular? 📊](#24-counting-frequencies-whos-most-popular-)
+- [2.5 Displaying Results: Show Me the Data! ✨](#25-displaying-results-show-me-the-data-)
 
 ---
 
 ## 2.1 File Handling in Python 📁
 
-### 🎯 Learning Objective
+### 🎯 Learning Objective: File Handling
+
 Master safe and efficient file reading operations using Python's context managers.
 
-### 💡 Core Concept
+### 💡 Core Concept: File Reading
+
 Reading data from external files safely and efficiently using the `with` statement pattern.
 
 ### 🔧 Key Syntax & Methods
@@ -38,16 +38,18 @@ with open(filepath, 'r', encoding='utf-8') as file:
 ```
 
 ### ✅ Best Practices Checklist
+
 - [ ] Always use `with` statements for automatic file closing
 - [ ] Specify encoding explicitly (usually `utf-8`)
 - [ ] Handle potential errors gracefully (`FileNotFoundError`, `UnicodeDecodeError`)
 - [ ] Validate input parameters before processing
 
-### 🏃‍♂️ Hands-On Activity
+### 🏃‍♂️ Hands-On Activity: Read File
 
 **Task:** Write a function to read `sample.txt` and return its content.
 
 **Template:**
+
 ```python
 def read_file(filepath):
     """
@@ -73,11 +75,14 @@ def read_file(filepath):
 
 ## 2.2 Text Cleaning: The Janitor's Work 🧹
 
-### 🎯 Learning Objective
+### 🎯 Learning Objective: Text Cleaning
+
 Understand text normalization techniques for consistent analysis.
 
-### 💡 Core Concept
+### 💡 Core Concept: Text Normalization
+
 **Why clean text?**
+
 - **Consistency:** "The" and "the" should be treated identically
 - **Noise Reduction:** Remove irrelevant characters that don't contribute to meaning
 - **Standardization:** Create uniform input for downstream processing
@@ -85,12 +90,14 @@ Understand text normalization techniques for consistent analysis.
 ### 🔧 Essential Cleaning Operations
 
 #### 1. Case Normalization
+
 ```python
 text = "Hello World!"
 normalized = text.lower()  # Result: "hello world!"
 ```
 
 #### 2. Punctuation Removal
+
 ```python
 import string
 
@@ -104,6 +111,7 @@ for punct in string.punctuation:
 ```
 
 #### 3. Advanced: Stop Word Removal (Conceptual)
+
 Common words like "is", "an", "the" might be filtered out for certain analyses.
 
 ### 📚 Python String Methods Reference
@@ -115,9 +123,10 @@ Common words like "is", "an", "the" might be filtered out for certain analyses.
 | `.isalpha()` | Check if alphabetic | `"abc".isalpha()` → `True` |
 | `str.maketrans()` | Create translation table | Used with `.translate()` |
 
-### 🏃‍♂️ Hands-On Activity
+### 🏃‍♂️ Hands-On Activity: Clean Text
 
 **Template:**
+
 ```python
 def clean_text(text):
     """
@@ -141,13 +150,16 @@ def clean_text(text):
 
 ## 2.3 Tokenization: Breaking Down Words 🧩
 
-### 🎯 Learning Objective
+### 🎯 Learning Objective: Tokenization
+
 Learn to split text into individual analyzable units (tokens).
 
-### 💡 Core Concept
+### 💡 Core Concept: Text Splitting
+
 **Tokenization** transforms continuous text into discrete units for analysis.
 
 **Benefits:**
+
 - Enables word-by-word analysis
 - Creates standardized processing units
 - Foundation for frequency analysis and other NLP tasks
@@ -161,6 +173,7 @@ tokens = text.split()  # Result: ['Hello', 'world', 'from', 'Python']
 ```
 
 **Why `.split()` is smart:**
+
 - Handles multiple consecutive spaces
 - Manages tabs and newlines
 - No empty strings in result
@@ -168,15 +181,17 @@ tokens = text.split()  # Result: ['Hello', 'world', 'from', 'Python']
 ### 🌟 Connection to Modern NLP
 
 **Advanced Tokenization in LLMs:**
+
 - **Byte Pair Encoding (BPE):** Handles unknown words via subword units
 - **WordPiece:** Used by BERT and similar models
 - **SentencePiece:** Used by T5 and other transformer models
 
 *Our project uses basic tokenization to understand fundamentals. See `llms-from-scratch` Chapter 2 for advanced techniques.*
 
-### 🏃‍♂️ Hands-On Activity
+### 🏃‍♂️ Hands-On Activity: Tokenize Text
 
 **Template:**
+
 ```python
 def tokenize_text(text):
     """
@@ -200,15 +215,18 @@ def tokenize_text(text):
 
 ## 2.4 Counting Frequencies: Who's Most Popular? 📊
 
-### 🎯 Learning Objective
+### 🎯 Learning Objective: Frequency Counting
+
 Learn to analyze word frequency patterns using appropriate data structures.
 
-### 💡 Core Concept
+### 💡 Core Concept: Word Frequency
+
 Frequency analysis reveals which words appear most often, providing insights into text content and themes.
 
 ### 🔧 Data Structure Options
 
 #### Option 1: Manual Dictionary
+
 ```python
 word_counts = {}
 for word in tokens:
@@ -219,6 +237,7 @@ for word in tokens:
 ```
 
 #### Option 2: collections.Counter (Recommended)
+
 ```python
 from collections import Counter
 
@@ -252,9 +271,10 @@ counter['unknown']         # 0 (no KeyError!)
 counter.update(['apple'])  # Add more items
 ```
 
-### 🏃‍♂️ Hands-On Activity
+### 🏃‍♂️ Hands-On Activity: Count Frequencies
 
 **Template:**
+
 ```python
 from collections import Counter
 
@@ -280,10 +300,12 @@ def count_frequencies(tokens):
 
 ## 2.5 Displaying Results: Show Me the Data! ✨
 
-### 🎯 Learning Objective
+### 🎯 Learning Objective: Result Display
+
 Create user-friendly output formatting for analysis results.
 
-### 💡 Core Concept
+### 💡 Core Concept: Data Presentation
+
 Raw data is meaningless without clear, readable presentation. Good formatting enhances understanding and usability.
 
 ### 🔧 Counter Display Methods
@@ -301,8 +323,9 @@ for word, count in top_items:
 
 ### 🎨 Output Formatting Best Practices
 
-#### Good Output Example:
-```
+#### Good Output Example
+
+```text
 Top 5 most common words:
 - the: 12
 - and: 8  
@@ -311,14 +334,16 @@ Top 5 most common words:
 - a: 5
 ```
 
-#### Poor Output Example:
-```
+#### Poor Output Example
+
+```text
 [('the', 12), ('and', 8), ('of', 7), ('to', 6), ('a', 5)]
 ```
 
-### 🏃‍♂️ Hands-On Activity
+### 🏃‍♂️ Hands-On Activity: Display Results
 
 **Template:**
+
 ```python
 def display_most_common(frequencies, n=10):
     """
@@ -401,6 +426,7 @@ Ready to implement these concepts? Continue to **[Module 3: Building the Script 
 ## 📖 Quick Reference Guide
 
 ### Essential Imports
+
 ```python
 # Standard library
 from collections import Counter
@@ -424,6 +450,7 @@ import time
 | Top N items | `counter.most_common(n)` | Get most frequent items |
 
 ### Error Handling Patterns
+
 ```python
 # File operations
 try:
@@ -438,6 +465,7 @@ except Exception as e:
 ```
 
 ### Function Template
+
 ```python
 def function_name(param1, param2=default_value):
     """
@@ -467,7 +495,3 @@ def function_name(param1, param2=default_value):
     # Return result
     return result
 ```
-
----
-
-*📝 This module provides the foundation for all text processing tasks. Master these concepts, and you'll be ready to tackle more advanced NLP challenges!*

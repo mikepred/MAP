@@ -347,15 +347,16 @@ if __name__ == "__main__":
 
 ## ✅ Testing Your Implementation
 
-### Test with sample.txt:
+### Test with sample.txt
 
 ```bash
 python analyzer.py
 # Enter: sample.txt
 ```
 
-### Expected output format:
-```
+### Expected output format
+
+```none
 Text Analyzer - Module 3C: Text Processing Testing
 ============================================================
 
@@ -394,7 +395,8 @@ This sentence contains many words that will help us test our text analysis...
 
 ## 🚧 Troubleshooting
 
-**Import Errors:**
+### Import Errors
+
 ```python
 # Make sure you have these imports at the top:
 import re
@@ -404,10 +406,12 @@ from pathlib import Path
 ```
 
 **Empty Results:**
+
 - Check that your text file has content
-- Verify the cleaning functions aren't removing too much
+- Verify the cleaning functions aren\'t removing too much
 
 **Regex Issues:**
+
 - The `re` module is built into Python
 - Test regex patterns separately if needed
 
@@ -443,6 +447,7 @@ Fantastic! Your text processing engine is now complete. Head to **[Module 3D: An
 ---
 
 📚 **Navigation:**
+
 - ⬅️ Previous: [Module 3B: File I/O & Error Handling](module3B-file-io.md)
 - ➡️ Next: [Module 3D: Analysis & Display Functions](module3D-analysis.md)
 - 🏠 Home: [Module 3 Navigation Guide](module3-navigation.md)

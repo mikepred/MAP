@@ -6,30 +6,33 @@ difficulty: "intermediate"
 estimated_time: "1.5-2 hours"
 ---
 
-# 🏗️ Module 2B: Code Design & Quality Practices
+## 🏗️ Module 2B: Code Design & Quality Practices
 
 > **Overview:** This module focuses on software engineering best practices to transform working code into maintainable, professional-quality code.
 
 ## 📋 Table of Contents
 
-**I. Foundational Code Design**
-- [2.6 Modular Design with Functions 🧱](#26-modular-design-with-functions-🧱)
-- [2.7 Input Validation & Error Handling 🛡️](#27-input-validation--error-handling-🛡️)
+I. Foundational Code Design
 
-**II. Code Quality & Maintainability**
-- [2.8 Performance Considerations ⚡](#28-performance-considerations-⚡)
-- [2.9 Code Style & Consistency 📏](#29-code-style--consistency-📏)
-- [2.10 Testing Mindset 🧪](#210-testing-mindset-🧪)
-- [2.11 Configuration & Flexibility 🔧](#211-configuration--flexibility-🔧)
-- [2.12 Documentation Standards 📚](#212-documentation-standards-📚)
+- [2.6 Modular Design with Functions](#26-modular-design-with-functions)
+- [2.7 Input Validation and Error Handling](#27-input-validation-and-error-handling)
+
+II. Code Quality & Maintainability
+
+- [2.8 Performance Considerations](#28-performance-considerations)
+- [2.9 Code Style and Consistency](#29-code-style-and-consistency)
+- [2.10 Testing Mindset](#210-testing-mindset)
+- [2.11 Configuration and Flexibility](#211-configuration-and-flexibility)
+- [2.12 Documentation Standards](#212-documentation-standards)
 
 ---
 
-## II. Foundational Code Design
+## I. Foundational Code Design
 
-## 2.6 Modular Design with Functions 🧱
+## 2.6 Modular Design with Functions {#26-modular-design-with-functions}
 
-### 🎯 Learning Objective
+### 🎯 Learning Objective-modular-design
+
 Understand how to structure code using functions for maintainability and reusability.
 
 ### 💡 Core Concept: Why Functions Matter
@@ -44,6 +47,7 @@ Understand how to structure code using functions for maintainability and reusabi
 ### ✅ Function Design Principles
 
 #### 1. Single Responsibility
+
 ```python
 # ✅ Good: Does one thing well
 def read_file(filepath):
@@ -61,17 +65,19 @@ def read_and_clean_file(filepath):
 ```
 
 #### 2. Clear Naming
+
 ```python
 # ✅ Descriptive names
 def count_frequencies(tokens):
     pass
 
-# ❌ Unclear names  
+# ❌ Unclear names
 def count_stuff(data):
     pass
 ```
 
 #### 3. Comprehensive Documentation
+
 ```python
 def clean_text(text):
     """
@@ -104,14 +110,16 @@ graph LR
 
 ## Additional Best Practices & Guidelines
 
-### 2.7 Input Validation & Error Handling 🛡️
+### 2.7 Input Validation & Error Handling {#27-input-validation-and-error-handling}
 
-#### 🎯 Learning Objective
+#### 🎯 Learning Objective-input-validation
+
 Build robust functions that handle edge cases and invalid inputs gracefully.
 
 #### 🔧 Validation Patterns
 
 **File Operations:**
+
 ```python
 def read_file(filepath):
     """Robust file reading with comprehensive error handling."""
@@ -134,6 +142,7 @@ def read_file(filepath):
 ```
 
 **Type Checking:**
+
 ```python
 def clean_text(text):
     """Type-safe text cleaning."""
@@ -147,16 +156,20 @@ def clean_text(text):
     return processed_text
 ```
 
-## III. Code Quality & Maintainability
+---
 
-### 2.8 Performance Considerations ⚡
+## II. Code Quality & Maintainability
 
-#### 🎯 Learning Objective
+### 2.8 Performance Considerations {#28-performance-considerations}
+
+#### 🎯 Learning Objective-performance-considerations
+
 Write efficient code that scales well with larger datasets.
 
 #### 🔧 Optimization Techniques
 
 **String Operations - Efficiency Comparison:**
+
 ```python
 # ❌ Slow: Multiple string replacements
 def clean_text_slow(text):
@@ -171,6 +184,7 @@ def clean_text_fast(text):
 ```
 
 **Memory Management:**
+
 ```python
 # For large files, consider streaming
 def process_large_file_streaming(filepath):
@@ -185,14 +199,16 @@ def process_large_file_streaming(filepath):
     return word_counter
 ```
 
-### 2.9 Code Style & Consistency 📏
+### 2.9 Code Style & Consistency {#29-code-style-and-consistency}
 
-#### 🎯 Learning Objective
+#### 🎯 Learning Objective-code-style
+
 Write maintainable code following Python conventions.
 
 #### 🔧 Style Guidelines
 
 **Variable Naming (PEP 8):**
+
 ```python
 # ✅ Good: Snake case, descriptive
 file_content = read_file(input_filepath)
@@ -207,6 +223,7 @@ lst = tokenize_text(x)
 ```
 
 **Import Organization:**
+
 ```python
 # 1. Standard library imports
 import string
@@ -221,14 +238,16 @@ import requests
 from utils import helper_function
 ```
 
-### 2.10 Testing Mindset 🧪
+### 2.10 Testing Mindset {#210-testing-mindset}
 
-#### 🎯 Learning Objective
+#### 🎯 Learning Objective-testing-mindset
+
 Write testable code and think about edge cases.
 
 #### 🔧 Test-Driven Thinking
 
 **Edge Cases to Consider:**
+
 ```python
 def clean_text(text):
     """Test cases to verify:
@@ -248,6 +267,7 @@ def clean_text(text):
 ```
 
 **Example Test Structure:**
+
 ```python
 # Test normal operation
 assert clean_text("Hello, World!") == "hello world"
@@ -264,14 +284,16 @@ except TypeError:
     pass  # Expected behavior
 ```
 
-### 2.11 Configuration & Flexibility 🔧
+### 2.11 Configuration & Flexibility {#211-configuration-and-flexibility}
 
-#### 🎯 Learning Objective
+#### 🎯 Learning Objective-configuration-flexibility
+
 Design functions that can be easily customized for different use cases.
 
 #### 🔧 Flexible Function Design
 
 **Configurable Parameters:**
+
 ```python
 def display_most_common(frequencies, n=10, show_count=True, format_style='list'):
     """Flexible display with multiple options."""
@@ -291,6 +313,7 @@ def display_most_common(frequencies, n=10, show_count=True, format_style='list')
 ```
 
 **Constants for Magic Numbers:**
+
 ```python
 # Configuration constants
 DEFAULT_TOP_WORDS = 10
@@ -303,9 +326,10 @@ def read_file(filepath, encoding=DEFAULT_ENCODING):
     pass
 ```
 
-### 2.12 Documentation Standards 📚
+### 2.12 Documentation Standards {#212-documentation-standards}
 
-#### 🎯 Learning Objective
+#### 🎯 Learning Objective-documentation-standards
+
 Write comprehensive documentation that serves as both specification and guide.
 
 #### 🔧 Enhanced Docstring Format
@@ -350,8 +374,8 @@ def count_frequencies(tokens):
     """
     if not isinstance(tokens, list):
         raise TypeError("tokens must be a list")
-    
-    if not all(isinstance(token, str) for token in tokens):
+      if not all(isinstance(token, str) for token in tokens):
         raise TypeError("All tokens must be strings")
     
     return Counter(tokens)
+```

@@ -6,19 +6,21 @@ difficulty: "intermediate-advanced"
 estimated_time: "45-60 minutes"
 ---
 
-# 🚀 Module 2C: Professional Development Practices
+## Module 2C: Professional Development Practices 🚀
 
 > **Overview:** This module focuses on production workflows and advanced practices to prepare your code for real-world use, emphasizing debugging, future-proofing, and scalable code organization.
 
 ## 📋 Table of Contents
 
-**IV. Development & Debugging Practices**
-- [2.13 Debugging Tips 🐛](#213-debugging-tips-🐛)
-- [2.14 Future-Proofing 🔮](#214-future-proofing-🔮)
+### Development & Debugging Practices
 
-**V. Real-World Application & Scalability**
-- [2.15 Code Organization 📁](#215-code-organization-📁)
-- [2.16 Real-World Considerations 🌍](#216-real-world-considerations-🌍)
+- [Debugging Tips 🐛](#213-debugging-tips-)
+- [Future-Proofing 🔮](#214-future-proofing-)
+
+### Real-World Application & Scalability
+
+- [Code Organization 📁](#215-code-organization-)
+- [Real-World Considerations 🌍](#216-real-world-considerations-)
 
 ---
 
@@ -26,19 +28,21 @@ estimated_time: "45-60 minutes"
 
 ### 2.13 Debugging Tips 🐛
 
-#### 🎯 Learning Objective
+#### 🎯 Learning Objective: Debugging Strategies
+
 Develop debugging strategies for text processing pipelines.
 
 #### 🔧 Debugging Techniques
 
 **Strategic Debug Prints:**
+
 ```python
 def tokenize_text(text, debug=False):
     """Enhanced tokenization with debugging support."""
     if debug:
         print(f"🔍 Input text length: {len(text)}")
         print(f"🔍 First 50 chars: '{text[:50]}...'")
-        print(f"🔍 Contains newlines: {'\\n' in text}")
+        print(f"🔍 Contains newlines: {'\\\n' in text}")
     
     tokens = text.split()
     
@@ -51,6 +55,7 @@ def tokenize_text(text, debug=False):
 ```
 
 **Data Validation Points:**
+
 ```python
 def text_processing_pipeline(filepath, debug=False):
     """Complete pipeline with validation checkpoints."""
@@ -76,13 +81,17 @@ def text_processing_pipeline(filepath, debug=False):
 
 ### 2.14 Future-Proofing 🔮
 
-#### 🎯 Learning Objective
+#### 🎯 Learning Objective: Extensible Design
+
 Design extensible code that can evolve with changing requirements.
 
 #### 🔧 Extensible Design Patterns
 
 **Flexible Cleaning Function:**
+
 ```python
+import string
+
 def clean_text(text, 
                lowercase=True, 
                remove_punctuation=True,
@@ -115,11 +124,11 @@ def clean_text(text,
         result = ''.join(char for char in result if not char.isdigit())
     
     if remove_punctuation:
-        punctuation = custom_punctuation or string.punctuation
+        punctuation_to_remove = custom_punctuation or string.punctuation
         if preserve_spaces:
-            translator = str.maketrans(punctuation, ' ' * len(punctuation))
+            translator = str.maketrans(punctuation_to_remove, ' ' * len(punctuation_to_remove))
         else:
-            translator = str.maketrans('', '', punctuation)
+            translator = str.maketrans('', '', punctuation_to_remove)
         result = result.translate(translator)
     
     # Clean up multiple spaces if preserving spaces
@@ -133,12 +142,13 @@ def clean_text(text,
 
 ### 2.15 Code Organization 📁
 
-#### 🎯 Learning Objective
+#### 🎯 Learning Objective: Code Maintainability
+
 Structure code for maintainability and team collaboration.
 
 #### 🏗️ Suggested Project Structure
 
-```
+```text
 text_analyzer/
 │
 ├── 📁 src/
@@ -168,12 +178,14 @@ text_analyzer/
 
 ### 2.16 Real-World Considerations 🌍
 
-#### 🎯 Learning Objective
+#### 🎯 Learning Objective: Production Challenges
+
 Handle practical challenges in production text processing systems.
 
 #### 🔧 Production-Ready Solutions
 
 **Robust File Reading:**
+
 ```python
 def read_file_robust(filepath, encodings=['utf-8', 'latin-1', 'cp1252']):
     """
@@ -212,7 +224,10 @@ def read_file_robust(filepath, encodings=['utf-8', 'latin-1', 'cp1252']):
 ```
 
 **Memory-Efficient Large File Processing:**
+
 ```python
+from collections import Counter
+
 def process_large_file(filepath, chunk_size=1024*1024):  # 1MB chunks
     """
     Process large files efficiently using chunked reading.
@@ -239,8 +254,8 @@ def process_large_file(filepath, chunk_size=1024*1024):  # 1MB chunks
                     break
                 
                 # Process chunk
-                cleaned = clean_text(chunk)
-                tokens = tokenize_text(cleaned)
+                cleaned = clean_text(chunk) # Assumes clean_text is defined elsewhere
+                tokens = tokenize_text(cleaned) # Assumes tokenize_text is defined elsewhere
                 word_counter.update(tokens)
                 
                 chunk_number += 1
@@ -249,7 +264,5 @@ def process_large_file(filepath, chunk_size=1024*1024):  # 1MB chunks
                 
     except Exception as e:
         print(f"❌ Error processing large file: {e}")
-        raise
-    
-    print(f"✅ Completed processing {chunk_number} chunks")
     return word_counter
+```
