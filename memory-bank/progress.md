@@ -23,6 +23,11 @@ This document outlines what currently works, what is left to build, the current 
         *   `time_function()` utility added and overall pipeline timing implemented.
         *   `NameError` for `tokenize_text` and other syntax issues resolved.
     *   The `text_analyzer.py` script is now fully enhanced as per the Module 4 lesson plan.
+    *   **Module 5C (Initial Exploration - "Immediate Next Steps" Step 1) In Progress**:
+        *   Reviewed Module 5 documentation (overview, navigation, sub-modules 5A, 5B, 5C).
+        *   Installed NLTK and spaCy libraries.
+        *   Downloaded NLTK data (`punkt`, `stopwords`, `punkt_tab`) and spaCy model (`en_core_web_sm`).
+        *   Created and executed `text_analyzer/explore_nlp_libraries.py` to demonstrate basic functionalities.
 
 *   **Git Branch Visualizer Project (`branch_visualizer.py`)**:
     *   The script successfully fetches local Git branch names using `git for-each-ref`.
@@ -58,10 +63,10 @@ This document outlines what currently works, what is left to build, the current 
 
 ## Current Status
 
-*   **Overall Project**: The MAP project now comprises two main functional Python scripts: `text_analyzer.py` (Module 4 enhancements completed) and `branch_visualizer.py` (functional).
-*   **Text Analyzer**: Fully functional as per Modules 1-4 of the lesson plan. All planned enhancements from Module 4 (A, B, C) are implemented and integrated. The script is ready for final review against the lesson plan objectives. Module 5 (conceptual connections to LLMs) has been reviewed.
+*   **Overall Project**: The MAP project now comprises two main functional Python scripts: `text_analyzer.py` (Module 4 enhancements completed, Module 5 exploration started) and `branch_visualizer.py` (functional).
+*   **Text Analyzer**: Fully functional as per Modules 1-4 of the lesson plan. All planned enhancements from Module 4 (A, B, C) are implemented. Module 5 (conceptual connections to LLMs) has been reviewed, and initial practical exploration of NLTK/spaCy (Module 5C, Step 1) is complete.
 *   **Git Branch Visualizer**: Functional for generating Mermaid graphs of local Git branches.
-*   **Memory Bank**: Currently being updated to reflect the completion of Module 4 for the Text Analyzer.
+*   **Memory Bank**: Currently being updated to reflect the Module 5 exploration for the Text Analyzer.
 *   **Git Branch**: (User to confirm if specific branch tracking is needed for this phase).
 
 ## Known Issues
@@ -89,4 +94,6 @@ This document outlines what currently works, what is left to build, the current 
     *   Completed Module 4A (testing and review of `analyzer.py`).
     *   Implemented Module 4B (all enhancements) in `text_analyzer.py`.
     *   Implemented Module 4C (all enhancements) in `text_analyzer.py`, including fixing runtime errors.
-    *   Currently updating Memory Bank files (`activeContext.md`, `progress.md`) to reflect the completion of Module 4.
+    *   Reviewed Module 5 documentation.
+    *   Initiated Module 5C Step 1: Installed NLTK, spaCy, and necessary data/models; created and ran `explore_nlp_libraries.py`.
+    *   Currently updating Memory Bank files (`activeContext.md`, `progress.md`) to reflect this Module 5 progress.

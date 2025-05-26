@@ -11,7 +11,8 @@ This document covers the technologies used in the project, the development setup
     *   `collections`: The `Counter` class for efficient word frequency counting (Module 3C onwards).
     *   `string`: The `string.punctuation` constant and `str.maketrans()` method for text cleaning (Module 3C onwards).
     *   `re`: The regular expression module for advanced text cleaning and sentence splitting (Module 3C onwards).
-*   **(Optional) NLTK/spaCy**: If enhancements from Module 4 are implemented (e.g., stop word removal, advanced cleaning), these libraries may be used.
+*   **NLTK (Natural Language Toolkit)**: Used for advanced tokenization, stop word removal, and other NLP tasks (Module 5C exploration).
+*   **spaCy**: Used for advanced tokenization, stop word removal, part-of-speech tagging, named entity recognition, and other NLP tasks (Module 5C exploration).
 
 ### Development Setup
 *   **Python Installation**: Ensure Python 3.7+ is installed and accessible from the command line.
@@ -23,8 +24,9 @@ This document covers the technologies used in the project, the development setup
 *   **Basic Tokenization**: Uses `.split()`, which is a simplification and doesn't handle all linguistic nuances.
 
 ### Dependencies
-*   Primarily relies on Python's standard library.
-*   Optional external dependencies for Module 4 enhancements: `nltk`, `spacy`.
+*   Primarily relies on Python's standard library for core Module 1-3 functionalities.
+*   **NLTK**: External dependency, installed and explored as part of Module 5C. Requires data packages like `punkt`, `stopwords`, `punkt_tab`.
+*   **spaCy**: External dependency, installed and explored as part of Module 5C. Requires language models like `en_core_web_sm`.
 
 ### Tool Usage Patterns
 *   Executed via `python analyzer.py`.
