@@ -25,7 +25,6 @@ This document outlines what currently works, what is left to build, the current 
 
 ## What's Left to Build
 
-*   Implementation of Module 3C (Text Processing Pipeline) in `text_analyzer/analyzer.py`.
 *   Implementation of Module 3D (Analysis & Display Functions) in `text_analyzer/analyzer.py`.
 *   Implementation and testing of `analyzer.py` for Module 3E (Integration & Testing).
 *   Potential enhancements from Module 4 (e.g., stop word removal, user input, file output) after core Module 3 functionality is complete.
@@ -33,7 +32,10 @@ This document outlines what currently works, what is left to build, the current 
 ## Current Status
 
 *   **Module 3B Complete**: File I/O and error handling are implemented and tested.
-*   Currently on `module-3c-text-processing-pipeline` branch, ready to begin implementing Module 3C (Text Processing Pipeline) in `text_analyzer/analyzer.py`.
+*   **Module 3C (Text Processing Pipeline) Completed**:
+    *   Implemented `clean_text`, `clean_text_for_words`, `count_words`, `get_unique_words`, `get_word_count_stats`, `count_sentences`, `analyze_sentences`, and `analyze_text_complete` functions in `text_analyzer/analyzer.py`.
+    *   Updated the `main` function to test the text processing pipeline.
+*   Currently on `module-3c-text-processing-pipeline` branch, ready to begin implementing Module 3D (Analysis & Display Functions) in `text_analyzer/analyzer.py`.
 *   Memory Bank files (`activeContext.md`, `progress.md`) are being updated to reflect the current state.
 
 ## Known Issues

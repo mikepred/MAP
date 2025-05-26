@@ -4,7 +4,7 @@ This document outlines the current work focus, recent changes, and next steps sp
 
 ## Current Work Focus
 
-The primary focus is now on implementing **Module 3C: Text Processing Pipeline** in `text_analyzer/analyzer.py`. Module 3B (File I/O & Error Handling) has been successfully completed and integrated into the `develop` branch. We are currently on the `module-3c-text-processing-pipeline` branch.
+The primary focus is now on implementing **Module 3D: Analysis & Display Functions** in `text_analyzer/analyzer.py`. Module 3C (Text Processing Pipeline) has been successfully completed and integrated into the `module-3c-text-processing-pipeline` branch.
 
 ## Recent Changes
 
@@ -21,9 +21,9 @@ The primary focus is now on implementing **Module 3C: Text Processing Pipeline**
 
 ## Next Steps
 
-1.  **Implement Module 3C (Text Processing Pipeline) in `text_analyzer/analyzer.py`.**
-    *   This involves adding functions for text cleaning, tokenization, and basic analysis.
-2.  Proceed with Module 3D and 3E sequentially, branching from `develop` for each.
+1.  **Implement Module 3D (Analysis & Display Functions) in `text_analyzer/analyzer.py`.**
+    *   This involves adding functions for advanced statistical analysis, professional results formatting, and user-friendly display.
+2.  Proceed with Module 3E sequentially, branching from `develop` for each.
 3.  Consider enhancements from Module 4 of the lesson plan after the basic pipeline (Modules 3A-3E) is functional and tested.
 4.  Update `progress.md` and `activeContext.md` to reflect the current state of the project as each module is completed.
 5.  Commit and push memory bank updates to the current branch.
