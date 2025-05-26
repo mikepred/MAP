@@ -11,6 +11,7 @@ The project has been reset. The primary focus is now on re-implementing the `tex
 *   **Project Reset**: `text_analyzer/analyzer.py` has been reset to its initial state as defined in Module 3A (Project Setup & Architecture).
 *   Updated `memory-bank/techContext.md` to better reflect the lesson plan's recommendation for using a virtual environment.
 *   `memory-bank/progress.md` will be updated to reflect this reset.
+*   **Core Directive Refinement**: `../../Cline/Rules/00-primary-directive.md` was refined to include five core mission points, enhancing clarity on proactive partnership, continuous learning, and principled development. Rationales were removed for conciseness.
 
 ## Next Steps
 

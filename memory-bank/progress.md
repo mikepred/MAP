@@ -13,6 +13,7 @@ This document outlines what currently works, what is left to build, the current 
 *   `memory-bank/techContext.md` updated to reflect virtual environment recommendations.
 *   `text_analyzer/analyzer.py` has been reset and now contains the initial script structure as defined in Module 3A.
 *   `memory-bank/activeContext.md` has been updated to reflect the project reset.
+*   **Core Directive Refinement**: The `../../Cline/Rules/00-primary-directive.md` file was refined to solidify core operational principles, including continuous learning and principled development.
 
 ## What's Left to Build
 

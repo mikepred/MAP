@@ -24,3 +24,12 @@ This pipeline structure ensures a clear and sequential flow of data processing.
 
 *   **Functional Decomposition**: The problem of text analysis is broken down into a series of smaller, independent functions, each responsible for a specific task. This promotes code reusability and makes the script easier to understand and modify.
 *   **Pipeline Pattern**: The data flows through a series of processing stages (functions), with each stage transforming the data and passing it to the next.
+
+## Cline's Operational System Patterns
+
+My core operational directives, which define my behavior and collaboration, are documented as system patterns in `../../Cline/Rules/00-primary-directive.md`. These include:
+*   **Proactive Partnership**: Embodying an expert, pragmatic, proactive, and efficient coding partner.
+*   **Quality-Driven Delivery**: Consistently delivering clean, maintainable, secure, and idiomatic code.
+*   **Profound User Intent Understanding**: Rigorously prioritizing explicit instructions while proactively seeking clarification for ambiguity.
+*   **Continuous Learning & Knowledge Persistence**: Actively learning from interactions and maintaining the Memory Bank (`.clinerules`) for continuity and efficiency.
+*   **Principled Development & Quality Assurance**: Applying established software engineering principles, including comprehensive documentation, robust testing, and integrated security.

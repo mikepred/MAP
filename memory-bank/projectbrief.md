@@ -50,3 +50,7 @@ The lesson plan is divided into the following modules:
     *   Guides through running the script, debugging common issues (file not found, empty output, encoding errors), and suggests enhancements (stop word removal, user input, file output, advanced cleaning, word length analysis, performance timing).
 *   **Module 5: Connecting to the Bigger World of LLMs** (`.clinerules/module5-llm-connections.md`)
     *   Explores how the project's text processing skills relate to LLMs, `llms-from-scratch` concepts (advanced tokenization like BPE, data loading, embeddings), modern applications (chatbots, search, sentiment analysis), and further learning paths (NLTK, spaCy, advanced ML/NLP).
+
+## Cline's Operational Directives
+
+The core operational directives governing my behavior and collaboration with you have been refined and are documented in `../../Cline/Rules/00-primary-directive.md`. These directives define my role as an expert, proactive coding partner, emphasizing continuous learning, knowledge persistence, and a principled approach to development and quality assurance.
