@@ -4,7 +4,7 @@ This document outlines the current work focus, recent changes, and next steps fo
 
 ## Current Work Focus
 
-The primary focus of the current session is to **update the Cline Memory Bank to reflect the restructuring of the Module 4 lesson plan documentation.** This involves reviewing and updating relevant memory bank files, particularly this file (`activeContext.md`) and `progress.md`.
+The primary focus of the current session is to **update the Cline Memory Bank to reflect the restructuring of both the Module 4 and Module 5 lesson plan documentation.** This involves reviewing and updating relevant memory bank files, particularly this file (`activeContext.md`) and `progress.md`.
 
 ## Recent Changes
 
@@ -16,6 +16,14 @@ The primary focus of the current session is to **update the Cline Memory Bank to
         *   `.clinerules/module4B-core-enhancements.md`
         *   `.clinerules/module4C-advanced-refinements.md`
         *   `.clinerules/module4-navigation.md`
+*   **Module 5 Documentation Restructuring (Current Session)**:
+    *   Reviewed `.clinerules/module5-llm-connections.md`.
+    *   Restructured Module 5 documentation into new, more focused files:
+        *   `.clinerules/module5-overview.md`
+        *   `.clinerules/module5A-foundations-llm-parallels.md`
+        *   `.clinerules/module5B-applications-ai-landscape.md`
+        *   `.clinerules/module5C-next-steps-learning-path.md`
+        *   `.clinerules/module5-navigation.md`
 *   **Memory Bank Update for Branch Visualizer (Completed in Current Session)**:
     *   `memory-bank/projectbrief.md` updated to include core requirements and project goals for the Git Branch Visualizer.
     *   `memory-bank/productContext.md` updated to include the problem statement, proposed solution, and user experience goals for the Git Branch Visualizer.
@@ -34,9 +42,9 @@ The primary focus of the current session is to **update the Cline Memory Bank to
 
 ## Next Steps
 
-1.  **Complete Memory Bank Update for Module 4 Restructuring (Current Task)**:
+1.  **Complete Memory Bank Update for Module 4 and Module 5 Restructuring (Current Task)**:
     *   Update `memory-bank/activeContext.md` (this file) to accurately reflect the current task. (Currently being done)
-    *   Update `memory-bank/progress.md` to reflect the Module 4 documentation restructuring.
+    *   Update `memory-bank/progress.md` to reflect the Module 4 and Module 5 documentation restructuring.
 2.  **Review and Finalize Memory Bank**: Ensure all memory bank files are consistent and accurately reflect the current state of the MAP project.
-3.  **Commit Changes**: Commit all memory bank updates and the new Module 4 documentation files.
-4.  **Consider Next Project Phase**: Evaluate potential next steps, which might include enhancements to the Text Analyzer (from the newly structured Module 4) or the Git Branch Visualizer.
+3.  **Commit Changes**: Commit all memory bank updates and the new Module 4 and Module 5 documentation files.
+4.  **Consider Next Project Phase**: Evaluate potential next steps, which might include enhancements to the Text Analyzer (from the newly structured Module 4 and informed by Module 5) or the Git Branch Visualizer.

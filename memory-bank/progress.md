@@ -38,6 +38,7 @@ This document outlines what currently works, what is left to build, the current 
     *   The `.clinerules` lesson plan provides a full guide for `text_analyzer.py` development.
     *   Core Memory Bank files (`projectbrief.md`, `productContext.md`, `systemPatterns.md`, `techContext.md`, `activeContext.md`, `progress.md`) are established and have been updated in the current session to reflect the completion of the Text Analyzer's Module 3E and the introduction of the Git Branch Visualizer.
     *   Module 4 documentation (`.clinerules/module4-*.md`) has been restructured into a series of focused sub-modules (`module4-overview.md`, `module4A-testing-debugging.md`, `module4B-core-enhancements.md`, `module4C-advanced-refinements.md`, `module4-navigation.md`).
+    *   Module 5 documentation (`.clinerules/module5-*.md`) has been restructured into a series of focused sub-modules (`module5-overview.md`, `module5A-foundations-llm-parallels.md`, `module5B-applications-ai-landscape.md`, `module5C-next-steps-learning-path.md`, `module5-navigation.md`).
 
 ## What's Left to Build
 
@@ -77,3 +78,4 @@ This document outlines what currently works, what is left to build, the current 
     *   Introduced the `branch_visualizer.py` script and `branch_visualization.mermaid.txt` example.
     *   Updated all core Memory Bank files (`projectbrief.md`, `productContext.md`, `systemPatterns.md`, `techContext.md`, `activeContext.md`, `progress.md`) to reflect the addition and functionality of the Git Branch Visualizer.
     *   Restructured Module 4 documentation into a series of sub-modules for clarity and better learning progression.
+    *   Restructured Module 5 documentation into a series of sub-modules for clarity and better learning progression.
