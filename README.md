@@ -18,12 +18,119 @@ Input Text → Clean → Tokenize → Count → Display Results
 
 **Example Output:**
 ```
-Top 5 most common words:
-1. the: 42 occurrences
-2. and: 28 occurrences  
-3. to: 21 occurrences
-4. of: 19 occurrences
-5. in: 15 occurrences
+============================================================
+            Text Analyzer - Comprehensive Script
+============================================================
+🚀 Text File Loader
+==============================
+
+📂 Enter filename (attempt 1/3):
+💡 Tip: Use 'sample.txt' for testing
+💡 Type 'quit' to exit
+Filename: c:\map\sample.txt
+✅ File validation passed.
+✅ Successfully read file: c:\map\sample.txt
+📄 File size: 406 characters
+
+📖 File Preview (first 100 characters):
+--------------------
+The quick brown fox jumps over the lazy dog. This sentence contains every letter of the alphabet at ...
+--------------------
+
+🔄 Running complete analysis...
+
+============================================================
+                   Choose Display Format:
+1. Complete Report
+2. Quick Summary
+3. Both
+============================================================
+Enter your choice (1-3): 3
+
+========================================
+            📊 QUICK SUMMARY
+========================================
+📄 Characters: 406
+📝 Words: 65
+📋 Sentences: 6
+🎯 Unique Words: 55
+🏆 Most Common Word: 'the' (4 times)
+========================================
+
+============================================================
+                    Full Report Details
+============================================================
+
+============================================================
+                  📊 TEXT ANALYSIS REPORT 📊
+============================================================
+
+📊 General Statistics
+------------------------------
+📄 Total Characters: 406
+🔤 Characters (no spaces): 342
+📝 Total Words: 65
+📋 Total Sentences: 6
+📄 Paragraphs: 1
+📏 Average Words per Sentence: 10.8
+📐 Average Characters per Word: 5.3
+
+🔤 Word Frequency Analysis
+------------------------------
+🎯 Unique Words: 55
+📊 Total Word Count: 65
+📈 Average Word Frequency: 1.18
+
+🏆 Top 10 Most Common Words (or fewer if not enough unique words appear):
+   1. 'the' - 4 times (6.2%)
+   2. 'of' - 3 times (4.6%)
+   3. 'text' - 3 times (4.6%)
+   4. 'understand' - 2 times (3.1%)
+   5. 'language' - 2 times (3.1%)
+   6. 'to' - 2 times (3.1%)
+   7. 'quick' - 1 times (1.5%)
+   8. 'brown' - 1 times (1.5%)
+   9. 'fox' - 1 times (1.5%)
+  10. 'jumps' - 1 times (1.5%)
+
+📋 Sentence Analysis
+------------------------------
+📊 Total Sentences: 6
+📏 Average Words per Sentence: 10.8
+
+📏 Longest Sentence (first 100 characters shown):
+   "The future of AI depends on our ability to process and understand text data effectively"
+
+📏 Shortest Sentence (first 100 characters shown):
+   "Text processing is fascinating"
+
+📖 Readability Analysis
+------------------------------
+📐 Average Word Length: 5.1 characters
+🎯 Complexity Score: 7.4
+📚 Readability Level: Easy
+   💡 This text is generally easy to read and understand.
+
+🔍 Interesting Patterns
+------------------------------
+🎨 Word Variety: 84.6% (Higher means more diverse vocabulary)
+
+🔄 Most Repeated Words (up to 5 shown):
+   'the' appears 4 times
+   'of' appears 3 times
+   'text' appears 3 times
+   'understand' appears 2 times
+   'language' appears 2 times
+
+📏 Sample of Long Words (7+ characters, up to 8 shown):
+   sentence, contains, alphabet, processing, fascinating, understand, computers, language
+
+🔤 Sample of Short Words (2 or fewer chars, up to 10 shown):
+   of, at, is, it, us, to, ai, on
+
+✅ Analysis Complete
+------------------------------
+📝 Report generated successfully!
 ```
 
 ## 🎯 Learning Objectives
