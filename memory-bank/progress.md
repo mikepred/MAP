@@ -37,11 +37,12 @@ This document outlines what currently works, what is left to build, the current 
     *   `text_analyzer/README.md` is comprehensive and aligned with project goals.
     *   The `.clinerules` lesson plan provides a full guide for `text_analyzer.py` development.
     *   Core Memory Bank files (`projectbrief.md`, `productContext.md`, `systemPatterns.md`, `techContext.md`, `activeContext.md`, `progress.md`) are established and have been updated in the current session to reflect the completion of the Text Analyzer's Module 3E and the introduction of the Git Branch Visualizer.
+    *   Module 4 documentation (`.clinerules/module4-*.md`) has been restructured into a series of focused sub-modules (`module4-overview.md`, `module4A-testing-debugging.md`, `module4B-core-enhancements.md`, `module4C-advanced-refinements.md`, `module4-navigation.md`).
 
 ## What's Left to Build
 
 *   **Text Analyzer Project**:
-    *   Potential enhancements from Module 4 (e.g., stop word removal, user input for file output name, advanced cleaning options, word length analysis, performance timing) as outlined in `.clinerules/module4-testing.md`.
+    *   Potential enhancements from Module 4 (e.g., stop word removal, user input for file output name, advanced cleaning options, word length analysis, performance timing) as outlined in the restructured `.clinerules/module4-overview.md` and its sub-modules.
 *   **Git Branch Visualizer Project**:
     *   More robust error handling for diverse or unusual Git repository states.
     *   Options for visualizing remote branches or specific branch subsets.
@@ -74,4 +75,5 @@ This document outlines what currently works, what is left to build, the current 
 *   Previous session: Completed Modules 3A-3E for the Text Analyzer project.
 *   Current session:
     *   Introduced the `branch_visualizer.py` script and `branch_visualization.mermaid.txt` example.
-    *   **Updated all core Memory Bank files (`projectbrief.md`, `productContext.md`, `systemPatterns.md`, `techContext.md`, `activeContext.md`, `progress.md`) to reflect the addition and functionality of the Git Branch Visualizer.**
+    *   Updated all core Memory Bank files (`projectbrief.md`, `productContext.md`, `systemPatterns.md`, `techContext.md`, `activeContext.md`, `progress.md`) to reflect the addition and functionality of the Git Branch Visualizer.
+    *   Restructured Module 4 documentation into a series of sub-modules for clarity and better learning progression.
