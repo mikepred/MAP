@@ -10,14 +10,15 @@
 
 ## 📊 What You'll Build
 
-```
+```text
 Input Text → Clean → Tokenize → Count → Display Results
     ↓         ↓        ↓        ↓         ↓
 "Hello!"  → "hello"  → ["hello"] → {hello: 1} → Top Words
 ```
 
 **Example Output:**
-```
+
+```text
 ============================================================
             Text Analyzer - Comprehensive Script
 ============================================================
@@ -136,6 +137,7 @@ Enter your choice (1-3): 3
 ## 🎯 Learning Objectives
 
 By completing this project and following the associated lesson plan, you will:
+
 - Understand the importance of text processing in the modern world of data.
 - Learn how to read text data from files using Python.
 - Master basic text cleaning techniques, such as lowercasing and punctuation removal.
@@ -148,11 +150,13 @@ By completing this project and following the associated lesson plan, you will:
 ## 🎓 Prerequisites
 
 **What you need to know:**
+
 - [ ] Basic Python syntax (variables, functions, loops)
 - [ ] How to run Python scripts from command line
 - [ ] Basic understanding of text files
 
 **What you'll learn:**
+
 - [ ] File I/O operations
 - [ ] String manipulation techniques
 - [ ] Data structure usage (dictionaries, lists)
@@ -162,19 +166,21 @@ By completing this project and following the associated lesson plan, you will:
 
 The project is organized as follows:
 
--   `analyzer.py`: The main Python script where you'll implement the text analysis logic.
--   `sample.txt`: A sample text file provided as input for your analyzer. Feel free to experiment with your own text files too!
--   `README.md`: This file – your guide to the project.
+- `analyzer.py`: The main Python script where you'll implement the text analysis logic.
+- `sample.txt`: A sample text file provided as input for your analyzer. Feel free to experiment with your own text files too!
+- `README.md`: This file – your guide to the project.
 
 ## ⚡ Quick Start
 
 ### Option 1: Follow the Full Lesson Plan (Recommended)
+
 ```bash
 # Start with Module 1 for complete understanding
 # Then work through each module systematically
 ```
 
 ### Option 2: Jump Right In
+
 ```bash
 git clone [repository-url]
 cd text_analyzer
@@ -186,13 +192,13 @@ python analyzer.py
 
 The `analyzer.py` script you will build (or enhance) performs a sequence of text processing tasks:
 
-1.  **Read File:** Loads text content from the specified input file (e.g., `sample.txt`).
-2.  **Clean Text:** Normalizes the text by:
-    *   Converting all characters to lowercase to ensure case-insensitive analysis.
-    *   Removing punctuation marks to focus on word content.
-3.  **Tokenize Text:** Splits the cleaned text into a list of individual words (tokens).
-4.  **Count Frequencies:** Calculates how many times each unique word appears in the token list.
-5.  **Display Results:** Shows the most frequently occurring words, providing insights into the text's content.
+1. **Read File:** Loads text content from the specified input file (e.g., `sample.txt`).
+2. **Clean Text:** Normalizes the text by:
+    - Converting all characters to lowercase to ensure case-insensitive analysis.
+    - Removing punctuation marks to focus on word content.
+3. **Tokenize Text:** Splits the cleaned text into a list of individual words (tokens).
+4. **Count Frequencies:** Calculates how many times each unique word appears in the token list.
+5. **Display Results:** Shows the most frequently occurring words, providing insights into the text's content.
 
 ## 🐛 Common Issues & Solutions
 
@@ -207,15 +213,17 @@ The `analyzer.py` script you will build (or enhance) performs a sequence of text
 
 ## 🚀 How to Run the Script
 
-1.  Ensure you have Python 3.7+ installed on your system.
-2.  Make sure the `analyzer.py` script and `sample.txt` (or your chosen text file) are in the same directory.
-3.  Open your terminal or command prompt.
-4.  Navigate to the `text_analyzer` project directory.
-5.  Run the script using the command:
+1. Ensure you have Python 3.7+ installed on your system.
+2. Make sure the `analyzer.py` script and `sample.txt` (or your chosen text file) are in the same directory.
+3. Open your terminal or command prompt.
+4. Navigate to the `text_analyzer` project directory.
+5. Run the script using the command:
+
     ```bash
     python analyzer.py
     ```
-6.  The script will output the analysis, including the most common words found in `sample.txt`.
+
+6. The script will output the analysis, including the most common words found in `sample.txt`.
 
 *(Note: The `analyzer.py` script in its final form, as per Module 3 and 4 of the lesson plan, may include interactive prompts for filename and number of top words, or options for stop-word removal.)*
 
@@ -223,9 +231,9 @@ The `analyzer.py` script you will build (or enhance) performs a sequence of text
 
 This seemingly simple text analyzer touches upon core principles vital to Large Language Models (LLMs) like GPT-4 or Claude:
 
-*   **Data Preprocessing:** LLMs are trained on vast amounts of text. This text must first be cleaned and normalized, much like our `clean_text` function, though on a much larger and more complex scale.
-*   **Tokenization:** LLMs don't see words as we do. They use sophisticated tokenizers (e.g., Byte Pair Encoding (BPE), WordPiece, SentencePiece) to break text into manageable pieces (tokens). Our `tokenize_text` function using `.split()` is a very basic form of this crucial step. Understanding this helps appreciate the complexity involved in LLM tokenization (see `llms-from-scratch` Ch02 for advanced techniques).
-*   **Frequency Analysis & Embeddings:** While we count raw word frequencies, LLMs learn dense vector representations (embeddings) for tokens. These embeddings capture semantic meaning. However, the underlying statistical patterns in language, which frequency analysis begins to reveal, are fundamental to how these embeddings are learned.
+- **Data Preprocessing:** LLMs are trained on vast amounts of text. This text must first be cleaned and normalized, much like our `clean_text` function, though on a much larger and more complex scale.
+- **Tokenization:** LLMs don't see words as we do. They use sophisticated tokenizers (e.g., Byte Pair Encoding (BPE), WordPiece, SentencePiece) to break text into manageable pieces (tokens). Our `tokenize_text` function using `.split()` is a very basic form of this crucial step. Understanding this helps appreciate the complexity involved in LLM tokenization (see `llms-from-scratch` Ch02 for advanced techniques).
+- **Frequency Analysis & Embeddings:** While we count raw word frequencies, LLMs learn dense vector representations (embeddings) for tokens. These embeddings capture semantic meaning. However, the underlying statistical patterns in language, which frequency analysis begins to reveal, are fundamental to how these embeddings are learned.
 
 **Fun Fact:** The text cleaning you're doing is similar to what happened to prepare the training data for this very conversation!
 
@@ -235,11 +243,11 @@ This project provides a tangible entry point to demystify the initial data handl
 
 This project is best understood by following the accompanying lesson plan:
 
--   **Module 1: Introduction & Setting the Stage** - Overview of text processing and project setup.
--   **Module 2: Core Python Concepts for Text Processing** - File handling, text cleaning, tokenization, and frequency counting.
--   **Module 3: Building the Script - Step-by-Step** - Implementation details and code examples.
--   **Module 4: Testing and Refinement** - Running, debugging, and improving the script.
--   **Module 5: Connecting to the Bigger World of LLMs** - Understanding how this relates to LLM development.
+- **Module 1: Introduction & Setting the Stage** - Overview of text processing and project setup.
+- **Module 2: Core Python Concepts for Text Processing** - File handling, text cleaning, tokenization, and frequency counting.
+- **Module 3: Building the Script - Step-by-Step** - Implementation details and code examples.
+- **Module 4: Testing and Refinement** - Running, debugging, and improving the script.
+- **Module 5: Connecting to the Bigger World of LLMs** - Understanding how this relates to LLM development.
 
 ## ✅ Success Criteria
 
@@ -257,11 +265,11 @@ You'll know you've mastered this project when you can:
 
 Once you've mastered the basics with this project, consider these enhancements (some are covered in Module 4):
 
-*   Implement stop-word removal.
-*   Allow the user to specify the input file and the number of top words to display.
-*   Output the results to a new file instead of just printing to the console.
-*   Experiment with different text sources.
-*   Explore more advanced NLP libraries like NLTK or spaCy.
-*   Dive deeper into the `llms-from-scratch` repository to see how these concepts scale up.
+- Implement stop-word removal.
+- Allow the user to specify the input file and the number of top words to display.
+- Output the results to a new file instead of just printing to the console.
+- Experiment with different text sources.
+- Explore more advanced NLP libraries like NLTK or spaCy.
+- Dive deeper into the `llms-from-scratch` repository to see how these concepts scale up.
 
 Happy analyzing!
