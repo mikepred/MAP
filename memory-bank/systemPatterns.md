@@ -8,11 +8,13 @@ This document outlines the system architecture, key technical decisions, and des
 
 The `analyzer.py` script is designed to follow a linear data processing pipeline. The full target pipeline is:
 
-1.  **Data Input & Validation**: Functions like `read_file()`, `validate_file_path()`, and `get_filename_from_user()` handle loading text content from a specified file, ensuring the path is valid and handling potential I/O errors. (Implemented in Module 3B)
-2.  **Text Cleaning**: The `clean_text()` function normalizes the text by converting it to lowercase and removing punctuation. (Implemented in Module 3C)
-3.  **Tokenization**: The `tokenize_text()` function splits the cleaned text into a list of individual words (tokens) using the `.split()` method. (Implemented in Module 3C)
-4.  **Frequency Counting**: The `count_frequencies()` function uses the `collections.Counter` class to efficiently count the occurrences of each token. (Implemented in Module 3C)
-5.  **Results Display**: The `display_most_common()` function and other display helper functions present the analysis results in a user-friendly format. (Implemented in Module 3D/3E)
+1.  **Data Input & Validation**: Functions like `read_file()`, `validate_file_path()`, and `get_filename_from_user()` handle loading text content from a specified file, ensuring the path is valid and handling potential I/O errors. (Implemented in Module 3B of the lesson plan)
+2.  **Text Cleaning**: The `clean_text()` (for general sentence structure) and `clean_text_for_words()` (for word analysis) functions normalize text. (Implemented in Module 3C of the lesson plan)
+3.  **Word Tokenization**: The `count_words()` function internally uses `text.split()` for tokenization after specific cleaning via `clean_text_for_words()`. (Logic from Module 3C, refined in Module 3E)
+4.  **Token Filtering (Optional)**: Integrated within `count_words()`, the `remove_stop_words()` function can filter common stop words from the token list if enabled. (Introduced in Module 4B)
+5.  **Frequency Counting**: The `count_words()` function then uses `collections.Counter` to count token occurrences on the (potentially filtered) tokens. (Logic from Module 3C, `count_words` enhanced in Module 4B)
+6.  **Comprehensive Analysis**: The `analyze_text_complete()` function orchestrates word analysis, sentence analysis, and general statistics generation. (Module 3C/3E)
+7.  **Results Display**: Functions like `display_complete_analysis()` and `display_summary()` present the analysis results in a user-friendly format. (Implemented in Module 3D/3E)
 
 This pipeline structure ensures a clear and sequential flow of data processing.
 
