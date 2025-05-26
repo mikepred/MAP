@@ -1,4 +1,4 @@
-gitGraph LR
+gitGraph LR;
   checkout main
   commit id:"fef6cd3"
   commit id:"fe5190f"
@@ -30,8 +30,6 @@ gitGraph LR
   commit id:"ed94260"
   commit id:"e56fac0"
   commit id:"9c4312b"
-  branch develop
-  checkout develop
   commit id:"14aceeb"
   branch module/3B-file-io
   checkout module/3B-file-io
@@ -42,6 +40,21 @@ gitGraph LR
   branch module/3D-analysis-display
   checkout module/3D-analysis-display
   commit id:"cbf6c5f"
+  commit id:"d5e7c13"
+  commit id:"cfe77f6"
+  commit id:"02ce726"
   branch module/3E-integration
   checkout module/3E-integration
-  commit id:"d5e7c13"
+  commit id:"cdc2add"
+  merge main id:"caf8757"
+  commit id:"71adcfc"
+  commit id:"486ec51"
+  branch module/m4-test-debug
+  checkout module/m4-test-debug
+  commit id:"7b6598f"
+  branch module/m4b-enhance
+  checkout module/m4b-enhance
+  commit id:"a557d9d"
+  branch develop
+  checkout develop
+  merge module/3E-integration id:"96c8874"
