@@ -10,6 +10,7 @@ import re
 import string
 from pathlib import Path
 from collections import Counter
+import time # Added for Module 4C
 
 # =============================================================================
 # FILE I/O FUNCTIONS (Module 3B from original structure)
@@ -191,19 +192,57 @@ def load_text_file():
     return content
 
 # =============================================================================
-# TEXT PROCESSING FUNCTIONS (Module 3C / Enhanced in 4B)
+# TEXT PROCESSING FUNCTIONS (Module 3C / Enhanced in 4B & 4C)
 # =============================================================================
 
-def clean_text(text):
-    """Clean and preprocess text for analysis."""
+def clean_text_for_sentence_analysis(text): # Renamed from clean_text for M4C
+    """Clean and preprocess text lightly, preserving sentence structures for analysis."""
     if not text or not isinstance(text, str):
         return ""
     
     cleaned = text.lower()
-    cleaned = ' '.join(cleaned.split())
-    cleaned = re.sub(r'[^\w\s.,!?;:-]', '', cleaned) # Keeps some punctuation for sentence analysis
+    # Normalize whitespace but try to keep sentence-relevant punctuation
+    cleaned = ' '.join(cleaned.split()) 
+    # This regex was designed to keep sentence delimiters.
+    cleaned = re.sub(r'[^\w\s.,!?;:\'-]', '', cleaned) # Kept ' for contractions.
     
     return cleaned
+
+def clean_text(text, advanced=False): # New from Module 4C
+    """
+    Converts text to lowercase and removes ALL punctuation.
+    If advanced is True, also removes URLs, emails, and optionally numbers.
+    
+    Args:
+        text (str): Input text
+        advanced (bool): Flag to enable advanced cleaning
+        
+    Returns:
+        str: Cleaned text
+    """
+    if text is None:
+        return ""
+    
+    processed_text = text.lower() # Keep 'text' as original for sequential regex
+    
+    if advanced:
+        # Remove URLs
+        processed_text = re.sub(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', '', processed_text)
+        # Remove email addresses
+        processed_text = re.sub(r'\S+@\S+', '', processed_text)
+        # Remove numbers (optional - commented out as per M4C guide)
+        # processed_text = re.sub(r'\d+', '', processed_text) 
+        # Remove extra whitespace that might have been introduced by above steps
+        processed_text = re.sub(r'\s+', ' ', processed_text).strip()
+    
+    # Remove ALL punctuation for word tokenization
+    translator = str.maketrans('', '', string.punctuation)
+    processed_text = processed_text.translate(translator)
+    
+    # Final whitespace cleanup
+    processed_text = re.sub(r'\s+', ' ', processed_text).strip()
+    
+    return processed_text
 
 def clean_text_for_words(text):
     """Clean text specifically for word analysis (removes punctuation)."""
@@ -215,6 +254,12 @@ def clean_text_for_words(text):
     cleaned = ' '.join(cleaned.split()) # Normalize whitespace again
     
     return cleaned.lower()
+
+def tokenize_text(text): # Added back - was missing
+    """Splits text into a list of words (tokens)."""
+    if not text:
+        return []
+    return text.split()
 
 def remove_stop_words(tokens):
     """
@@ -337,48 +382,62 @@ def analyze_sentences(text):
         'shortest_sentence': sentences[shortest_idx].strip() if shortest_idx != -1 else ""
     }
 
-def analyze_text_complete(text, use_stop_words=False, num_common_words_to_display=10): # Added parameters
+def analyze_text_complete(text, use_stop_words=False, num_common_words_to_display=10):
     """Complete text analysis pipeline."""
     if not text:
         return {
             'error': 'No text provided for analysis',
             'word_analysis': {},
             'sentence_analysis': {},
-            'general_stats': {}
+            'general_stats': {},
+            'processed_tokens': [] # Ensure processed_tokens is always in the return structure
         }
     
     try:
-        # Word analysis
-        word_counts = count_words(text, use_stop_words=use_stop_words) # Pass flag
-        word_stats = get_word_count_stats(word_counts)
-        unique_words_list = sorted(word_counts.keys()) if word_counts else [] # Derive from processed counts
+        # Sentence analysis (uses lightly cleaned text for sentence splitting)
+        # This should be done before heavy cleaning that might remove sentence delimiters.
+        text_for_sentence_structure = clean_text_for_sentence_analysis(text)
+        sentence_stats = analyze_sentences(text_for_sentence_structure)
+
+        # Word analysis (Primary pipeline)
+        # Use the new clean_text with advanced=True for word processing. This removes all punctuation.
+        text_for_word_tokenization = clean_text(text, advanced=True)
+        tokens_after_cleaning = tokenize_text(text_for_word_tokenization)
         
-        # Sentence analysis (uses original text for sentence splitting)
-        cleaned_for_sentences = clean_text(text) # Light cleaning for sentence structure
-        sentence_stats = analyze_sentences(cleaned_for_sentences)
+        if use_stop_words:
+            processed_tokens = remove_stop_words(tokens_after_cleaning)
+        else:
+            processed_tokens = tokens_after_cleaning
         
-        # General statistics
-        char_count = len(text)
-        char_count_no_spaces = len(text.replace(' ', ''))
-        
+        # Generate final_word_counts from the fully processed tokens
+        final_word_counts = Counter(processed_tokens)
+        # Get word statistics based on these final_word_counts
+        word_stats = get_word_count_stats(final_word_counts)
+        unique_words_list = sorted(final_word_counts.keys()) if final_word_counts else []
+            
+        # General statistics (based on raw text and final word counts)
+        char_count = len(text) # Raw text length
+        char_count_no_spaces = len(text.replace(' ', '')) # Raw text, no spaces
+            
         general_stats = {
             'character_count': char_count,
             'character_count_no_spaces': char_count_no_spaces,
-            'word_count': word_stats['total_words'], # Based on (potentially) stop-word filtered counts
+            'word_count': word_stats['total_words'], # This is from final_word_counts
             'sentence_count': sentence_stats['sentence_count'],
             'paragraph_count': len([p for p in text.split('\n\n') if p.strip()])
         }
-        
+            
         return {
             'word_analysis': {
-                'word_frequencies': dict(word_counts.most_common(num_common_words_to_display)), # Use dynamic N
-                'statistics': word_stats,
-                'unique_words_sample': unique_words_list[:10], # Sample of unique words
-                'full_word_counts_obj': word_counts # Add the full Counter object
+                'word_frequencies': dict(final_word_counts.most_common(num_common_words_to_display)),
+                'statistics': word_stats, # Based on final_word_counts
+                'unique_words_sample': unique_words_list[:10],
+                'full_word_counts_obj': final_word_counts 
             },
+            'processed_tokens': processed_tokens, # For word length analysis
             'sentence_analysis': sentence_stats,
             'general_stats': general_stats,
-            'original_text': text  # Store for readability analysis
+            'original_text': text # For readability context
         }
         
     except Exception as e:
@@ -386,12 +445,53 @@ def analyze_text_complete(text, use_stop_words=False, num_common_words_to_displa
             'error': f'Analysis failed: {str(e)}',
             'word_analysis': {},
             'sentence_analysis': {},
-            'general_stats': {}
+            'general_stats': {},
+            'processed_tokens': [] # Ensure processed_tokens is always in the return structure
         }
 
 # =============================================================================
-# ANALYSIS & DISPLAY FUNCTIONS (Module 3D)
+# ANALYSIS & DISPLAY FUNCTIONS (Module 3D / Enhanced in 4C)
 # =============================================================================
+
+def time_function(func, *args, **kwargs): # New from Module 4C
+    """Times the execution of a function and prints the duration."""
+    start_time = time.time()
+    result = func(*args, **kwargs)
+    end_time = time.time()
+    # Optional: print(f"Function '{func.__name__}' took {end_time - start_time:.4f} seconds.")
+    return result
+
+def analyze_word_lengths(tokens): # New from Module 4C
+    """
+    Analyzes the distribution of word lengths and prints the analysis.
+    
+    Args:
+        tokens (list): List of word tokens
+        
+    Returns:
+        Counter: Counter object with word lengths as keys and counts as values
+    """
+    if not tokens:
+        print("\nℹ️ No tokens to analyze for word lengths.")
+        return Counter()
+
+    length_counts = Counter(len(word) for word in tokens)
+    
+    print("\n--- Word Length Analysis ---")
+    # Sort by length for display
+    for length_val in sorted(length_counts.keys()): # Renamed length to length_val to avoid conflict
+        count = length_counts[length_val]
+        percentage = (count / len(tokens)) * 100 if len(tokens) > 0 else 0
+        print(f"{length_val:2d} letter(s): {count:4d} words ({percentage:5.1f}%)")
+    
+    if len(tokens) > 0:
+        avg_length = sum(len(word) for word in tokens) / len(tokens)
+        print(f"\nAverage word length: {avg_length:.1f} letters")
+    else:
+        print("\nAverage word length: N/A (no tokens)")
+    print("--------------------------")
+    
+    return length_counts
 
 def calculate_readability_stats(text, word_counts, sentence_analysis):
     """Calculate readability and complexity statistics."""
@@ -814,6 +914,8 @@ def main():
                     continue
                 
                 print("\n🔄 Running complete analysis...")
+                pipeline_start_time = time.time() # Start timing for M4C
+
                 if use_stop_words_config:
                     print("ℹ️ Stop word removal is ON.")
                 else:
@@ -823,6 +925,9 @@ def main():
                                                 use_stop_words=use_stop_words_config, 
                                                 num_common_words_to_display=num_common_words_config)
                 
+                pipeline_end_time = time.time() # End timing for M4C
+                print(f"\n⏱️ Total processing pipeline took: {pipeline_end_time - pipeline_start_time:.4f} seconds")
+
                 if 'error' in results and results['error']:
                     print(f"❌ Analysis error: {results['error']}")
                     continue 
@@ -842,9 +947,15 @@ def main():
                 elif display_choice_input == "3":
                     display_summary(results)
                     display_complete_analysis(results)
-                    else:
-                        print("Invalid choice, showing summary:")
-                        display_summary(results)
+                else: # Default to summary if invalid choice
+                    print("⚠️ Invalid display choice, showing summary:")
+                    display_summary(results)
+
+                # Word Length Analysis display (M4C)
+                processed_tokens_for_length_analysis = results.get('processed_tokens', [])
+                if processed_tokens_for_length_analysis:
+                    analyze_word_lengths(processed_tokens_for_length_analysis)
+                # No specific "else" needed here, analyze_word_lengths handles empty tokens.
 
                 # Ask to save results
                 if 'word_analysis' in results and results['word_analysis'].get('full_word_counts_obj'):

@@ -11,15 +11,18 @@ This document outlines what currently works, what is left to build, the current 
     *   **Module 3D (Analysis & Display Functions)**: Fully completed.
     *   **Module 3E (Integration & Testing)**: Fully completed. The core text analysis script as defined by Modules 3A-3E is fully functional.
     *   **Module 4A (Testing and Debugging Fundamentals) Completed**:
-        *   Script execution verified with updated `sample.txt`.
+        *   Script execution verified.
         *   Debugging fundamentals reviewed.
-    *   **Module 4B (Core Script Enhancements) - In Progress**:
-        *   Enhancement 1 (Stop Word Removal) implemented:
-            *   `remove_stop_words()` function added.
-            *   `count_words()` and `analyze_text_complete()` updated to support optional stop word removal.
-            *   `main()` updated to enable stop word removal by default (hardcoded `True`).
-            *   Script tested successfully with stop word removal active.
-            *   `analyze_text_complete` updated to return the full `word_counts` object (as `full_word_counts_obj`) for use in `display_complete_analysis`.
+    *   **Module 4B (Core Script Enhancements) Completed**:
+        *   Enhancement 1 (Stop Word Removal): `remove_stop_words()` implemented and integrated.
+        *   Enhancement 2 (User Input for Configuration): `get_user_input_config()` implemented and integrated for filepath, top N words, and stop word toggle.
+        *   Enhancement 3 (Output to File): `save_results_to_file()` implemented and integrated with user prompt.
+    *   **Module 4C (Advanced Refinements and Performance) Completed**:
+        *   `clean_text()` enhanced with an `advanced` flag for URL/email removal.
+        *   `analyze_word_lengths()` function added and integrated.
+        *   `time_function()` utility added and overall pipeline timing implemented.
+        *   `NameError` for `tokenize_text` and other syntax issues resolved.
+    *   The `text_analyzer.py` script is now fully enhanced as per the Module 4 lesson plan.
 
 *   **Git Branch Visualizer Project (`branch_visualizer.py`)**:
     *   The script successfully fetches local Git branch names using `git for-each-ref`.
@@ -40,13 +43,12 @@ This document outlines what currently works, what is left to build, the current 
 ## What's Left to Build
 
 *   **Text Analyzer Project (`analyzer.py`)**:
-    *   **Complete Module 4B enhancements**:
-        *   Implement Enhancement 2: User Input for Configuration (making stop word removal, input file, and number of top words configurable by the user at runtime).
-        *   Implement Enhancement 3: Output to File (allowing users to save analysis results).
-    *   **Proceed with Module 4C enhancements**:
-        *   Advanced text cleaning.
-        *   Word length analysis.
-        *   Performance timing and considerations.
+    *   The core lesson plan (Modules 1-5, with Modules 1-4 resulting in code) is complete.
+    *   Potential future enhancements (beyond the current lesson plan) could include:
+        *   More sophisticated NLP tasks (e.g., stemming, lemmatization, POS tagging using NLTK/spaCy).
+        *   Graphical display of word frequencies (e.g., bar charts).
+        *   Support for different input file formats (e.g., .docx, .pdf).
+        *   More comprehensive automated testing.
 *   **Git Branch Visualizer Project (`branch_visualizer.py`)**:
     *   More robust error handling for diverse or unusual Git repository states.
     *   Options for visualizing remote branches or specific branch subsets.
@@ -56,11 +58,11 @@ This document outlines what currently works, what is left to build, the current 
 
 ## Current Status
 
-*   **Overall Project**: The MAP project now comprises two main functional Python scripts: `text_analyzer.py` (undergoing Module 4 enhancements) and `branch_visualizer.py` (functional).
-*   **Text Analyzer**: Fully functional as per Modules 3A-3E. Module 4A completed. Module 4B, Enhancement 1 (Stop Word Removal) implemented and tested.
+*   **Overall Project**: The MAP project now comprises two main functional Python scripts: `text_analyzer.py` (Module 4 enhancements completed) and `branch_visualizer.py` (functional).
+*   **Text Analyzer**: Fully functional as per Modules 1-4 of the lesson plan. All planned enhancements from Module 4 (A, B, C) are implemented and integrated. The script is ready for final review against the lesson plan objectives. Module 5 (conceptual connections to LLMs) has been reviewed.
 *   **Git Branch Visualizer**: Functional for generating Mermaid graphs of local Git branches.
-*   **Memory Bank**: Currently being updated to reflect progress on Text Analyzer Module 4.
-*   **Git Branch**: Work on Text Analyzer Module 4 enhancements has commenced. (Specific branch name to be confirmed by user if relevant for future reference).
+*   **Memory Bank**: Currently being updated to reflect the completion of Module 4 for the Text Analyzer.
+*   **Git Branch**: (User to confirm if specific branch tracking is needed for this phase).
 
 ## Known Issues
 
@@ -85,5 +87,6 @@ This document outlines what currently works, what is left to build, the current 
 *   **Current session (continued)**:
     *   Started Module 4 for Text Analyzer.
     *   Completed Module 4A (testing and review of `analyzer.py`).
-    *   Implemented Module 4B, Enhancement 1 (Stop Word Removal) in `text_analyzer.py`.
-    *   Currently updating Memory Bank files (`systemPatterns.md`, `activeContext.md`, `progress.md`) to reflect this progress.
+    *   Implemented Module 4B (all enhancements) in `text_analyzer.py`.
+    *   Implemented Module 4C (all enhancements) in `text_analyzer.py`, including fixing runtime errors.
+    *   Currently updating Memory Bank files (`activeContext.md`, `progress.md`) to reflect the completion of Module 4.
