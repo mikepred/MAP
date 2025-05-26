@@ -2,6 +2,10 @@
 
 This document outlines what currently works, what is left to build, the current status of the project, known issues, and the evolution of project decisions. This file is expected to be updated frequently.
 
+# Progress
+
+This document outlines what currently works, what is left to build, the current status of the project, known issues, and the evolution of project decisions. This file is expected to be updated frequently.
+
 ## What Works
 
 *   `text_analyzer/README.md` has been comprehensively updated and aligns with project goals.
@@ -11,13 +15,16 @@ This document outlines what currently works, what is left to build, the current 
 *   `.clinerules/module2-python-concepts.md` has been enhanced with additional best practices, guidelines, and a table of contents.
 *   The updated `.clinerules/module2-python-concepts.md` has been successfully pushed to the GitHub repository (`mikepred/MAP`, branch `main`).
 *   `memory-bank/techContext.md` updated to reflect virtual environment recommendations.
-*   `text_analyzer/analyzer.py` has been reset and now contains the initial script structure as defined in Module 3A.
-*   `memory-bank/activeContext.md` has been updated to reflect the project reset.
+*   `text_analyzer/analyzer.py` now contains the initial script structure as defined in Module 3A.
+*   `memory-bank/activeContext.md` has been updated to reflect the project state.
 *   **Core Directive Refinement**: The `../../Cline/Rules/00-primary-directive.md` file was refined to solidify core operational principles, including continuous learning and principled development.
+*   **Module 3B (File I/O & Error Handling) Completed**:
+    *   Implemented `validate_file_path`, `read_file`, `get_filename_from_user`, and `load_text_file` functions in `text_analyzer/analyzer.py`.
+    *   Successfully tested file reading, error handling for non-existent files, and directory input.
+    *   Changes committed to `module/3B-file-io` branch and pushed to origin.
 
 ## What's Left to Build
 
-*   Implementation of Module 3B (File I/O & Error Handling) in `text_analyzer/analyzer.py`.
 *   Implementation of Module 3C (Text Processing Pipeline) in `text_analyzer/analyzer.py`.
 *   Implementation of Module 3D (Analysis & Display Functions) in `text_analyzer/analyzer.py`.
 *   Implementation and testing of `analyzer.py` for Module 3E (Integration & Testing).
@@ -25,9 +32,9 @@ This document outlines what currently works, what is left to build, the current 
 
 ## Current Status
 
-*   **Project Reset**: `text_analyzer/analyzer.py` has been reset to its initial state as defined in Module 3A.
-*   Memory Bank files (`activeContext.md`, `progress.md`) have been updated to reflect this reset.
-*   Ready to begin implementing Module 3B (File I/O & Error Handling) in `text_analyzer/analyzer.py`.
+*   **Module 3B Complete**: File I/O and error handling are implemented and tested.
+*   Currently on `module-3c-text-processing-pipeline` branch, ready to begin implementing Module 3C (Text Processing Pipeline) in `text_analyzer/analyzer.py`.
+*   Memory Bank files (`activeContext.md`, `progress.md`) are being updated to reflect the current state.
 
 ## Known Issues
 
@@ -39,4 +46,8 @@ This document outlines what currently works, what is left to build, the current 
 *   Decision to create a comprehensive, educational README incorporating user feedback and visual aids.
 *   Decision to systematically review and update the Memory Bank to ensure full project context awareness.
 *   Decision to enhance `.clinerules/module2-python-concepts.md` with best practices, guidelines, and a table of contents.
-*   **Decision to backtrack and reset `text_analyzer/analyzer.py` to Module 3A content due to user request.**
+*   **Decision to adopt a "preserved main with a development line" Git strategy**:
+    *   `main` branch remains stable (currently at Module 3A completion).
+    *   `develop` branch serves as the integration point for completed modules.
+    *   New module-specific branches (e.g., `module/3B-file-io`, `module/3C-text-processing`) are branched from `develop`, developed, and then merged back into `develop`.
+    *   The `develop` branch will be merged into `main` only at major release points.
