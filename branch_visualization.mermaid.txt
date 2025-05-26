@@ -1,4 +1,4 @@
-gitGraph LR
+gitGraph LR;
   checkout main
   commit id:"fef6cd3"
   commit id:"fe5190f"
@@ -42,6 +42,8 @@ gitGraph LR
   branch module/3D-analysis-display
   checkout module/3D-analysis-display
   commit id:"cbf6c5f"
+  commit id:"d5e7c13"
+  commit id:"cfe77f6"
   branch module/3E-integration
   checkout module/3E-integration
-  commit id:"d5e7c13"
+  commit id:"02ce726"
