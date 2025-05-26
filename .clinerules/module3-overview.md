@@ -45,7 +45,7 @@ By the end of this module series, you will be able to:
 
 - Statistical analysis implementation
 - Results formatting and display
-- Data visualization basics
+- Structured data presentation
 - Professional output formatting
 
 **🎯 Learning Focus:** Analysis and presentation
