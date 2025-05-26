@@ -29,7 +29,7 @@ except OSError:
     print("You can try: python -m spacy download en_core_web_sm")
     exit()
 
-def read_sample_file(filename="sample.txt"):
+def read_sample_file(filename="s.txt"):
     """Reads content from the sample.txt file, located in the same directory as this script."""
     script_dir = pathlib.Path(__file__).parent.resolve()
     file_path = script_dir / filename

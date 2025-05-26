@@ -1,4 +1,4 @@
-gitGraph LR;
+gitGraph;
   checkout main
   commit id:"fef6cd3"
   commit id:"fe5190f"
@@ -55,6 +55,8 @@ gitGraph LR;
   branch module/m4b-enhance
   checkout module/m4b-enhance
   commit id:"a557d9d"
+  merge module/3E-integration id:"96c8874"
+  commit id:"91a92c3"
   branch develop
   checkout develop
-  merge module/3E-integration id:"96c8874"
+  commit id:"7bf9b62"

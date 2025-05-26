@@ -92,9 +92,9 @@ def generate_mermaid_code(commits_data, all_local_branches_set):
     Focuses on local branches and their connections.
     """
     if not commits_data:
-        return "gitGraph LR;\n  commit id:\"No Commits Found\";"
+        return "gitGraph;\n  commit id:\"No Commits Found\";"
 
-    mermaid_lines = ["gitGraph LR;"] # Left-to-Right layout
+    mermaid_lines = ["gitGraph;"] # Layout
 
     # Determine the primary line of development (e.g., main or master)
     # This will be the first branch checked out in Mermaid.
@@ -184,13 +184,12 @@ def main():
     if not local_branches:
         # Handle case where git might not be available or no local branches
         # get_git_log_data might still work if commits exist (e.g. detached HEAD)
-        print("Info: No local branches found or git command failed for branches.")
-        # We can proceed, generate_mermaid_code will try to adapt.
+        print("Info: No local branches found or git command failed for branches.")        # We can proceed, generate_mermaid_code will try to adapt.
 
     log_data = get_git_log_data()
 
     if not log_data and not local_branches: # Truly empty or inaccessible repo
-        print("gitGraph LR;\n  commit id:\"No Git data found (empty repository or Git error).\";")
+        print("gitGraph;\n  commit id:\"No Git data found (empty repository or Git error).\";")
         return
     
     # If log_data is empty but local_branches exist, it's an odd state (branches exist but no commits in log --all?)
