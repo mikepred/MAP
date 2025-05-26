@@ -8,53 +8,70 @@ This document outlines what currently works, what is left to build, the current 
 
 ## What Works
 
-*   `text_analyzer/README.md` has been comprehensively updated and aligns with project goals.
-*   Initial project structure (`text_analyzer` directory, `analyzer.py`, `sample.txt`) is in place (as per Module 1 of the lesson plan).
-*   The `.clinerules` lesson plan provides a full guide for script development.
-*   The core Memory Bank file structure has been created and populated with project-specific details.
-*   `.clinerules/module2-python-concepts.md` has been enhanced with additional best practices, guidelines, and a table of contents.
-*   The updated `.clinerules/module2-python-concepts.md` has been successfully pushed to the GitHub repository (`mikepred/MAP`, branch `main`).
-*   `memory-bank/techContext.md` updated to reflect virtual environment recommendations.
-*   `text_analyzer/analyzer.py` now contains the initial script structure as defined in Module 3A.
-*   `memory-bank/activeContext.md` has been updated to reflect the project state.
-*   **Core Directive Refinement**: The `../../Cline/Rules/00-primary-directive.md` file was refined to solidify core operational principles, including continuous learning and principled development.
-*   **Module 3B (File I/O & Error Handling) Completed**:
-    *   Implemented `validate_file_path`, `read_file`, `get_filename_from_user`, and `load_text_file` functions in `text_analyzer/analyzer.py`.
-    *   Successfully tested file reading, error handling for non-existent files, and directory input.
-    *   Changes committed to `module/3B-file-io` branch and pushed to origin.
-*   **Module 3C (Text Processing Pipeline) Completed**:
-    *   Implemented `clean_text`, `clean_text_for_words`, `count_words`, `get_unique_words`, `get_word_count_stats`, `count_sentences`, `analyze_sentences`, and `analyze_text_complete` functions in `text_analyzer/analyzer.py`.
-    *   Updated the `main` function to test the text processing pipeline.
-*   **Module 3D (Analysis & Display Functions) Completed**:
-    *   Implemented advanced statistical analysis functions (`calculate_readability_stats`, `find_interesting_patterns`).
-    *   Implemented professional display helper functions (`print_header`, `print_section`).
-    *   Implemented specific display functions (`display_general_statistics`, `display_word_analysis`, `display_sentence_analysis`, `display_readability_analysis`, `display_interesting_patterns`).
-    *   Implemented complete display system functions (`display_complete_analysis`, `display_summary`).
-    *   Updated the `main` function to integrate these new display options.
+*   **Text Analyzer Project (`analyzer.py`)**:
+    *   **Module 3A (Project Setup & Architecture)**:
+        *   Initial project structure (`text_analyzer` directory, `analyzer.py`, `sample.txt`) is in place.
+        *   `text_analyzer/analyzer.py` contains the initial script structure.
+    *   **Module 3B (File I/O & Error Handling)**:
+        *   Functions for `validate_file_path(filename)`, `read_file(filename)`, `get_filename_from_user()`, and `load_text_file()` are implemented and tested.
+    *   **Module 3C (Text Processing Pipeline)**:
+        *   `text_analyzer/analyzer.py` includes functions for text cleaning, word analysis, sentence analysis, and a complete pipeline (`analyze_text_complete(text)`).
+        *   The `main()` function in `analyzer.py` was updated to test Module 3C additions.
+    *   **Module 3D (Analysis & Display Functions)**:
+        *   `text_analyzer/analyzer.py` includes functions for advanced statistical analysis, professional results formatting, a complete display system, and an updated `main()` function with display choices.
+        *   The script with Module 3D changes was tested successfully.
+    *   **Module 3E (Integration & Testing)**:
+        *   `text_analyzer/analyzer.py` contains the fully integrated code, including the final `main()` function with a menu system, a `run_comprehensive_test()` function, and help information.
+        *   **The core text analysis script as defined by Modules 3A-3E is fully functional.**
+
+*   **Git Branch Visualizer Project (`branch_visualizer.py`)**:
+    *   The script successfully fetches local Git branch names using `git for-each-ref`.
+    *   It fetches complete Git log data (SHAs, parent SHAs, refs) in chronological order using `git log --all --pretty=format:"%H|%P|%D" --date-order --reverse`.
+    *   It parses commit references to identify local branches pointing to specific commits.
+    *   It generates valid Mermaid `gitGraph LR;` syntax representing the local branch structure, including commits and merges.
+    *   It saves the generated Mermaid code to `branch_visualization.mermaid.txt`.
+    *   Basic error handling for `git` command execution (e.g., Git not found) and file output is implemented.
+    *   **The `branch_visualizer.py` script is functional for its core purpose.**
+
+*   **Documentation & Setup**:
+    *   `text_analyzer/README.md` is comprehensive and aligned with project goals.
+    *   The `.clinerules` lesson plan provides a full guide for `text_analyzer.py` development.
+    *   Core Memory Bank files (`projectbrief.md`, `productContext.md`, `systemPatterns.md`, `techContext.md`, `activeContext.md`, `progress.md`) are established and have been updated in the current session to reflect the completion of the Text Analyzer's Module 3E and the introduction of the Git Branch Visualizer.
 
 ## What's Left to Build
 
-*   Implementation and testing of `analyzer.py` for Module 3E (Integration & Testing).
-*   Potential enhancements from Module 4 (e.g., stop word removal, user input, file output) after core Module 3 functionality is complete.
+*   **Text Analyzer Project**:
+    *   Potential enhancements from Module 4 (e.g., stop word removal, user input for file output name, advanced cleaning options, word length analysis, performance timing) as outlined in `.clinerules/module4-testing.md`.
+*   **Git Branch Visualizer Project**:
+    *   More robust error handling for diverse or unusual Git repository states.
+    *   Options for visualizing remote branches or specific branch subsets.
+    *   Alternative layout options for the Mermaid graph (e.g., Top-Down).
+    *   Improved identification of merge sources in complex histories.
+    *   User arguments for specifying repository path or output file name.
 
 ## Current Status
 
-*   **Module 3D Complete**: Analysis and display functions are implemented and integrated.
-*   Currently on `module-3c-text-processing-pipeline` branch, ready to begin implementing Module 3E (Integration & Testing) in `text_analyzer/analyzer.py`.
-*   Memory Bank files (`activeContext.md`, `progress.md`) are being updated to reflect the current state.
+*   **Overall Project**: The MAP project now comprises two main functional Python scripts: `text_analyzer.py` and `branch_visualizer.py`.
+*   **Text Analyzer**: Fully functional as per Modules 3A-3E of its lesson plan.
+*   **Git Branch Visualizer**: Functional for generating Mermaid graphs of local Git branches.
+*   **Memory Bank**: Updated in the current session to incorporate details of both the Text Analyzer (Module 3E completion) and the new Git Branch Visualizer.
+*   **Git Branch**: Currently on `module/3D-analysis-display` (this branch was for Text Analyzer work; new work on Branch Visualizer or further Text Analyzer enhancements should ideally be on new, appropriately named branches).
 
 ## Known Issues
 
-*   None specific to the documentation or Memory Bank.
+*   **Text Analyzer**:
+    *   The `run_comprehensive_test()` function in `analyzer.py` has simplified/simulated tests for File I/O and Display functionality. True tests would require more complex setups.
+*   **Git Branch Visualizer**:
+    *   The visualization accuracy depends on the `git log` output format and parsing logic; very complex or non-standard Git histories might not render perfectly.
+    *   Performance might degrade on repositories with extremely large numbers of commits or branches.
+    *   The logic for determining the "main line" for Mermaid checkout could be made more robust for repositories not using `main` or `master`.
 
 ## Evolution of Project Decisions
 
 *   Initial decision: Establish the Cline's Memory Bank system as the foundation for all future work.
-*   Decision to create a comprehensive, educational README incorporating user feedback and visual aids.
-*   Decision to systematically review and update the Memory Bank to ensure full project context awareness.
-*   Decision to enhance `.clinerules/module2-python-concepts.md` with best practices, guidelines, and a table of contents.
-*   **Decision to adopt a "preserved main with a development line" Git strategy**:
-    *   `main` branch remains stable (currently at Module 3A completion).
-    *   `develop` branch serves as the integration point for completed modules.
-    *   New module-specific branches (e.g., `module/3B-file-io`, `module/3C-text-processing`) are branched from `develop`, developed, and then merged back into `develop`.
-    *   The `develop` branch will be merged into `main` only at major release points.
+*   Decision to create a comprehensive, educational README for the Text Analyzer.
+*   Decision to systematically review and update the Memory Bank for all project changes.
+*   Previous session: Completed Modules 3A-3E for the Text Analyzer project.
+*   Current session:
+    *   Introduced the `branch_visualizer.py` script and `branch_visualization.mermaid.txt` example.
+    *   **Updated all core Memory Bank files (`projectbrief.md`, `productContext.md`, `systemPatterns.md`, `techContext.md`, `activeContext.md`, `progress.md`) to reflect the addition and functionality of the Git Branch Visualizer.**

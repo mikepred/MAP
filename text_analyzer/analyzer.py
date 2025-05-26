@@ -1,41 +1,32 @@
 """
-Text Analysis Script - Module 3B
+Text Analysis Script - Complete Version
 A comprehensive text analysis tool for processing and analyzing text files.
+
+Modules 3A-3E: Complete Integration
 """
 
 import os
+import re
+import string
 import re
 import string
 from pathlib import Path
 from collections import Counter
 
 def validate_file_path(filename):
-    """
-    Validate that a file path is safe and accessible.
-    
-    Args:
-        filename (str): Path to validate
-        
-    Returns:
-        tuple: (is_valid, error_message)
-    """
+    """Validate that a file path is safe and accessible."""
     try:
-        # Convert to Path object for better handling
         file_path = Path(filename)
         
-        # Check if path is absolute and potentially dangerous
         if file_path.is_absolute() and not file_path.is_relative_to(Path.cwd()):
             return False, "For security, please use files in the current directory"
         
-        # Check if file exists
         if not file_path.exists():
             return False, f"File '{filename}' does not exist"
         
-        # Check if it's actually a file
         if not file_path.is_file():
             return False, f"'{filename}' is not a file"
         
-        # Check file size (limit to 10MB for this exercise)
         file_size = file_path.stat().st_size
         max_size = 10 * 1024 * 1024  # 10MB
         if file_size > max_size:
@@ -47,18 +38,7 @@ def validate_file_path(filename):
         return False, f"Error validating file: {e}"
 
 def read_file(filename):
-    """
-    Read text from a file with comprehensive error handling.
-    
-    Args:
-        filename (str): Path to the text file to read
-        
-    Returns:
-        str: Content of the file, or empty string if error
-        
-    Raises:
-        None: All exceptions are caught and handled gracefully
-    """
+    """Read text from a file with comprehensive error handling."""
     try:
         with open(filename, 'r', encoding='utf-8') as file:
             content = file.read()
@@ -92,12 +72,7 @@ def read_file(filename):
         return ""
 
 def get_filename_from_user():
-    """
-    Get filename from user with input validation and retry logic.
-    
-    Returns:
-        str: Valid filename, or empty string if user cancels
-    """
+    """Get filename from user with input validation and retry logic."""
     max_attempts = 3
     attempts = 0
     
@@ -109,18 +84,15 @@ def get_filename_from_user():
             
             filename = input("Filename: ").strip()
             
-            # Check for quit command
             if filename.lower() in ['quit', 'exit', 'q']:
                 print("👋 Goodbye!")
                 return ""
             
-            # Validate input
             if not filename:
                 print("⚠️  Please enter a filename")
                 attempts += 1
                 continue
             
-            # Validate file path
             is_valid, message = validate_file_path(filename)
             if is_valid:
                 print(f"✅ {message}")
@@ -140,25 +112,17 @@ def get_filename_from_user():
     return ""
 
 def load_text_file():
-    """
-    Complete file loading workflow with user interaction.
-    
-    Returns:
-        str: File content, or empty string if failed
-    """
+    """Complete file loading workflow with user interaction."""
     print("🚀 Text File Loader")
     print("=" * 30)
     
-    # Get filename from user
     filename = get_filename_from_user()
     if not filename:
         return ""
     
-    # Read the file
     content = read_file(filename)
     
     if content:
-        # Show preview of content
         preview_length = 100
         if len(content) > preview_length:
             preview = content[:preview_length] + "..."
