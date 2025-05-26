@@ -1,5 +1,5 @@
 """
-Text Analysis Script - Module 3C
+Text Analysis Script - Module 3D
 A comprehensive text analysis tool for processing and analyzing text files.
 """
 
@@ -434,13 +434,343 @@ def analyze_text_complete(text):
         }
 
 # =============================================================================
-# MAIN FUNCTION (Updated for Module 3C Testing)
+# ANALYSIS & DISPLAY FUNCTIONS (Module 3D)
+# =============================================================================
+
+def calculate_readability_stats(text, word_counts, sentence_analysis):
+    """
+    Calculate readability and complexity statistics.
+    
+    Args:
+        text (str): Original text (can be empty if word_counts is primary)
+        word_counts (Counter): Word frequency data
+        sentence_analysis (dict): Sentence analysis results
+        
+    Returns:
+        dict: Readability statistics
+    """
+    if not word_counts: # Check word_counts instead of text for primary data
+        return {
+            'avg_word_length': 0,
+            'complexity_score': 0,
+            'readability_level': 'Unknown'
+        }
+    
+    # Calculate average word length
+    total_chars = sum(len(word) * count for word, count in word_counts.items())
+    total_words = sum(word_counts.values())
+    avg_word_length = total_chars / total_words if total_words > 0 else 0
+    
+    # Simple complexity score based on word length and sentence length
+    avg_sentence_length = sentence_analysis.get('average_words_per_sentence', 0)
+    complexity_score = (avg_word_length * 0.6) + (avg_sentence_length * 0.4)
+    
+    # Determine readability level
+    readability_level = 'Unknown'
+    if complexity_score == 0 and total_words == 0: # Handle case with no words
+        readability_level = 'Not Applicable (No Content)'
+    elif complexity_score < 8:
+        readability_level = 'Easy'
+    elif complexity_score < 12:
+        readability_level = 'Moderate'
+    elif complexity_score < 16:
+        readability_level = 'Difficult'
+    else:
+        readability_level = 'Very Difficult'
+    
+    return {
+        'avg_word_length': round(avg_word_length, 1),
+        'complexity_score': round(complexity_score, 1),
+        'readability_level': readability_level
+    }
+
+def find_interesting_patterns(word_counts, text):
+    """
+    Find interesting patterns in the text.
+    
+    Args:
+        word_counts (Counter): Word frequency data
+        text (str): Original text (can be empty if word_counts is primary)
+        
+    Returns:
+        dict: Interesting patterns found
+    """
+    patterns = {
+        'repeated_words': [],
+        'long_words': [],
+        'short_words': [],
+        'word_variety': 0
+    }
+    
+    if not word_counts:
+        return patterns
+    
+    # Find words that appear multiple times
+    patterns['repeated_words'] = [
+        (word, count) for word, count in word_counts.most_common(10) 
+        if count > 1
+    ]
+    
+    # Find long words (7+ characters)
+    patterns['long_words'] = sorted([
+        word for word in word_counts.keys() 
+        if len(word) >= 7
+    ])[:10] # Sorted for consistency
+    
+    # Find very short words (1-2 characters)
+    patterns['short_words'] = sorted([
+        word for word in word_counts.keys() 
+        if len(word) <= 2
+    ])[:10] # Sorted for consistency
+    
+    # Calculate word variety (unique words / total words)
+    total_words = sum(word_counts.values())
+    unique_words = len(word_counts)
+    patterns['word_variety'] = round(unique_words / total_words * 100, 1) if total_words > 0 else 0
+    
+    return patterns
+
+def print_header(title, width=60):
+    """Print a formatted header."""
+    print("\n" + "=" * width)
+    print(f"{title:^{width}}")
+    print("=" * width)
+
+def print_section(title, width=60):
+    """Print a formatted section header."""
+    # Using a slightly shorter underline for visual separation
+    print(f"\n{title}")
+    print("-" * (len(title) if len(title) < width else width // 2))
+
+
+def display_general_statistics(stats):
+    """
+    Display general text statistics in a formatted way.
+    
+    Args:
+        stats (dict): General statistics dictionary
+    """
+    print_section("📊 General Statistics")
+    
+    print(f"📄 Total Characters: {stats.get('character_count', 0):,}")
+    print(f"🔤 Characters (no spaces): {stats.get('character_count_no_spaces', 0):,}")
+    print(f"📝 Total Words: {stats.get('word_count', 0):,}")
+    print(f"📋 Total Sentences: {stats.get('sentence_count', 0):,}")
+    print(f"📄 Paragraphs: {stats.get('paragraph_count', 0):,}")
+    
+    # Calculate derived statistics
+    if stats.get('sentence_count', 0) > 0 and stats.get('word_count', 0) > 0 :
+        words_per_sentence = stats['word_count'] / stats['sentence_count']
+        print(f"📏 Average Words per Sentence: {words_per_sentence:.1f}")
+    
+    if stats.get('word_count', 0) > 0 and stats.get('character_count_no_spaces', 0) > 0:
+        chars_per_word = stats['character_count_no_spaces'] / stats['word_count']
+        print(f"📐 Average Characters per Word: {chars_per_word:.1f}")
+
+def display_word_analysis(word_analysis):
+    """
+    Display word frequency analysis.
+    
+    Args:
+        word_analysis (dict): Word analysis results
+    """
+    print_section("🔤 Word Frequency Analysis")
+    
+    word_frequencies = word_analysis.get('word_frequencies', {})
+    statistics = word_analysis.get('statistics', {})
+    
+    print(f"🎯 Unique Words: {statistics.get('unique_words', 0):,}")
+    print(f"📊 Total Word Count: {statistics.get('total_words', 0):,}")
+    print(f"📈 Average Word Frequency: {statistics.get('average_frequency', 0.0)}")
+    
+    if word_frequencies:
+        print(f"\n🏆 Top 10 Most Common Words:")
+        total_word_count = statistics.get('total_words', 1) # Avoid division by zero
+        if total_word_count == 0: total_word_count = 1 # Ensure not zero
+
+        for i, (word, count) in enumerate(word_frequencies.items(), 1):
+            percentage = (count / total_word_count) * 100
+            print(f"  {i:2d}. '{word}' - {count} times ({percentage:.1f}%)")
+
+def display_sentence_analysis(sentence_analysis):
+    """
+    Display sentence analysis results.
+    
+    Args:
+        sentence_analysis (dict): Sentence analysis results
+    """
+    print_section("📋 Sentence Analysis")
+    
+    print(f"📊 Total Sentences: {sentence_analysis.get('sentence_count', 0)}")
+    print(f"📏 Average Words per Sentence: {sentence_analysis.get('average_words_per_sentence', 0.0)}")
+    
+    longest_sentence = sentence_analysis.get('longest_sentence', "")
+    if longest_sentence:
+        print(f"\n📏 Longest Sentence ({len(longest_sentence.split())} words):") # Added word count
+        print(f"   \"{longest_sentence[:100]}{'...' if len(longest_sentence) > 100 else ''}\"")
+    
+    shortest_sentence = sentence_analysis.get('shortest_sentence', "")
+    if shortest_sentence:
+        print(f"\n📏 Shortest Sentence ({len(shortest_sentence.split())} words):") # Added word count
+        print(f"   \"{shortest_sentence}\"")
+
+def display_readability_analysis(readability_stats):
+    """
+    Display readability analysis.
+    
+    Args:
+        readability_stats (dict): Readability statistics
+    """
+    print_section("📖 Readability Analysis")
+    
+    print(f"📐 Average Word Length: {readability_stats.get('avg_word_length', 0.0)} characters")
+    print(f"🎯 Complexity Score: {readability_stats.get('complexity_score', 0.0)}/20") # Max score isn't strictly 20, but it's a reference
+    level = readability_stats.get('readability_level', 'Unknown')
+    print(f"📚 Readability Level: {level}")
+    
+    # Add interpretation
+    if level == 'Easy':
+        print("   💡 This text is generally easy to read and understand.")
+    elif level == 'Moderate':
+        print("   💡 This text requires moderate reading skills.")
+    elif level == 'Difficult':
+        print("   💡 This text is challenging and requires good reading skills.")
+    elif level == 'Very Difficult':
+        print("   💡 This text is very difficult and likely requires advanced reading skills.")
+    elif level == 'Not Applicable (No Content)':
+        print("   💡 Readability cannot be assessed as there is no content.")
+
+
+def display_interesting_patterns(patterns):
+    """
+    Display interesting patterns found in the text.
+    
+    Args:
+        patterns (dict): Patterns analysis results
+    """
+    print_section("🔍 Interesting Patterns")
+    
+    print(f"🎨 Word Variety: {patterns.get('word_variety', 0.0)}% (unique words / total words)")
+    
+    repeated_words = patterns.get('repeated_words', [])
+    if repeated_words:
+        print(f"\n🔄 Most Repeated Words (up to top 5 shown):")
+        for word, count in repeated_words[:5]:
+            print(f"   '{word}' appears {count} times")
+    
+    long_words = patterns.get('long_words', [])
+    if long_words:
+        print(f"\n📏 Sample of Long Words (7+ characters, up to 8 shown):")
+        print(f"   {', '.join(long_words[:8])}")
+    
+    short_words = patterns.get('short_words', [])
+    if short_words:
+        print(f"\n🔤 Sample of Short Words (1-2 characters, up to 10 shown):")
+        print(f"   {', '.join(short_words[:10])}")
+
+def display_complete_analysis(analysis_results):
+    """
+    Display complete text analysis in a professional format.
+    
+    Args:
+        analysis_results (dict): Complete analysis results
+    """
+    if 'error' in analysis_results and analysis_results['error']:
+        print(f"❌ Analysis Error: {analysis_results['error']}")
+        return
+    
+    # Header
+    print_header("📊 TEXT ANALYSIS REPORT 📊")
+    
+    # General statistics
+    if 'general_stats' in analysis_results:
+        display_general_statistics(analysis_results['general_stats'])
+    
+    # Word analysis
+    if 'word_analysis' in analysis_results:
+        display_word_analysis(analysis_results['word_analysis'])
+    
+    # Sentence analysis
+    if 'sentence_analysis' in analysis_results:
+        display_sentence_analysis(analysis_results['sentence_analysis'])
+    
+    # Calculate and display readability & patterns
+    if all(key in analysis_results for key in ['word_analysis', 'sentence_analysis', 'original_text']):
+        # Ensure word_frequencies exists and is a Counter or dict for Counter conversion
+        word_freq_data = analysis_results['word_analysis'].get('word_frequencies', {})
+        if isinstance(word_freq_data, dict):
+            word_counts_for_calc = Counter(word_freq_data)
+        elif isinstance(word_freq_data, Counter):
+            word_counts_for_calc = word_freq_data
+        else: # Fallback if it's something else, though it shouldn't be
+            word_counts_for_calc = Counter()
+
+        # If word_frequencies was a dict of top N, we need full counts for accurate readability
+        # Re-calculating word_counts from original_text for readability if necessary
+        # The current structure of analyze_text_complete returns word_counts.most_common(10) in 'word_frequencies'
+        # and full word_stats in 'statistics'. We should use the full word_counts for calculations.
+        
+        # Let's assume word_analysis.statistics.most_common contains enough for Counter
+        # or better, re-evaluate how word_counts is passed.
+        # For now, let's use the full word count from statistics for readability.
+        full_word_counts = count_words(analysis_results['original_text'])
+
+
+        readability_stats = calculate_readability_stats(
+            analysis_results['original_text'],
+            full_word_counts, # Use full word counts
+            analysis_results['sentence_analysis']
+        )
+        display_readability_analysis(readability_stats)
+        
+        patterns = find_interesting_patterns(full_word_counts, analysis_results['original_text']) # Use full word counts
+        display_interesting_patterns(patterns)
+    
+    # Footer
+    print_section("✅ Analysis Complete", width=60) # Match header width
+    print("📝 Report generated successfully!")
+    print("🎯 Ready for Module 3E: Integration & Testing")
+
+def display_summary(analysis_results):
+    """
+    Display a quick summary of the analysis.
+    
+    Args:
+        analysis_results (dict): Analysis results
+    """
+    if 'error' in analysis_results and analysis_results['error']:
+        print(f"❌ Error: {analysis_results['error']}")
+        return
+    
+    general = analysis_results.get('general_stats', {})
+    word_analysis = analysis_results.get('word_analysis', {})
+    
+    print_header("📊 QUICK SUMMARY 📊", width=40) # Shorter header for summary
+    print(f"📄 Characters: {general.get('character_count', 0):,}")
+    print(f"📝 Words: {general.get('word_count', 0):,}")
+    print(f"📋 Sentences: {general.get('sentence_count', 0):,}")
+    
+    word_stats = word_analysis.get('statistics', {})
+    print(f"🎯 Unique Words: {word_stats.get('unique_words', 0):,}")
+    
+    # word_frequencies in word_analysis is already a dict of top 10
+    most_common_preview = word_analysis.get('word_frequencies', {})
+    if most_common_preview:
+        # Get the actual most common word from the preview dict
+        # This assumes the dict is ordered by frequency (which Counter.most_common(N) then dict() preserves in Py3.7+)
+        top_word, count = next(iter(most_common_preview.items()))
+        print(f"🏆 Most Common Word: '{top_word}' ({count} times)")
+    
+    print("="*40)
+
+
+# =============================================================================
+# MAIN FUNCTION (Updated for Module 3D Testing)
 # =============================================================================
 
 def main():
-    """Main execution function - testing text processing pipeline."""
-    print("Text Analyzer - Module 3C: Text Processing Testing")
-    print("=" * 60)
+    """Main execution function - testing display and analysis."""
+    print_header("Text Analyzer - Module 3D: Display Testing", width=70)
     
     # Load text file
     content = load_text_file()
@@ -449,38 +779,43 @@ def main():
         print("❌ No content to analyze. Exiting.")
         return
     
-    print("\n🔄 Processing text...")
+    print("\n🔄 Running complete analysis...")
     
     # Run complete analysis
     results = analyze_text_complete(content)
     
-    if 'error' in results and results['error']: # Check if error key exists and has a value
+    if 'error' in results and results['error']:
         print(f"❌ Analysis error: {results['error']}")
         return
     
-    # Display results preview
-    print("\n📊 Analysis Results Preview:")
-    print("-" * 30)
+    # Display results
+    print("\n" + "="*60)
+    print("Choose display format:")
+    print("1. 📜 Complete Report")
+    print("2. ⚡ Quick Summary")
+    print("3. 📜+⚡ Both")
+    print("="*60)
     
-    # General stats
-    general = results.get('general_stats', {}) # Use .get for safety
-    print(f"📄 Characters: {general.get('character_count', 0)}")
-    print(f"📝 Words: {general.get('word_count', 0)}")
-    print(f"📋 Sentences: {general.get('sentence_count', 0)}")
-    
-    # Word analysis preview
-    word_analysis = results.get('word_analysis', {})
-    word_frequencies_preview = word_analysis.get('word_frequencies', {})
-    print(f"\n🔤 Most common words (sample):")
-    for word, count in list(word_frequencies_preview.items())[:3]: # Show top 3 from the preview
-        print(f"   '{word}': {count} times")
-    
-    # Sentence analysis preview
-    sentence_analysis = results.get('sentence_analysis', {})
-    print(f"\n📏 Average words per sentence: {sentence_analysis.get('average_words_per_sentence', 0.0)}")
-    
-    print("\n✅ Text processing pipeline (Module 3C) testing complete!")
-    print("🎯 Ready for Module 3D: Analysis & Display Functions")
+    try:
+        choice = input("Enter choice (1-3): ").strip()
+        
+        if choice == "1":
+            display_complete_analysis(results)
+        elif choice == "2":
+            display_summary(results)
+        elif choice == "3":
+            display_summary(results)
+            display_complete_analysis(results)
+        else:
+            print("⚠️ Invalid choice. Defaulting to Quick Summary.")
+            display_summary(results)
+            
+    except KeyboardInterrupt:
+        print("\n\n👋 Analysis interrupted by user.")
+    except Exception as e:
+        print(f"❌ An unexpected error occurred during display: {e}")
+        print("💡 Displaying Quick Summary as a fallback.")
+        display_summary(results)  # Fallback to summary
 
 if __name__ == "__main__":
     main()
