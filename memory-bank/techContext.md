@@ -14,7 +14,7 @@ This document covers the technologies used in the project, the development setup
 
 *   **Python Installation**: Ensure Python 3.7+ is installed and accessible from the command line.
 *   **Text Editor/IDE**: A text editor or Integrated Development Environment (IDE) is needed to view and modify the `analyzer.py` script and other project files. Popular options include VS Code, PyCharm, Sublime Text, and Atom.
-*   **(Optional) Virtual Environment**: While not strictly required, it's recommended to use a virtual environment to manage dependencies, especially if enhancements from Module 4 are implemented.
+*   **Virtual Environment**: Module 3A of the lesson plan recommends creating and activating a virtual environment as a professional development practice. This helps isolate project dependencies and is good practice even if no external libraries are immediately added.
 
 ## Technical Constraints
 
