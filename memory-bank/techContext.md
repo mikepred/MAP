@@ -69,3 +69,8 @@ This document covers the technologies used in the project, the development setup
 *   The script automatically uses the current working directory as the `REPO_PATH`.
 *   Outputs the generated Mermaid `gitGraph` code to `branch_visualization.mermaid.txt`.
 *   The content of `branch_visualization.mermaid.txt` can be copied into a Mermaid renderer to view the graph.
+
+## Overall Project/Repository Technical Context
+
+### Dependency Management
+*   **Git Submodules**: The project utilizes Git submodules for managing external repository dependencies. For example, the `LLMs-from-scratch` directory is integrated as a submodule, allowing the project to track a specific version of this external code.

@@ -4,7 +4,7 @@ This document outlines what currently works, what is left to build, the current 
 
 ## What Works
 
-*   **Text Analyzer Project (`analyzer.py`)**:
+*   **Text Analyzer Project (`analyzer.py`) - Now on `main` branch**:
     *   **Module 3A (Project Setup & Architecture)**: Fully completed.
     *   **Module 3B (File I/O & Error Handling)**: Fully completed.
     *   **Module 3C (Text Processing Pipeline)**: Fully completed.
@@ -15,85 +15,73 @@ This document outlines what currently works, what is left to build, the current 
         *   Debugging fundamentals reviewed.
     *   **Module 4B (Core Script Enhancements) Completed**:
         *   Enhancement 1 (Stop Word Removal): `remove_stop_words()` implemented and integrated.
-        *   Enhancement 2 (User Input for Configuration): `get_user_input_config()` implemented and integrated for filepath, top N words, and stop word toggle.
-        *   Enhancement 3 (Output to File): `save_results_to_file()` implemented and integrated with user prompt.
+        *   Enhancement 2 (User Input for Configuration): `get_user_input_config()` implemented and integrated.
+        *   Enhancement 3 (Output to File): `save_results_to_file()` implemented and integrated.
     *   **Module 4C (Advanced Refinements and Performance) Completed**:
         *   `clean_text()` enhanced with an `advanced` flag for URL/email removal.
         *   `analyze_word_lengths()` function added and integrated.
         *   `time_function()` utility added and overall pipeline timing implemented.
         *   `NameError` for `tokenize_text` and other syntax issues resolved.
-    *   The `text_analyzer.py` script is now fully enhanced as per the Module 4 lesson plan.
-    *   **Module 5C (Initial Exploration - "Immediate Next Steps" Step 1) In Progress**:
-        *   Reviewed Module 5 documentation (overview, navigation, sub-modules 5A, 5B, 5C).
-        *   Installed NLTK and spaCy libraries.
-        *   Downloaded NLTK data (`punkt`, `stopwords`, `punkt_tab`) and spaCy model (`en_core_web_sm`).
-        *   Created and executed `text_analyzer/explore_nlp_libraries.py` to demonstrate basic functionalities.
+    *   The `text_analyzer.py` script is fully enhanced as per the Module 4 lesson plan and is now integrated into the `main` branch.
+    *   **Module 5C (Initial Exploration - "Immediate Next Steps" Step 1) - Now on `main` branch**:
+        *   Reviewed Module 5 documentation.
+        *   Installed NLTK and spaCy libraries and necessary data/models.
+        *   Created and executed `text_analyzer/explore_nlp_libraries.py`.
 
-*   **Git Branch Visualizer Project (`branch_visualizer.py`)**:
-    *   The script successfully fetches local Git branch names using `git for-each-ref`.
-    *   It fetches complete Git log data (SHAs, parent SHAs, refs) in chronological order using `git log --all --pretty=format:"%H|%P|%D" --date-order --reverse`.
-    *   It parses commit references to identify local branches pointing to specific commits.
-    *   It generates valid Mermaid `gitGraph LR;` syntax representing the local branch structure, including commits and merges.
-    *   It saves the generated Mermaid code to `branch_visualization.mermaid.txt`.
-    *   Basic error handling for `git` command execution (e.g., Git not found) and file output is implemented.
-    *   **The `branch_visualizer.py` script is functional for its core purpose.**
+*   **Git Branch Visualizer Project (`branch_visualizer.py`) - On `main` branch**:
+    *   The script is functional for its core purpose of generating Mermaid `gitGraph` syntax for local branches.
 
 *   **Documentation & Setup**:
-    *   `text_analyzer/README.md` is comprehensive and aligned with project goals.
-    *   The `.clinerules` lesson plan provides a full guide for `text_analyzer.py` development.
-    *   Core Memory Bank files (`projectbrief.md`, `productContext.md`, `systemPatterns.md`, `techContext.md`, `activeContext.md`, `progress.md`) are established and are being updated to reflect current progress.
-    *   Module 4 documentation (`.clinerules/module4-*.md`) has been restructured into a series of focused sub-modules.
-    *   Module 5 documentation (`.clinerules/module5-*.md`) has been restructured into a series of focused sub-modules.
+    *   `text_analyzer/README.md` is comprehensive.
+    *   The `.clinerules` lesson plan provides a full guide for `text_analyzer.py`.
+    *   Core Memory Bank files are established and being updated.
+    *   Module 4 and 5 documentation (`.clinerules/module*-*.md`) restructured.
+
+*   **Repository State**:
+    *   The `develop` branch has been successfully merged into the `main` branch.
+    *   The `main` branch (local and remote `origin/main`) is up-to-date with all completed features.
+    *   The `develop` branch (local and remote `origin/develop`) has been updated from `main` and is also up-to-date.
+    *   The `LLMs-from-scratch` Git submodule is integrated and present on the `main` branch.
 
 ## What's Left to Build
 
 *   **Text Analyzer Project (`analyzer.py`)**:
-    *   The core lesson plan (Modules 1-5, with Modules 1-4 resulting in code) is complete.
-    *   Potential future enhancements (beyond the current lesson plan) could include:
-        *   More sophisticated NLP tasks (e.g., stemming, lemmatization, POS tagging using NLTK/spaCy).
-        *   Graphical display of word frequencies (e.g., bar charts).
-        *   Support for different input file formats (e.g., .docx, .pdf).
-        *   More comprehensive automated testing.
+    *   Continue with Module 5C "Immediate Next Steps" (Step 2: Experiment with Real-World Data, or Step 3: Build an Enhanced Version).
+    *   Potential future enhancements (beyond the current lesson plan) as previously listed (e.g., advanced NLP tasks, GUI, different file formats, automated testing).
 *   **Git Branch Visualizer Project (`branch_visualizer.py`)**:
-    *   More robust error handling for diverse or unusual Git repository states.
-    *   Options for visualizing remote branches or specific branch subsets.
-    *   Alternative layout options for the Mermaid graph (e.g., Top-Down).
-    *   Improved identification of merge sources in complex histories.
-    *   User arguments for specifying repository path or output file name.
+    *   Potential future enhancements as previously listed (e.g., robust error handling, remote branch visualization, alternative layouts, user arguments).
 
 ## Current Status
 
-*   **Overall Project**: The MAP project now comprises two main functional Python scripts: `text_analyzer.py` (Module 4 enhancements completed, Module 5 exploration started) and `branch_visualizer.py` (functional).
-*   **Text Analyzer**: Fully functional as per Modules 1-4 of the lesson plan. All planned enhancements from Module 4 (A, B, C) are implemented. Module 5 (conceptual connections to LLMs) has been reviewed, and initial practical exploration of NLTK/spaCy (Module 5C, Step 1) is complete.
-*   **Git Branch Visualizer**: Functional for generating Mermaid graphs of local Git branches.
-*   **Memory Bank**: Currently being updated to reflect the Module 5 exploration for the Text Analyzer.
-*   **Git Branch**: (User to confirm if specific branch tracking is needed for this phase).
+*   **Overall Project**: The `main` branch is now the stable, up-to-date representation of the project, incorporating all completed work on the Text Analyzer (including Module 4 enhancements and initial Module 5C exploration) and the functional Git Branch Visualizer.
+*   **Text Analyzer**: Fully functional as per Modules 1-4, with initial Module 5C exploration completed, all on the `main` branch.
+*   **Git Branch Visualizer**: Functional on the `main` branch.
+*   **Memory Bank**: Currently being updated to reflect the `develop` to `main` merge and overall project status.
+*   **Git Branches**:
+    *   `main`: Up-to-date locally and on `origin/main`. Contains all merged features.
+    *   `develop`: Up-to-date locally and on `origin/develop`, synchronized with `main`.
 
 ## Known Issues
 
 *   **Text Analyzer**:
-    *   The `run_comprehensive_test()` function in `analyzer.py` has simplified/simulated tests for some components; could be expanded for more rigorous automated testing.
+    *   The `run_comprehensive_test()` function in `analyzer.py` could be expanded for more rigorous automated testing.
 *   **Git Branch Visualizer**:
-    *   The visualization accuracy depends on the `git log` output format and parsing logic; very complex or non-standard Git histories might not render perfectly.
-    *   Performance might degrade on repositories with extremely large numbers of commits or branches.
-    *   The logic for determining the "main line" for Mermaid checkout could be made more robust for repositories not using `main` or `master`.
+    *   Limitations regarding complex Git histories, performance on very large repos, and main line detection persist as areas for potential improvement.
 
 ## Evolution of Project Decisions
 
-*   Initial decision: Establish the Cline's Memory Bank system as the foundation for all future work.
-*   Decision to create a comprehensive, educational README for the Text Analyzer.
-*   Decision to systematically review and update the Memory Bank for all project changes.
-*   Previous session: Completed Modules 3A-3E for the Text Analyzer project.
+*   Initial decision: Establish Cline's Memory Bank system.
+*   Decision: Create a comprehensive README for Text Analyzer.
+*   Decision: Systematically update Memory Bank.
+*   Previous session: Completed Modules 3A-3E for Text Analyzer.
 *   Earlier in current session:
-    *   Introduced the `branch_visualizer.py` script and `branch_visualization.mermaid.txt` example.
-    *   Updated all core Memory Bank files to reflect the addition and functionality of the Git Branch Visualizer.
-    *   Restructured Module 4 documentation into a series of sub-modules.
-    *   Restructured Module 5 documentation into a series of sub-modules.
+    *   Introduced `branch_visualizer.py`.
+    *   Updated Memory Bank for Git Branch Visualizer.
+    *   Restructured Module 4 & 5 `.clinerules` documentation.
+    *   Completed Text Analyzer Module 4 (A, B, C).
+    *   Reviewed Module 5 documentation and initiated Module 5C Step 1 (NLTK/spaCy exploration).
 *   **Current session (continued)**:
-    *   Started Module 4 for Text Analyzer.
-    *   Completed Module 4A (testing and review of `analyzer.py`).
-    *   Implemented Module 4B (all enhancements) in `text_analyzer.py`.
-    *   Implemented Module 4C (all enhancements) in `text_analyzer.py`, including fixing runtime errors.
-    *   Reviewed Module 5 documentation.
-    *   Initiated Module 5C Step 1: Installed NLTK, spaCy, and necessary data/models; created and ran `explore_nlp_libraries.py`.
-    *   Currently updating Memory Bank files (`activeContext.md`, `progress.md`) to reflect this Module 5 progress.
+    *   **Successfully merged `develop` branch into `main` branch.** This included resolving merge conflicts in `text_analyzer/analyzer.py` and ensuring the `LLMs-from-scratch` Git submodule was correctly handled and kept.
+    *   **Pushed updated `main` to `origin/main`.**
+    *   **Updated `develop` branch from `main` and pushed to `origin/develop`.**
+    *   Currently updating Memory Bank files (`activeContext.md`, `progress.md`, `techContext.md`) to reflect this major integration and current project state.
