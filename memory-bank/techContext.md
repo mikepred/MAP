@@ -1,37 +1,69 @@
 # Tech Context
 
-This document covers the technologies used in the project, the development setup, technical constraints, dependencies, and tool usage patterns.
+This document covers the technologies used in the project, the development setup, technical constraints, dependencies, and tool usage patterns for each component.
 
-## Technologies Used
+## Text Analyzer (`analyzer.py`)
 
-*   **Python**: Version 3.7 or higher is required to run the `analyzer.py` script.
-*   **Standard Library**: The current implementation (Module 3B) uses `os` and `pathlib`. Future modules will incorporate:
-    *   `collections`: The `Counter` class will be used for efficient word frequency counting (Module 3C).
-    *   `string`: The `string.punctuation` constant and `str.maketrans()` method will be used for text cleaning (Module 3C).
-    *   `re`: The regular expression module will be used for more advanced text cleaning and sentence splitting (Module 3C).
-*   **(Optional) NLTK/spaCy**: If enhancements from Module 4 are implemented (e.g., stop word removal, advanced cleaning), the Natural Language Toolkit (NLTK) or spaCy libraries may be used.
+### Technologies Used
+*   **Python**: Version 3.7 or higher is required.
+*   **Standard Library**:
+    *   `os`, `pathlib`: For file system interactions (Module 3B onwards).
+    *   `collections`: The `Counter` class for efficient word frequency counting (Module 3C onwards).
+    *   `string`: The `string.punctuation` constant and `str.maketrans()` method for text cleaning (Module 3C onwards).
+    *   `re`: The regular expression module for advanced text cleaning and sentence splitting (Module 3C onwards).
+*   **(Optional) NLTK/spaCy**: If enhancements from Module 4 are implemented (e.g., stop word removal, advanced cleaning), these libraries may be used.
 
-## Development Setup
-
+### Development Setup
 *   **Python Installation**: Ensure Python 3.7+ is installed and accessible from the command line.
-*   **Text Editor/IDE**: A text editor or Integrated Development Environment (IDE) is needed to view and modify the `analyzer.py` script and other project files. Popular options include VS Code, PyCharm, Sublime Text, and Atom.
-*   **Virtual Environment**: Module 3A of the lesson plan recommends creating and activating a virtual environment as a professional development practice. This helps isolate project dependencies and is good practice even if no external libraries are immediately added.
+*   **Text Editor/IDE**: VS Code, PyCharm, Sublime Text, Atom, etc.
+*   **Virtual Environment**: Recommended as per Module 3A of the lesson plan.
 
-## Technical Constraints
+### Technical Constraints
+*   **Simple Design**: Intentionally simple for beginners; does not handle very large datasets or highly complex NLP tasks.
+*   **Basic Tokenization**: Uses `.split()`, which is a simplification and doesn't handle all linguistic nuances.
 
-*   **Simple Design**: The project is intentionally designed to be simple and accessible for beginners. It does not address the complexities of real-world text processing, such as handling very large datasets, dealing with noisy or unstructured text, or implementing advanced linguistic features.
-*   **Basic Tokenization**: The use of `.split()` for tokenization is a simplification. It does not handle contractions, hyphenated words, or other complex tokenization scenarios effectively.
+### Dependencies
+*   Primarily relies on Python's standard library.
+*   Optional external dependencies for Module 4 enhancements: `nltk`, `spacy`.
 
-## Dependencies
+### Tool Usage Patterns
+*   Executed via `python analyzer.py`.
+*   Reads from a specified input text file (default: `sample.txt`).
+*   Outputs analysis results to the console.
 
-*   The current functionality of `analyzer.py` (up to Module 3B) relies only on Python's standard library (`os`, `pathlib`). No external dependencies are currently required.
-*   Future modules (3C onwards) will continue to primarily use the standard library (`collections`, `string`, `re`).
-*   If enhancements from Module 4 are implemented, the following external dependencies may be required:
-    *   `nltk`: Natural Language Toolkit (if stop word removal or other advanced features are added). Install with `pip install nltk`.
-    *   `spacy`: Industrial-strength NLP library (if more sophisticated NLP tasks are implemented). Install with `pip install spacy`.
+## Git Branch Visualizer (`branch_visualizer.py`)
 
-## Tool Usage Patterns
+### Technologies Used
+*   **Python**: Version 3.7 or higher.
+*   **Standard Library**:
+    *   `subprocess`: To execute external Git commands.
+    *   `re`: For parsing Git log output.
+    *   `os`: Used implicitly by `subprocess` for path context.
+    *   `pathlib`: For path manipulations if extended (currently uses string for REPO_PATH).
+*   **Git**: External command-line tool. The script assumes `git` is installed and in the system's PATH.
+*   **Mermaid**: The script generates `gitGraph` syntax, which is a domain-specific language for Mermaid.js to render diagrams.
 
-*   The `analyzer.py` script is executed from the command line using the `python analyzer.py` command.
-*   The script reads text data from a specified input file (default: `sample.txt`). The user may modify this file or provide a different file path.
-*   The script outputs the analysis results (the most common words and their counts) to the console.
+### Development Setup
+*   **Python Installation**: Python 3.7+ installed.
+*   **Git Installation**: Git must be installed and configured in the system's PATH.
+*   **Text Editor/IDE**: For viewing/editing the script.
+*   **Mermaid Renderer (Optional, for viewing output)**:
+    *   Online editors (e.g., mermaid.live).
+    *   IDE extensions (e.g., Markdown Preview Mermaid Support for VS Code).
+    *   Command-line tools for Mermaid.
+
+### Technical Constraints
+*   **Git Dependency**: Functionality is entirely dependent on the presence and correct operation of the `git` executable.
+*   **Local Branch Focus**: The current visualization primarily focuses on local branches. Representation of remote branches is limited.
+*   **Parsing Robustness**: The accuracy of the graph depends on the parsing logic for `git log` output, which might need adjustments for highly unusual Git histories or log formats.
+*   **Graph Complexity**: Very large repositories with numerous branches and complex merge histories might result in overly dense or hard-to-read Mermaid diagrams.
+
+### Dependencies
+*   **External**: `git` command-line tool.
+*   **Python**: Relies only on Python's standard library (`subprocess`, `re`, `os`).
+
+### Tool Usage Patterns
+*   Executed via `python branch_visualizer.py` from within a Git repository.
+*   The script automatically uses the current working directory as the `REPO_PATH`.
+*   Outputs the generated Mermaid `gitGraph` code to `branch_visualization.mermaid.txt`.
+*   The content of `branch_visualization.mermaid.txt` can be copied into a Mermaid renderer to view the graph.

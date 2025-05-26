@@ -51,6 +51,22 @@ The lesson plan is divided into the following modules:
 *   **Module 5: Connecting to the Bigger World of LLMs** (`.clinerules/module5-llm-connections.md`)
     *   Explores how the project's text processing skills relate to LLMs, `llms-from-scratch` concepts (advanced tokenization like BPE, data loading, embeddings), modern applications (chatbots, search, sentiment analysis), and further learning paths (NLTK, spaCy, advanced ML/NLP).
 
+## Project: Git Branch Visualizer
+
+### Core Requirements
+*   The `branch_visualizer.py` script must:
+    *   Operate on the Git repository located in the current working directory.
+    *   Fetch local Git branch names.
+    *   Fetch Git log data including commit SHAs, parent SHAs, and commit references (e.g., branch names, HEAD).
+    *   Parse commit references to identify which local branches point to specific commits.
+    *   Generate Mermaid `gitGraph` syntax that visually represents the local branch structure, commits, and merges.
+    *   Save the generated Mermaid code to a file named `branch_visualization.mermaid.txt`.
+
+### Project Goals
+*   Provide a utility (`branch_visualizer.py`) to visualize the Git branch structure of the current repository.
+*   Output a Mermaid diagram that is compatible with standard Mermaid renderers (e.g., mermaid.live, integrated Markdown previews).
+*   Assist developers in understanding complex Git branch histories and relationships within their local repository.
+
 ## Cline's Operational Directives
 
 The core operational directives governing my behavior and collaboration with you have been refined and are documented in `../../Cline/Rules/00-primary-directive.md`. These directives define my role as an expert, proactive coding partner, emphasizing continuous learning, knowledge persistence, and a principled approach to development and quality assurance.
