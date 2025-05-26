@@ -5,9 +5,10 @@ This document covers the technologies used in the project, the development setup
 ## Technologies Used
 
 *   **Python**: Version 3.7 or higher is required to run the `analyzer.py` script.
-*   **Standard Library**: The core functionality relies primarily on Python's standard library, specifically:
-    *   `collections`: The `Counter` class is used for efficient word frequency counting.
-    *   `string`: The `string.punctuation` constant and `str.maketrans()` method are used for text cleaning (punctuation removal).
+*   **Standard Library**: The current implementation (Module 3B) uses `os` and `pathlib`. Future modules will incorporate:
+    *   `collections`: The `Counter` class will be used for efficient word frequency counting (Module 3C).
+    *   `string`: The `string.punctuation` constant and `str.maketrans()` method will be used for text cleaning (Module 3C).
+    *   `re`: The regular expression module will be used for more advanced text cleaning and sentence splitting (Module 3C).
 *   **(Optional) NLTK/spaCy**: If enhancements from Module 4 are implemented (e.g., stop word removal, advanced cleaning), the Natural Language Toolkit (NLTK) or spaCy libraries may be used.
 
 ## Development Setup
@@ -23,7 +24,8 @@ This document covers the technologies used in the project, the development setup
 
 ## Dependencies
 
-*   The core functionality of `analyzer.py` relies only on Python's standard library, so no external dependencies are required for basic operation.
+*   The current functionality of `analyzer.py` (up to Module 3B) relies only on Python's standard library (`os`, `pathlib`). No external dependencies are currently required.
+*   Future modules (3C onwards) will continue to primarily use the standard library (`collections`, `string`, `re`).
 *   If enhancements from Module 4 are implemented, the following external dependencies may be required:
     *   `nltk`: Natural Language Toolkit (if stop word removal or other advanced features are added). Install with `pip install nltk`.
     *   `spacy`: Industrial-strength NLP library (if more sophisticated NLP tasks are implemented). Install with `pip install spacy`.

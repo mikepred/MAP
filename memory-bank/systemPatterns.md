@@ -4,13 +4,13 @@ This document outlines the system architecture, key technical decisions, and des
 
 ## System Architecture
 
-The `analyzer.py` script follows a linear data processing pipeline:
+The `analyzer.py` script is designed to follow a linear data processing pipeline. As of the completion of Module 3B, the "Data Input" and "Error Handling" aspects are implemented. The full target pipeline is:
 
-1.  **Data Input**: The `read_file()` function loads the text content from a specified file.
-2.  **Text Cleaning**: The `clean_text()` function normalizes the text by converting it to lowercase and removing punctuation.
-3.  **Tokenization**: The `tokenize_text()` function splits the cleaned text into a list of individual words (tokens) using the `.split()` method.
-4.  **Frequency Counting**: The `count_frequencies()` function uses the `collections.Counter` class to efficiently count the occurrences of each token.
-5.  **Results Display**: The `display_most_common()` function presents the most frequent words and their counts in a user-friendly format.
+1.  **Data Input & Validation**: Functions like `read_file()`, `validate_file_path()`, and `get_filename_from_user()` handle loading text content from a specified file, ensuring the path is valid and handling potential I/O errors. (Implemented in Module 3B)
+2.  **Text Cleaning**: The `clean_text()` function will normalize the text by converting it to lowercase and removing punctuation. (To be implemented in Module 3C)
+3.  **Tokenization**: The `tokenize_text()` function will split the cleaned text into a list of individual words (tokens) using the `.split()` method. (To be implemented in Module 3C)
+4.  **Frequency Counting**: The `count_frequencies()` function will use the `collections.Counter` class to efficiently count the occurrences of each token. (To be implemented in Module 3C)
+5.  **Results Display**: The `display_most_common()` function will present the most frequent words and their counts in a user-friendly format. (To be implemented in Module 3D/3E)
 
 This pipeline structure ensures a clear and sequential flow of data processing.
 
