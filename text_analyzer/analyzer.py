@@ -42,6 +42,15 @@ STOP_WORDS: Set[str] = {
     'her', 'us', 'them'
 }
 
+# Pre-compiled Regular Expressions for performance
+URL_REGEX: re.Pattern = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+EMAIL_REGEX: re.Pattern = re.compile(r'\S+@\S+')
+NUMBERS_REGEX: re.Pattern = re.compile(r'\d+') # Optional, if number removal is desired
+EXTRA_WHITESPACE_REGEX: re.Pattern = re.compile(r'\s+')
+# For clean_text_for_sentence_analysis:
+SENTENCE_CLEAN_REGEX: re.Pattern = re.compile(r'[^\w\s.,!?;:\'-]')
+
+
 # =============================================================================
 # FILE I/O FUNCTIONS (Module 3B from original structure)
 # =============================================================================
@@ -171,13 +180,14 @@ def get_filename_from_user() -> str: # Returns Path object as string or empty st
     print(f"\n❌ Maximum attempts ({MAX_INPUT_ATTEMPTS}) reached")
     return ""
 
-def get_user_input_config() -> Tuple[str, int, bool]:
+def get_user_input_config() -> Tuple[int, bool]:
     """
-    Gets configuration from user input. (Enhancement 2 from Module 4B)
-    It no longer asks for filepath, as that's fixed for the main analysis option.
+    Gets configuration from user input for number of top words and stop word removal.
+    (Enhancement 2 from Module 4B)
+    Filepath is NOT asked here as it's handled differently by the caller.
     
     Returns:
-        tuple: (num_words, enable_stop_words)
+        Tuple[int, bool]: (num_words_to_display, enable_stop_word_removal)
     """
     print("\n--- ⚙️ Text Analysis Configuration ---")
     
@@ -256,7 +266,7 @@ def clean_text_for_sentence_analysis(text: Optional[str]) -> str:
     # Normalize whitespace but try to keep sentence-relevant punctuation
     cleaned_text = ' '.join(cleaned_text.split())
     # This regex was designed to keep sentence delimiters.
-    cleaned_text = re.sub(r'[^\w\s.,!?;:\'-]', '', cleaned_text) # Kept ' for contractions.
+    cleaned_text = SENTENCE_CLEAN_REGEX.sub('', cleaned_text) # Kept ' for contractions.
     
     return cleaned_text
 
@@ -279,20 +289,20 @@ def clean_text(text: Optional[str], advanced: bool = False) -> str: # New from M
     
     if advanced:
         # Remove URLs
-        processed_text = re.sub(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', '', processed_text)
+        processed_text = URL_REGEX.sub('', processed_text)
         # Remove email addresses
-        processed_text = re.sub(r'\S+@\S+', '', processed_text)
+        processed_text = EMAIL_REGEX.sub('', processed_text)
         # Remove numbers (optional - commented out as per M4C guide)
-        # processed_text = re.sub(r'\d+', '', processed_text) 
+        # processed_text = NUMBERS_REGEX.sub('', processed_text) 
         # Remove extra whitespace that might have been introduced by above steps
-        processed_text = re.sub(r'\s+', ' ', processed_text).strip()
+        processed_text = EXTRA_WHITESPACE_REGEX.sub(' ', processed_text).strip()
     
     # Remove ALL punctuation for word tokenization
     translator = str.maketrans('', '', string.punctuation)
     processed_text = processed_text.translate(translator)
     
     # Final whitespace cleanup
-    processed_text = re.sub(r'\s+', ' ', processed_text).strip()
+    processed_text = EXTRA_WHITESPACE_REGEX.sub(' ', processed_text).strip()
     
     return processed_text
 
@@ -338,13 +348,6 @@ def count_words(text: Optional[str], use_stop_words: bool = False) -> Counter[st
         
     word_counts: Counter[str] = Counter(words)
     return word_counts
-
-def get_unique_words(text: Optional[str], use_stop_words: bool = False) -> List[str]:
-    """Get list of unique words in text."""
-    # This function now also considers stop words if the flag is passed.
-    # However, analyze_text_complete will derive unique words from its already processed word_counts.
-    word_counts: Counter[str] = count_words(text, use_stop_words=use_stop_words)
-    return sorted(word_counts.keys())
 
 def get_word_count_stats(word_counts: Counter[str]) -> Dict[str, Any]:
     """Calculate statistics from word counts."""
@@ -432,7 +435,9 @@ def analyze_text_complete(
             'word_analysis': {},
             'sentence_analysis': {},
             'general_stats': {},
-            'processed_tokens': [] # Ensure processed_tokens is always in the return structure
+            'processed_tokens': [],
+            'readability_stats': {}, # Add new keys to default error return
+            'interesting_patterns': {}
         }
     
     try:
@@ -452,6 +457,7 @@ def analyze_text_complete(
         
         final_word_counts: Counter[str] = Counter(processed_tokens)
         word_stats: Dict[str, Any] = get_word_count_stats(final_word_counts)
+        # Unique words list is derived directly from final_word_counts
         unique_words_list: List[str] = sorted(final_word_counts.keys()) if final_word_counts else []
             
         char_count: int = len(text) # Raw text length
@@ -468,6 +474,20 @@ def analyze_text_complete(
         # Ensure num_common_words_to_display is not negative
         num_to_display = max(0, num_common_words_to_display)
 
+        # Calculate readability and patterns here
+        readability_stats_result: Dict[str, Any] = {}
+        interesting_patterns_result: Dict[str, Any] = {}
+        if final_word_counts: # Only calculate if there are words
+            readability_stats_result = calculate_readability_stats(
+                text, # Original text
+                final_word_counts,
+                sentence_stats
+            )
+            interesting_patterns_result = find_interesting_patterns(
+                final_word_counts,
+                text # Original text
+            )
+
         return {
             'word_analysis': {
                 'word_frequencies': dict(final_word_counts.most_common(num_to_display)),
@@ -478,7 +498,9 @@ def analyze_text_complete(
             'processed_tokens': processed_tokens, 
             'sentence_analysis': sentence_stats,
             'general_stats': general_stats,
-            'original_text': text 
+            'original_text': text,
+            'readability_stats': readability_stats_result, # Add to return
+            'interesting_patterns': interesting_patterns_result # Add to return
         }
         
     except Exception as e:
@@ -489,7 +511,9 @@ def analyze_text_complete(
             'word_analysis': {},
             'sentence_analysis': {},
             'general_stats': {},
-            'processed_tokens': [] # Ensure processed_tokens is always in the return structure
+            'processed_tokens': [],
+            'readability_stats': {}, # Add new keys to default error return
+            'interesting_patterns': {}
         }
 
 # =============================================================================
@@ -730,22 +754,19 @@ def display_complete_analysis(analysis_results: Dict[str, Any]) -> None:
         display_sentence_analysis(analysis_results['sentence_analysis'])
     
     if 'word_analysis' in analysis_results and 'sentence_analysis' in analysis_results:
-        full_word_counts: Counter[str] = analysis_results.get('word_analysis',{}).get('full_word_counts_obj', Counter())
-
-        if full_word_counts:
-            text_for_readability: str = analysis_results.get('original_text', '') 
-            readability_stats: Dict[str, Any] = calculate_readability_stats(
-                text_for_readability, 
-                full_word_counts, 
-                analysis_results['sentence_analysis']
-            )
-            display_readability_analysis(readability_stats)
-            
-            patterns: Dict[str, Any] = find_interesting_patterns(full_word_counts, text_for_readability)
-            display_interesting_patterns(patterns)
+        # Use pre-calculated readability and patterns
+        readability_stats_data = analysis_results.get('readability_stats', {})
+        if readability_stats_data:
+            display_readability_analysis(readability_stats_data)
         else:
-            print("\nℹ️ Full word counts not available for readability and pattern analysis.")
+            print("\nℹ️ Readability stats not available.")
 
+        patterns_data = analysis_results.get('interesting_patterns', {})
+        if patterns_data:
+            display_interesting_patterns(patterns_data)
+        else:
+            print("\nℹ️ Interesting patterns not available.")
+            
     print_section("✅ Analysis Complete")
     print("📝 Report generated successfully!")
 
@@ -905,6 +926,100 @@ def run_comprehensive_test() -> bool:
     return all_passed
 
 
+def _handle_analyze_file_option() -> None:
+    """Handles the logic for menu option 1: Analyze Text File."""
+    # Filepath is now fixed for this option.
+    filepath_config: str = str(FIXED_TARGET_FILEPATH)
+    print(f"ℹ️ Analyzing fixed file: {filepath_config}")
+
+    num_common_words_config: int
+    use_stop_words_config: bool
+    num_common_words_config, use_stop_words_config = get_user_input_config()
+    
+    # Validate the fixed filepath
+    is_valid_path, path_message = validate_file_path(filepath_config)
+    if not is_valid_path:
+        print(f"❌ Error with fixed file path '{filepath_config}': {path_message}")
+        print("Please ensure 's.txt' exists in the script directory.")
+        print("Returning to main menu.")
+        return
+
+    content: str = read_file(filepath_config)
+    
+    if not content:
+        print(f"❌ No content loaded from '{filepath_config}' (file might be empty or unreadable). Returning to main menu.")
+        return
+    
+    print("\n🔄 Running complete analysis...")
+    pipeline_start_time = time.time() # Start timing for M4C
+
+    if use_stop_words_config:
+        print("ℹ️ Stop word removal is ON.")
+    else:
+        print("ℹ️ Stop word removal is OFF.")
+    
+    results = analyze_text_complete(content, 
+                                    use_stop_words=use_stop_words_config, 
+                                    num_common_words_to_display=num_common_words_config)
+    
+    pipeline_end_time = time.time() # End timing for M4C
+    print(f"\n⏱️ Total processing pipeline took: {pipeline_end_time - pipeline_start_time:.4f} seconds")
+
+    if 'error' in results and results['error']:
+        print(f"❌ Analysis error: {results['error']}")
+        return
+    
+    # Display options
+    print("\n📊 Analysis complete! Choose display format:")
+    print("1. Complete Report")
+    print("2. Quick Summary")
+    print("3. Both")
+    
+    display_choice_input = input("Enter choice (1-3): ").strip() # Renamed variable
+    
+    if display_choice_input == "1":
+        display_complete_analysis(results)
+    elif display_choice_input == "2":
+        display_summary(results)
+    elif display_choice_input == "3":
+        display_summary(results)
+        display_complete_analysis(results)
+    else: # Default to summary if invalid choice
+        print("⚠️ Invalid display choice, showing summary:")
+        display_summary(results)
+
+    # Word Length Analysis display (M4C)
+    processed_tokens_for_length_analysis = results.get('processed_tokens', [])
+    if processed_tokens_for_length_analysis:
+        analyze_word_lengths(processed_tokens_for_length_analysis)
+    # No specific "else" needed here, analyze_word_lengths handles empty tokens.
+
+    # Ask to save results
+    if 'word_analysis' in results and results['word_analysis'].get('full_word_counts_obj'):
+        while True:
+            save_choice = input("\n💾 Save analysis results to file? (yes/no, default: no): ").strip().lower()
+            if not save_choice or save_choice == 'no':
+                break
+            elif save_choice == 'yes':
+                default_output_filename = "analysis_results.txt"
+                output_filename_input = input(f"Enter output filename (default: {default_output_filename}): ").strip()
+                if not output_filename_input:
+                    output_filename_input = default_output_filename
+                
+                # Prepare data for save_results_to_file
+                freq_counter = results['word_analysis']['full_word_counts_obj']
+                # num_common_words_config is the number of words user wanted to *display*
+                # For saving, we can use the same or decide on a fixed number, e.g., all or top N.
+                # Let's use num_common_words_config for consistency with display.
+                n_to_save = num_common_words_config 
+                unique_count_to_save = len(freq_counter)
+                
+                save_results_to_file(freq_counter, n_to_save, unique_count_to_save, output_filename_input)
+                break
+            else:
+                print("⚠️ Invalid choice. Please enter 'yes' or 'no'.")
+
+
 def main() -> None:
     """Main execution function - Complete integrated application."""
     print_header("🚀 TEXT ANALYZER - COMPLETE VERSION 🚀")
@@ -916,111 +1031,86 @@ def main() -> None:
             print("\n" + "="*50)
             print("📋 Main Menu")
             print("="*50)
-            print("1. 📊 Analyze Text File")
-            print("2. 🧪 Run System Tests")
-            print("3. ❓ Help & Information")
-            print("4. 🚪 Exit")
+            print("1. 📊 Analyze Fixed Text File (s.txt)") 
+            print("2. 📂 Analyze Custom Text File") # New menu option
+            print("3. 🧪 Run System Tests")
+            print("4. ❓ Help & Information")
+            print("5. 🚪 Exit")
             print("="*50)
             
-            choice = input("Enter your choice (1-4): ").strip()
+            choice = input("Enter your choice (1-5): ").strip()
             
             if choice == "1":
-                # Main analysis workflow
-                # Filepath is now fixed for this option.
-                filepath_config: str = str(FIXED_TARGET_FILEPATH)
-                print(f"ℹ️ Analyzing fixed file: {filepath_config}")
-
-                num_common_words_config: int
-                use_stop_words_config: bool
-                num_common_words_config, use_stop_words_config = get_user_input_config()
-                
-                # Validate the fixed filepath
-                is_valid_path, path_message = validate_file_path(filepath_config)
-                if not is_valid_path:
-                    print(f"❌ Error with fixed file path '{filepath_config}': {path_message}")
-                    print("Please ensure 's.txt' exists in the script directory.")
-                    print("Returning to main menu.")
-                    continue
-
-                content: str = read_file(filepath_config)
-                
-                if not content:
-                    print(f"❌ No content loaded from '{filepath_config}' (file might be empty or unreadable). Returning to main menu.")
-                    continue
-                
-                print("\n🔄 Running complete analysis...")
-                pipeline_start_time = time.time() # Start timing for M4C
-
-                if use_stop_words_config:
-                    print("ℹ️ Stop word removal is ON.")
-                else:
-                    print("ℹ️ Stop word removal is OFF.")
-                
-                results = analyze_text_complete(content, 
-                                                use_stop_words=use_stop_words_config, 
-                                                num_common_words_to_display=num_common_words_config)
-                
-                pipeline_end_time = time.time() # End timing for M4C
-                print(f"\n⏱️ Total processing pipeline took: {pipeline_end_time - pipeline_start_time:.4f} seconds")
-
-                if 'error' in results and results['error']:
-                    print(f"❌ Analysis error: {results['error']}")
-                    continue 
-                
-                # Display options
-                print("\n📊 Analysis complete! Choose display format:")
-                print("1. Complete Report")
-                print("2. Quick Summary")
-                print("3. Both")
-                
-                display_choice_input = input("Enter choice (1-3): ").strip() # Renamed variable
-                
-                if display_choice_input == "1":
-                    display_complete_analysis(results)
-                elif display_choice_input == "2":
-                    display_summary(results)
-                elif display_choice_input == "3":
-                    display_summary(results)
-                    display_complete_analysis(results)
-                else: # Default to summary if invalid choice
-                    print("⚠️ Invalid display choice, showing summary:")
-                    display_summary(results)
-
-                # Word Length Analysis display (M4C)
-                processed_tokens_for_length_analysis = results.get('processed_tokens', [])
-                if processed_tokens_for_length_analysis:
-                    analyze_word_lengths(processed_tokens_for_length_analysis)
-                # No specific "else" needed here, analyze_word_lengths handles empty tokens.
-
-                # Ask to save results
-                if 'word_analysis' in results and results['word_analysis'].get('full_word_counts_obj'):
-                    while True:
-                        save_choice = input("\n💾 Save analysis results to file? (yes/no, default: no): ").strip().lower()
-                        if not save_choice or save_choice == 'no':
-                            break
-                        elif save_choice == 'yes':
-                            default_output_filename = "analysis_results.txt"
-                            output_filename_input = input(f"Enter output filename (default: {default_output_filename}): ").strip()
-                            if not output_filename_input:
-                                output_filename_input = default_output_filename
-                            
-                            # Prepare data for save_results_to_file
-                            freq_counter = results['word_analysis']['full_word_counts_obj']
-                            # num_common_words_config is the number of words user wanted to *display*
-                            # For saving, we can use the same or decide on a fixed number, e.g., all or top N.
-                            # Let's use num_common_words_config for consistency with display.
-                            n_to_save = num_common_words_config 
-                            unique_count_to_save = len(freq_counter)
-                            
-                            save_results_to_file(freq_counter, n_to_save, unique_count_to_save, output_filename_input)
-                            break
-                        else:
-                            print("⚠️ Invalid choice. Please enter 'yes' or 'no'.")
+                _handle_analyze_file_option()
             
-            elif choice == "2":
+            elif choice == "2": # New handler for custom file
+                custom_filepath_content = load_text_file()
+                if custom_filepath_content:
+                    num_common_words_cfg, use_stop_words_cfg = get_user_input_config()
+                    print("\n🔄 Running complete analysis...")
+                    pipeline_start_time = time.time()
+                    if use_stop_words_cfg:
+                        print("ℹ️ Stop word removal is ON.")
+                    else:
+                        print("ℹ️ Stop word removal is OFF.")
+                    
+                    results = analyze_text_complete(
+                        custom_filepath_content,
+                        use_stop_words=use_stop_words_cfg,
+                        num_common_words_to_display=num_common_words_cfg
+                    )
+                    pipeline_end_time = time.time()
+                    print(f"\n⏱️ Total processing pipeline took: {pipeline_end_time - pipeline_start_time:.4f} seconds")
+
+                    if 'error' in results and results['error']:
+                        print(f"❌ Analysis error: {results['error']}")
+                    else:
+                        # Display options
+                        print("\n📊 Analysis complete! Choose display format:")
+                        print("1. Complete Report")
+                        print("2. Quick Summary")
+                        print("3. Both")
+                        display_choice = input("Enter choice (1-3): ").strip()
+                        if display_choice == "1":
+                            display_complete_analysis(results)
+                        elif display_choice == "2":
+                            display_summary(results)
+                        elif display_choice == "3":
+                            display_summary(results)
+                            display_complete_analysis(results)
+                        else:
+                            print("⚠️ Invalid display choice, showing summary:")
+                            display_summary(results)
+
+                        processed_tokens_len_analysis = results.get('processed_tokens', [])
+                        if processed_tokens_len_analysis:
+                            analyze_word_lengths(processed_tokens_len_analysis)
+
+                        if 'word_analysis' in results and results['word_analysis'].get('full_word_counts_obj'):
+                            while True:
+                                save_choice = input("\n💾 Save analysis results to file? (yes/no, default: no): ").strip().lower()
+                                if not save_choice or save_choice == 'no':
+                                    break
+                                elif save_choice == 'yes':
+                                    default_out_fn = "custom_analysis_results.txt"
+                                    out_fn_input = input(f"Enter output filename (default: {default_out_fn}): ").strip()
+                                    if not out_fn_input:
+                                        out_fn_input = default_out_fn
+                                    
+                                    freq_ctr = results['word_analysis']['full_word_counts_obj']
+                                    n_save = num_common_words_cfg
+                                    unique_save = len(freq_ctr)
+                                    save_results_to_file(freq_ctr, n_save, unique_save, out_fn_input)
+                                    break
+                                else:
+                                    print("⚠️ Invalid choice. Please enter 'yes' or 'no'.")
+                else:
+                    print("❌ No content loaded from custom file. Returning to main menu.")
+
+            elif choice == "3":
                 run_comprehensive_test()
             
-            elif choice == "3":
+            elif choice == "4":
                 print_header("❓ HELP & INFORMATION ❓")
                 print("This text analyzer can process any UTF-8 text file and provide:")
                 print("• Word frequency analysis (optionally with stop word removal)")
@@ -1032,15 +1122,15 @@ def main() -> None:
                 print("• Use plain text files (.txt)")
                 print("• Keep files under 10MB")
                 print("• Ensure UTF-8 encoding")
-                # print("• Place files in the same directory as this script or provide path") # Already handled by input
+                # print("• Place files in the same directory as this script or provide path") 
             
-            elif choice == "4":
+            elif choice == "5":
                 print("\n👋 Thank you for using Text Analyzer!")
                 print("🎉 Module 3 series complete! Module 4 enhancements started.")
                 break
             
             else:
-                print("❌ Invalid choice. Please enter 1-4.")
+                print("❌ Invalid choice. Please enter 1-5.")
         
         except KeyboardInterrupt:
             print("\n\n⚠️ Interrupted by user. Exiting.")

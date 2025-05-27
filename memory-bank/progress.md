@@ -27,7 +27,7 @@ This document outlines what currently works, what is left to build, the current 
     * Reviewed Module 5 documentation.
     * Installed NLTK and spaCy libraries and necessary data/models.
     * Created and executed `text_analyzer/explore_nlp_libraries.py`.
-  * **Refactoring for Pythonic Best Practices (Current Session)**: Applied type hints, defined module-level constants, standardized path handling with `pathlib`, consolidated text cleaning functions, and fixed the main analysis input file to `text_analyzer/s.txt`.
+  * **Refactoring for Pythonic Best Practices (Current Session)**: Applied type hints, defined module-level constants, standardized path handling with `pathlib`, consolidated text cleaning functions, centralized all analysis logic within `analyze_text_complete()`, refactored `main()` for better menu handling (including adding a custom file analysis option), removed redundant functions, and pre-compiled regular expressions. The main analysis input file for one menu option remains `text_analyzer/s.txt`.
 
 * **Git Branch Visualizer Project (`branch_visualizer.py`) - On `main` branch**:
   * The script is functional for its core purpose of generating Mermaid `gitGraph` syntax for local branches.
@@ -47,8 +47,28 @@ This document outlines what currently works, what is left to build, the current 
 ## What's Left to Build
 
 * **Text Analyzer Project (`analyzer.py`)**:
-  * Continue with Module 5C "Immediate Next Steps" (Step 2: Experiment with Real-World Data, or Step 3: Build an Enhanced Version).
-  * Potential future enhancements (beyond the current lesson plan) as previously listed (e.g., advanced NLP tasks, GUI, different file formats, automated testing).
+  * **Continue with Module 5C "Immediate Next Steps"**:
+    * Step 2: Experiment with Real-World Data.
+    * Step 3: Build an Enhanced Version of the Project or a New Small Project.
+  * **Pending Refactorings/Improvements (from recent code review)**:
+    *   **Major Structural:**
+        *   Split `analyzer.py` into multiple, more focused Python modules (e.g., `file_utils.py`, `text_processing.py`, etc.).
+        *   Further refactor `main()`: Extract logic for the "Analyze Custom Text File" menu option into its own helper function.
+    *   **Functional/Clarity:**
+        *   Consider more descriptive names for `clean_text_for_sentence_analysis` and `clean_text`.
+        *   Simplify `get_filename_from_user()` path resolution logic.
+    *   **Robustness/Testing:**
+        *   Improve `run_comprehensive_test()` with specific assertions against known inputs/outputs.
+        *   (Long-term) Consider transitioning to a formal testing framework (e.g., `pytest`).
+        *   Implement more specific exception handling where generic `except Exception` is used.
+    *   **Minor/Configurability:**
+        *   Make `time_function` output (internal print) configurable or return duration for conditional printing.
+        *   Parameterize or use constants for hardcoded numerical values in functions like `get_word_count_stats` (e.g., `most_common(5)`) and `find_interesting_patterns` (slice limits).
+  * **Potential Future Enhancements (beyond current lesson plan/review)**:
+    * Advanced NLP tasks (sentiment analysis, topic modeling).
+    * GUI implementation.
+    * Support for different file formats (PDF, DOCX).
+    * More sophisticated automated testing.
 * **Git Branch Visualizer Project (`branch_visualizer.py`)**:
   * Potential future enhancements as previously listed (e.g., robust error handling, remote branch visualization, alternative layouts, user arguments).
 
@@ -87,4 +107,4 @@ This document outlines what currently works, what is left to build, the current 
   * **Updated `develop` branch from `main` and pushed to `origin/develop`.**
   * Currently updating Memory Bank files (`activeContext.md`, `progress.md`, `techContext.md`) to reflect this major integration and current project state.
   * **Resolved markdownlint errors across the project.**
-  * **Refactored `analyzer.py` for Pythonic best practices (type hinting, constants, path handling, cleaning function consolidation, fixed input file).**
+  * **Refactored `analyzer.py` for Pythonic best practices (Current Session)**: This involved updates to type hinting, constants, path handling, cleaning function consolidation, centralization of analysis logic in `analyze_text_complete()`, `main()` menu refactoring (including adding a custom file analysis option), removal of redundant functions, and pre-compilation of regular expressions.
