@@ -11,41 +11,73 @@ import string
 from pathlib import Path
 from collections import Counter
 import time # Added for Module 4C
+from typing import Optional, List, Dict, Tuple, Set, Any, Union # For type hints
+
+# =============================================================================
+# MODULE-LEVEL CONSTANTS
+# =============================================================================
+MAX_FILE_SIZE_BYTES: int = 10 * 1024 * 1024  # 10MB
+MAX_INPUT_ATTEMPTS: int = 3
+DEFAULT_TOP_WORDS_DISPLAY: int = 10
+PREVIEW_LENGTH: int = 100
+
+# Path constants
+SCRIPT_DIRECTORY: Path = Path(__file__).resolve().parent
+DEFAULT_SAMPLE_FILENAME: str = "sample.txt" # Relative to script directory
+DEFAULT_RESULTS_FILENAME: str = "analysis_results.txt"
+# Construct full default path for sample.txt, assuming it's in the same dir as the script
+DEFAULT_SAMPLE_FILEPATH: Path = SCRIPT_DIRECTORY / DEFAULT_SAMPLE_FILENAME
+
+# Fixed target file for automatic analysis as per user request
+FIXED_TARGET_FILENAME: str = "s.txt"
+FIXED_TARGET_FILEPATH: Path = SCRIPT_DIRECTORY / FIXED_TARGET_FILENAME
+
+# Stop words set (moved from remove_stop_words function)
+STOP_WORDS: Set[str] = {
+    'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+    'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
+    'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could',
+    'should', 'may', 'might', 'must', 'can', 'this', 'that', 'these',
+    'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him',
+    'her', 'us', 'them'
+}
 
 # =============================================================================
 # FILE I/O FUNCTIONS (Module 3B from original structure)
 # =============================================================================
 
-def validate_file_path(filename):
+def validate_file_path(filename: Union[str, Path]) -> Tuple[bool, str]:
     """Validate that a file path is safe and accessible."""
     try:
-        file_path = Path(filename)
+        file_path: Path = Path(filename).resolve() # Resolve the path to make it absolute and normalized
         
-        if file_path.is_absolute() and not file_path.is_relative_to(Path.cwd()):
-            return False, "For security, please use files in the current directory"
+        # The previous security check for absolute paths outside CWD has been removed
+        # to allow users to specify any valid absolute file path.
+        # OS-level permissions will handle access control.
         
         if not file_path.exists():
-            return False, f"File '{filename}' does not exist"
+            return False, f"File '{file_path}' does not exist"
         
         if not file_path.is_file():
-            return False, f"'{filename}' is not a file"
+            return False, f"'{file_path}' is not a file"
         
-        file_size = file_path.stat().st_size
-        max_size = 10 * 1024 * 1024  # 10MB
-        if file_size > max_size:
-            return False, f"File too large ({file_size} bytes). Maximum: {max_size} bytes"
+        file_size: int = file_path.stat().st_size
+        if file_size > MAX_FILE_SIZE_BYTES:
+            return False, f"File too large ({file_size} bytes). Maximum: {MAX_FILE_SIZE_BYTES} bytes"
         
         return True, "File validation passed"
         
     except Exception as e:
-        return False, f"Error validating file: {e}"
+        return False, f"Error validating file '{filename}': {e}"
 
-def read_file(filename):
+def read_file(filename: Union[str, Path]) -> str: # Return empty string on error, not Optional[str] as per original logic
     """Read text from a file with comprehensive error handling."""
     try:
-        with open(filename, 'r', encoding='utf-8') as file:
-            content = file.read()
-            print(f"✅ Successfully read file: {filename}")
+        # Ensure filename is a Path object for open()
+        file_to_read: Path = Path(filename)
+        with open(file_to_read, 'r', encoding='utf-8') as file:
+            content: str = file.read()
+            print(f"✅ Successfully read file: {file_to_read}")
             print(f"📄 File size: {len(content)} characters")
             return content
             
@@ -74,34 +106,59 @@ def read_file(filename):
         print("💡 Please try again or contact support.")
         return ""
 
-def get_filename_from_user():
+def get_filename_from_user() -> str: # Returns Path object as string or empty string
     """Get filename from user with input validation and retry logic."""
-    max_attempts = 3
-    attempts = 0
+    attempts: int = 0
     
-    while attempts < max_attempts:
+    while attempts < MAX_INPUT_ATTEMPTS:
         try:
-            print(f"\n📂 Enter filename (attempt {attempts + 1}/{max_attempts}):")
-            print("💡 Tip: Use 'sample.txt' for testing")
+            print(f"\n📂 Enter filename (attempt {attempts + 1}/{MAX_INPUT_ATTEMPTS}):")
+            # Using str() for display if DEFAULT_SAMPLE_FILEPATH is Path
+            print(f"💡 Tip: Use '{DEFAULT_SAMPLE_FILEPATH.name}' for testing (located in script directory)")
             print("💡 Type 'quit' to exit")
             
-            filename = input("Filename: ").strip()
+            filename_str: str = input("Filename: ").strip()
             
-            if filename.lower() in ['quit', 'exit', 'q']:
+            if filename_str.lower() in ['quit', 'exit', 'q']:
                 print("👋 Goodbye!")
                 return ""
             
-            if not filename:
-                print("⚠️  Please enter a filename")
+            if not filename_str:
+                print("⚠️  Please enter a filename.")
                 attempts += 1
                 continue
             
-            is_valid, message = validate_file_path(filename)
+            # Construct path relative to script dir if not absolute, or use as is if absolute
+            input_path: Path = Path(filename_str)
+            path_to_validate: Path
+            if input_path.is_absolute():
+                path_to_validate = input_path
+            else:
+                # Assume relative to script directory if not absolute,
+                # or could be relative to CWD. For consistency with DEFAULT_SAMPLE_FILEPATH,
+                # let's assume relative to script dir if simple name, else CWD.
+                # This logic can be tricky. For now, let's assume CWD for relative paths.
+                path_to_validate = Path.cwd() / input_path
+
+
+            is_valid, message = validate_file_path(path_to_validate)
             if is_valid:
                 print(f"✅ {message}")
-                return filename
+                return str(path_to_validate) # Return as string
             else:
-                print(f"❌ {message}")
+                # If validation failed for CWD relative, try SCRIPT_DIRECTORY relative for simple names
+                if not input_path.is_absolute() and not os.path.sep in filename_str : # simple filename
+                    path_to_validate_script_dir = SCRIPT_DIRECTORY / input_path
+                    is_valid_script_dir, message_script_dir = validate_file_path(path_to_validate_script_dir)
+                    if is_valid_script_dir:
+                        print(f"✅ {message_script_dir} (found in script directory)")
+                        return str(path_to_validate_script_dir)
+                    else:
+                        print(f"❌ {message} (checked in CWD)")
+                        # Optionally print message_script_dir if different and more informative
+                        # print(f"❌ Also not valid in script directory: {message_script_dir}")
+                else:
+                     print(f"❌ {message}")
                 attempts += 1
                 
         except KeyboardInterrupt:
@@ -111,34 +168,29 @@ def get_filename_from_user():
             print(f"❌ Error getting input: {e}")
             attempts += 1
     
-    print(f"\n❌ Maximum attempts ({max_attempts}) reached")
+    print(f"\n❌ Maximum attempts ({MAX_INPUT_ATTEMPTS}) reached")
     return ""
 
-def get_user_input_config():
+def get_user_input_config() -> Tuple[str, int, bool]:
     """
     Gets configuration from user input. (Enhancement 2 from Module 4B)
+    It no longer asks for filepath, as that's fixed for the main analysis option.
     
     Returns:
-        tuple: (filepath, num_words, enable_stop_words)
+        tuple: (num_words, enable_stop_words)
     """
     print("\n--- ⚙️ Text Analysis Configuration ---")
     
-    # Default filepath to the sample file within the text_analyzer directory
-    default_filepath = "text_analyzer/sample.txt"
-    filepath_prompt = f"Enter path to text file (default: {default_filepath}): "
-    filepath = input(filepath_prompt).strip()
-    if not filepath:
-        filepath = default_filepath
+    # Filepath is no longer asked here, it will be fixed in main() for option 1.
     
-    num_words = 10 # Default
+    num_words: int = DEFAULT_TOP_WORDS_DISPLAY
     while True:
         try:
-            num_words_str = input(f"Number of top words to display (default: {num_words}): ").strip()
-            if not num_words_str:
-                # num_words remains default
+            num_words_str_input: str = input(f"Number of top words to display (default: {num_words}): ").strip()
+            if not num_words_str_input:
                 break
             else:
-                num_words_val = int(num_words_str)
+                num_words_val: int = int(num_words_str_input)
                 if num_words_val <= 0:
                     print("⚠️ Please enter a positive number for top words.")
                     continue
@@ -147,13 +199,12 @@ def get_user_input_config():
         except ValueError:
             print("⚠️ Invalid input. Please enter a number.")
             
-    enable_stop_words = True # Default
+    enable_stop_words: bool = True # Default
     while True:
-        default_sw_choice_str = 'yes' if enable_stop_words else 'no'
-        stop_words_prompt = f"Remove stop words? (yes/no, default: {default_sw_choice_str}): "
-        stop_words_choice = input(stop_words_prompt).strip().lower()
+        default_sw_choice_str: str = 'yes' if enable_stop_words else 'no'
+        stop_words_prompt: str = f"Remove stop words? (yes/no, default: {default_sw_choice_str}): "
+        stop_words_choice: str = input(stop_words_prompt).strip().lower()
         if not stop_words_choice:
-            # enable_stop_words remains default
             break
         elif stop_words_choice == 'yes':
             enable_stop_words = True
@@ -164,25 +215,26 @@ def get_user_input_config():
         else:
             print("⚠️ Invalid choice. Please enter 'yes' or 'no'.")
             
-    return filepath, num_words, enable_stop_words
+    return num_words, enable_stop_words
 
-def load_text_file():
+def load_text_file() -> str: # Returns content as string or empty string
     """Complete file loading workflow with user interaction."""
     print("🚀 Text File Loader")
     print("=" * 30)
     
-    filename = get_filename_from_user()
-    if not filename:
+    filename_str: str = get_filename_from_user()
+    if not filename_str:
         return ""
     
-    content = read_file(filename)
+    # filename_str from get_filename_from_user should be a validated, existing path string
+    content: str = read_file(filename_str) # read_file expects str or Path
     
     if content:
-        preview_length = 100
-        if len(content) > preview_length:
-            preview = content[:preview_length] + "..."
+        # PREVIEW_LENGTH is now a constant
+        if len(content) > PREVIEW_LENGTH:
+            preview: str = content[:PREVIEW_LENGTH] + "..."
         else:
-            preview = content
+            preview: str = content
         
         print(f"\n📖 File Preview:")
         print("-" * 20)
@@ -195,35 +247,35 @@ def load_text_file():
 # TEXT PROCESSING FUNCTIONS (Module 3C / Enhanced in 4B & 4C)
 # =============================================================================
 
-def clean_text_for_sentence_analysis(text): # Renamed from clean_text for M4C
+def clean_text_for_sentence_analysis(text: Optional[str]) -> str:
     """Clean and preprocess text lightly, preserving sentence structures for analysis."""
-    if not text or not isinstance(text, str):
+    if not text or not isinstance(text, str): # isinstance check is good
         return ""
     
-    cleaned = text.lower()
+    cleaned_text: str = text.lower()
     # Normalize whitespace but try to keep sentence-relevant punctuation
-    cleaned = ' '.join(cleaned.split()) 
+    cleaned_text = ' '.join(cleaned_text.split())
     # This regex was designed to keep sentence delimiters.
-    cleaned = re.sub(r'[^\w\s.,!?;:\'-]', '', cleaned) # Kept ' for contractions.
+    cleaned_text = re.sub(r'[^\w\s.,!?;:\'-]', '', cleaned_text) # Kept ' for contractions.
     
-    return cleaned
+    return cleaned_text
 
-def clean_text(text, advanced=False): # New from Module 4C
+def clean_text(text: Optional[str], advanced: bool = False) -> str: # New from Module 4C
     """
     Converts text to lowercase and removes ALL punctuation.
     If advanced is True, also removes URLs, emails, and optionally numbers.
     
     Args:
-        text (str): Input text
+        text (Optional[str]): Input text
         advanced (bool): Flag to enable advanced cleaning
         
     Returns:
         str: Cleaned text
     """
-    if text is None:
+    if text is None: # Explicit check for None
         return ""
     
-    processed_text = text.lower() # Keep 'text' as original for sequential regex
+    processed_text: str = text.lower() # Keep 'text' as original for sequential regex
     
     if advanced:
         # Remove URLs
@@ -244,75 +296,59 @@ def clean_text(text, advanced=False): # New from Module 4C
     
     return processed_text
 
-def clean_text_for_words(text):
-    """Clean text specifically for word analysis (removes punctuation)."""
-    if not text:
-        return ""
-    
-    translator = str.maketrans('', '', string.punctuation)
-    cleaned = text.translate(translator)
-    cleaned = ' '.join(cleaned.split()) # Normalize whitespace again
-    
-    return cleaned.lower()
+# clean_text_for_words is being removed. Its functionality will be covered by
+# clean_text(text, advanced=False)
 
-def tokenize_text(text): # Added back - was missing
+def tokenize_text(text: Optional[str]) -> List[str]:
     """Splits text into a list of words (tokens)."""
-    if not text:
+    if not text: # Handles None or empty string
         return []
     return text.split()
 
-def remove_stop_words(tokens):
+def remove_stop_words(tokens: List[str]) -> List[str]:
     """
     Removes common stop words from a list of tokens. (Enhancement 1 from Module 4B)
     
     Args:
-        tokens (list): List of word tokens
+        tokens (List[str]): List of word tokens
         
     Returns:
-        list: Filtered list without stop words
+        List[str]: Filtered list without stop words
     """
-    # Common English stop words
-    stop_words = {
-        'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 
-        'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
-        'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could',
-        'should', 'may', 'might', 'must', 'can', 'this', 'that', 'these', 
-        'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 
-        'her', 'us', 'them'
-    }
-    
-    original_token_count = len(tokens)
-    filtered_tokens = [token for token in tokens if token not in stop_words]
-    removed_count = original_token_count - len(filtered_tokens)
+    # Uses module-level STOP_WORDS constant
+    original_token_count: int = len(tokens)
+    filtered_tokens: List[str] = [token for token in tokens if token not in STOP_WORDS]
+    removed_count: int = original_token_count - len(filtered_tokens)
     if removed_count > 0 : # Only print if words were actually removed
         print(f"ℹ️ Removed {removed_count} stop words.")
     return filtered_tokens
 
-def count_words(text, use_stop_words=False): # Added use_stop_words parameter
+def count_words(text: Optional[str], use_stop_words: bool = False) -> Counter[str]:
     """Count word frequencies in text."""
     if not text:
         return Counter()
     
-    cleaned_text = clean_text_for_words(text)
-    words = cleaned_text.split()
+    # Use clean_text with advanced=False to replicate clean_text_for_words functionality
+    cleaned_text: str = clean_text(text, advanced=False) 
+    words: List[str] = cleaned_text.split() # clean_text already handles stripping and whitespace normalization
     words = [word for word in words if len(word) > 0] # Filter out empty strings
 
     if use_stop_words:
-        words = remove_stop_words(words)
+        words = remove_stop_words(words) # remove_stop_words expects List[str]
         
-    word_counts = Counter(words)
+    word_counts: Counter[str] = Counter(words)
     return word_counts
 
-def get_unique_words(text, use_stop_words=False): # Added use_stop_words to keep interface consistent if called elsewhere
+def get_unique_words(text: Optional[str], use_stop_words: bool = False) -> List[str]:
     """Get list of unique words in text."""
     # This function now also considers stop words if the flag is passed.
     # However, analyze_text_complete will derive unique words from its already processed word_counts.
-    word_counts = count_words(text, use_stop_words=use_stop_words)
+    word_counts: Counter[str] = count_words(text, use_stop_words=use_stop_words)
     return sorted(word_counts.keys())
 
-def get_word_count_stats(word_counts):
+def get_word_count_stats(word_counts: Counter[str]) -> Dict[str, Any]:
     """Calculate statistics from word counts."""
-    if not word_counts:
+    if not word_counts: # Check if the Counter is empty
         return {
             'total_words': 0,
             'unique_words': 0,
@@ -320,10 +356,11 @@ def get_word_count_stats(word_counts):
             'average_frequency': 0
         }
     
-    total_words = sum(word_counts.values())
-    unique_words = len(word_counts)
-    most_common = word_counts.most_common(5) # From Module 3E, used for summary
-    average_frequency = total_words / unique_words if unique_words > 0 else 0
+    total_words: int = sum(word_counts.values())
+    unique_words: int = len(word_counts)
+    # most_common returns List[Tuple[str, int]]
+    most_common: List[Tuple[str, int]] = word_counts.most_common(5) # From Module 3E, used for summary
+    average_frequency: float = total_words / unique_words if unique_words > 0 else 0.0
     
     return {
         'total_words': total_words,
@@ -332,48 +369,49 @@ def get_word_count_stats(word_counts):
         'average_frequency': round(average_frequency, 2)
     }
 
-def count_sentences(text):
+def count_sentences(text: Optional[str]) -> int:
     """Count sentences in text."""
     if not text:
         return 0
     
-    sentences = re.split(r'[.!?]+', text)
+    # re.split returns List[str]
+    sentences: List[str] = re.split(r'[.!?]+', text)
     sentences = [s.strip() for s in sentences if s.strip()]
     
     return len(sentences)
 
-def analyze_sentences(text):
+def analyze_sentences(text: Optional[str]) -> Dict[str, Any]:
     """Analyze sentence structure in text."""
     if not text:
         return {
             'sentence_count': 0,
-            'average_words_per_sentence': 0,
+            'average_words_per_sentence': 0.0,
             'longest_sentence': '',
             'shortest_sentence': ''
         }
     
-    sentences = re.split(r'[.!?]+', text) # Uses original text before heavy cleaning
+    sentences: List[str] = re.split(r'[.!?]+', text) # Uses original text before heavy cleaning
     sentences = [s.strip() for s in sentences if s.strip()]
     
     if not sentences:
         return {
             'sentence_count': 0,
-            'average_words_per_sentence': 0,
+            'average_words_per_sentence': 0.0,
             'longest_sentence': '',
             'shortest_sentence': ''
         }
     
-    sentence_word_counts = []
-    for sentence in sentences:
-        # For sentence word counts, use clean_text_for_words to get a reasonable word split
-        words_in_sentence = clean_text_for_words(sentence).split()
+    sentence_word_counts: List[int] = []
+    for sentence_str in sentences: # Renamed sentence to sentence_str to avoid conflict
+        # For sentence word counts, use clean_text(advanced=False) to get a reasonable word split
+        words_in_sentence: List[str] = clean_text(sentence_str, advanced=False).split()
         words_in_sentence = [word for word in words_in_sentence if len(word) > 0]
         sentence_word_counts.append(len(words_in_sentence))
     
-    average_words = sum(sentence_word_counts) / len(sentence_word_counts) if sentence_word_counts else 0
+    average_words: float = sum(sentence_word_counts) / len(sentence_word_counts) if sentence_word_counts else 0.0
     
-    longest_idx = sentence_word_counts.index(max(sentence_word_counts)) if sentence_word_counts else -1
-    shortest_idx = sentence_word_counts.index(min(sentence_word_counts)) if sentence_word_counts else -1
+    longest_idx: int = sentence_word_counts.index(max(sentence_word_counts)) if sentence_word_counts else -1
+    shortest_idx: int = sentence_word_counts.index(min(sentence_word_counts)) if sentence_word_counts else -1
     
     return {
         'sentence_count': len(sentences),
@@ -382,9 +420,13 @@ def analyze_sentences(text):
         'shortest_sentence': sentences[shortest_idx].strip() if shortest_idx != -1 else ""
     }
 
-def analyze_text_complete(text, use_stop_words=False, num_common_words_to_display=10):
+def analyze_text_complete(
+    text: Optional[str], 
+    use_stop_words: bool = False, 
+    num_common_words_to_display: int = DEFAULT_TOP_WORDS_DISPLAY
+) -> Dict[str, Any]:
     """Complete text analysis pipeline."""
-    if not text:
+    if not text: # Handles None or empty string
         return {
             'error': 'No text provided for analysis',
             'word_analysis': {},
@@ -395,52 +437,53 @@ def analyze_text_complete(text, use_stop_words=False, num_common_words_to_displa
     
     try:
         # Sentence analysis (uses lightly cleaned text for sentence splitting)
-        # This should be done before heavy cleaning that might remove sentence delimiters.
-        text_for_sentence_structure = clean_text_for_sentence_analysis(text)
-        sentence_stats = analyze_sentences(text_for_sentence_structure)
+        text_for_sentence_structure: str = clean_text_for_sentence_analysis(text)
+        sentence_stats: Dict[str, Any] = analyze_sentences(text_for_sentence_structure)
 
         # Word analysis (Primary pipeline)
-        # Use the new clean_text with advanced=True for word processing. This removes all punctuation.
-        text_for_word_tokenization = clean_text(text, advanced=True)
-        tokens_after_cleaning = tokenize_text(text_for_word_tokenization)
+        text_for_word_tokenization: str = clean_text(text, advanced=True) # Using advanced cleaning
+        tokens_after_cleaning: List[str] = tokenize_text(text_for_word_tokenization)
         
+        processed_tokens: List[str]
         if use_stop_words:
             processed_tokens = remove_stop_words(tokens_after_cleaning)
         else:
             processed_tokens = tokens_after_cleaning
         
-        # Generate final_word_counts from the fully processed tokens
-        final_word_counts = Counter(processed_tokens)
-        # Get word statistics based on these final_word_counts
-        word_stats = get_word_count_stats(final_word_counts)
-        unique_words_list = sorted(final_word_counts.keys()) if final_word_counts else []
+        final_word_counts: Counter[str] = Counter(processed_tokens)
+        word_stats: Dict[str, Any] = get_word_count_stats(final_word_counts)
+        unique_words_list: List[str] = sorted(final_word_counts.keys()) if final_word_counts else []
             
-        # General statistics (based on raw text and final word counts)
-        char_count = len(text) # Raw text length
-        char_count_no_spaces = len(text.replace(' ', '')) # Raw text, no spaces
+        char_count: int = len(text) # Raw text length
+        char_count_no_spaces: int = len(text.replace(' ', '')) # Raw text, no spaces
             
-        general_stats = {
+        general_stats: Dict[str, Any] = {
             'character_count': char_count,
             'character_count_no_spaces': char_count_no_spaces,
-            'word_count': word_stats['total_words'], # This is from final_word_counts
+            'word_count': word_stats['total_words'], 
             'sentence_count': sentence_stats['sentence_count'],
             'paragraph_count': len([p for p in text.split('\n\n') if p.strip()])
         }
             
+        # Ensure num_common_words_to_display is not negative
+        num_to_display = max(0, num_common_words_to_display)
+
         return {
             'word_analysis': {
-                'word_frequencies': dict(final_word_counts.most_common(num_common_words_to_display)),
-                'statistics': word_stats, # Based on final_word_counts
-                'unique_words_sample': unique_words_list[:10],
+                'word_frequencies': dict(final_word_counts.most_common(num_to_display)),
+                'statistics': word_stats, 
+                'unique_words_sample': unique_words_list[:10], # Keep sample size fixed or make configurable
                 'full_word_counts_obj': final_word_counts 
             },
-            'processed_tokens': processed_tokens, # For word length analysis
+            'processed_tokens': processed_tokens, 
             'sentence_analysis': sentence_stats,
             'general_stats': general_stats,
-            'original_text': text # For readability context
+            'original_text': text 
         }
         
     except Exception as e:
+        # It's good practice to log the exception here or re-raise a custom one
+        # For now, returning a dict with error is consistent with current design
         return {
             'error': f'Analysis failed: {str(e)}',
             'word_analysis': {},
@@ -453,39 +496,39 @@ def analyze_text_complete(text, use_stop_words=False, num_common_words_to_displa
 # ANALYSIS & DISPLAY FUNCTIONS (Module 3D / Enhanced in 4C)
 # =============================================================================
 
-def time_function(func, *args, **kwargs): # New from Module 4C
+def time_function(func: callable, *args: Any, **kwargs: Any) -> Any: # New from Module 4C
     """Times the execution of a function and prints the duration."""
-    start_time = time.time()
-    result = func(*args, **kwargs)
-    end_time = time.time()
+    start_time: float = time.time()
+    result: Any = func(*args, **kwargs)
+    end_time: float = time.time()
     # Optional: print(f"Function '{func.__name__}' took {end_time - start_time:.4f} seconds.")
     return result
 
-def analyze_word_lengths(tokens): # New from Module 4C
+def analyze_word_lengths(tokens: List[str]) -> Counter[int]: # New from Module 4C
     """
     Analyzes the distribution of word lengths and prints the analysis.
     
     Args:
-        tokens (list): List of word tokens
+        tokens (List[str]): List of word tokens
         
     Returns:
-        Counter: Counter object with word lengths as keys and counts as values
+        Counter[int]: Counter object with word lengths as keys and counts as values
     """
     if not tokens:
         print("\nℹ️ No tokens to analyze for word lengths.")
         return Counter()
 
-    length_counts = Counter(len(word) for word in tokens)
+    length_counts: Counter[int] = Counter(len(word) for word in tokens)
     
     print("\n--- Word Length Analysis ---")
     # Sort by length for display
     for length_val in sorted(length_counts.keys()): # Renamed length to length_val to avoid conflict
-        count = length_counts[length_val]
-        percentage = (count / len(tokens)) * 100 if len(tokens) > 0 else 0
+        count: int = length_counts[length_val]
+        percentage: float = (count / len(tokens)) * 100 if len(tokens) > 0 else 0.0
         print(f"{length_val:2d} letter(s): {count:4d} words ({percentage:5.1f}%)")
     
     if len(tokens) > 0:
-        avg_length = sum(len(word) for word in tokens) / len(tokens)
+        avg_length: float = sum(len(word) for word in tokens) / len(tokens)
         print(f"\nAverage word length: {avg_length:.1f} letters")
     else:
         print("\nAverage word length: N/A (no tokens)")
@@ -493,23 +536,23 @@ def analyze_word_lengths(tokens): # New from Module 4C
     
     return length_counts
 
-def calculate_readability_stats(text, word_counts, sentence_analysis):
+def calculate_readability_stats(text: str, word_counts: Counter[str], sentence_analysis: Dict[str, Any]) -> Dict[str, Any]:
     """Calculate readability and complexity statistics."""
     if not text or not word_counts: # Check word_counts as it's now primary for word stats
         return {
-            'avg_word_length': 0,
-            'complexity_score': 0,
+            'avg_word_length': 0.0,
+            'complexity_score': 0.0,
             'readability_level': 'Unknown'
         }
     
-    total_chars_in_counted_words = sum(len(word) * count for word, count in word_counts.items())
-    total_counted_words = sum(word_counts.values())
-    avg_word_length = total_chars_in_counted_words / total_counted_words if total_counted_words > 0 else 0
+    total_chars_in_counted_words: int = sum(len(word) * count for word, count in word_counts.items())
+    total_counted_words: int = sum(word_counts.values())
+    avg_word_length: float = total_chars_in_counted_words / total_counted_words if total_counted_words > 0 else 0.0
     
-    avg_sentence_length = sentence_analysis.get('average_words_per_sentence', 0)
-    complexity_score = (avg_word_length * 0.6) + (avg_sentence_length * 0.4)
+    avg_sentence_length: float = sentence_analysis.get('average_words_per_sentence', 0.0)
+    complexity_score: float = (avg_word_length * 0.6) + (avg_sentence_length * 0.4)
     
-    readability_level = 'Unknown'
+    readability_level: str = 'Unknown'
     if complexity_score < 8:
         readability_level = 'Easy'
     elif complexity_score < 12:
@@ -525,13 +568,13 @@ def calculate_readability_stats(text, word_counts, sentence_analysis):
         'readability_level': readability_level
     }
 
-def find_interesting_patterns(word_counts, text): # text parameter might be less used if patterns are from word_counts
+def find_interesting_patterns(word_counts: Counter[str], text: str) -> Dict[str, Any]: # text parameter might be less used
     """Find interesting patterns in the text."""
-    patterns = {
+    patterns: Dict[str, Any] = {
         'repeated_words': [],
         'long_words': [],
         'short_words': [],
-        'word_variety': 0
+        'word_variety': 0.0
     }
     
     if not word_counts:
@@ -545,32 +588,32 @@ def find_interesting_patterns(word_counts, text): # text parameter might be less
     patterns['long_words'] = [
         word for word in word_counts.keys() 
         if len(word) >= 7
-    ][:10]
+    ][:10] # Top 10 long words
     
     patterns['short_words'] = [
         word for word in word_counts.keys() 
         if len(word) <= 2
-    ][:10]
+    ][:10] # Top 10 short words
     
-    total_words = sum(word_counts.values())
-    unique_words_count = len(word_counts)
-    patterns['word_variety'] = round(unique_words_count / total_words * 100, 1) if total_words > 0 else 0
+    total_words: int = sum(word_counts.values())
+    unique_words_count: int = len(word_counts)
+    patterns['word_variety'] = round(unique_words_count / total_words * 100, 1) if total_words > 0 else 0.0
     
     return patterns
 
-def print_header(title, width=60):
+def print_header(title: str, width: int = 60) -> None:
     """Print a formatted header."""
     print("\n" + "=" * width)
     print(f"{title:^{width}}")
     print("=" * width)
 
-def print_section(title, width=60): # width parameter was unused, now used for consistency
+def print_section(title: str, width: int = 60) -> None:
     """Print a formatted section header."""
     print(f"\n{title}")
     print("-" * len(title) if len(title) <= width else "-" * width)
 
 
-def display_general_statistics(stats):
+def display_general_statistics(stats: Dict[str, Any]) -> None:
     """Display general text statistics in a formatted way."""
     print_section("📊 General Statistics")
     
@@ -580,65 +623,61 @@ def display_general_statistics(stats):
     print(f"📋 Total Sentences: {stats.get('sentence_count', 0):,}")
     print(f"📄 Paragraphs: {stats.get('paragraph_count', 0):,}")
     
-    if stats.get('sentence_count', 0) > 0 and stats.get('word_count',0) > 0 :
-        words_per_sentence = stats['word_count'] / stats['sentence_count']
+    if stats.get('sentence_count', 0) > 0 and stats.get('word_count', 0) > 0 :
+        words_per_sentence: float = stats['word_count'] / stats['sentence_count']
         print(f"📏 Average Words per Sentence: {words_per_sentence:.1f}")
     
-    if stats.get('word_count', 0) > 0:
-        # For average chars per word, it's better to use sum of lengths of words in word_counts
-        # This is effectively calculated in readability_stats avg_word_length
-        # For now, keep the old way or note it.
-        # chars_per_word = stats['character_count_no_spaces'] / stats['word_count']
-        # print(f"📐 Average Characters per Word (approx): {chars_per_word:.1f}")
-        pass # This stat is better represented by avg_word_length from readability
+    # avg_word_length from readability_stats is more accurate for analyzed words
+    # if stats.get('word_count', 0) > 0:
+    #     pass 
 
-def display_word_analysis(word_analysis):
+def display_word_analysis(word_analysis: Dict[str, Any]) -> None:
     """Display word frequency analysis."""
     print_section("🔤 Word Frequency Analysis")
     
-    word_frequencies = word_analysis.get('word_frequencies', {})
-    statistics = word_analysis.get('statistics', {})
+    word_frequencies: Dict[str, int] = word_analysis.get('word_frequencies', {})
+    statistics: Dict[str, Any] = word_analysis.get('statistics', {})
     
     print(f"🎯 Unique Words: {statistics.get('unique_words', 0):,}")
     print(f"📊 Total Word Count (in analysis): {statistics.get('total_words', 0):,}")
-    # average_frequency might be misleading if stop words removed, as total_words changes
-    # print(f"📈 Average Word Frequency: {statistics.get('average_frequency', 0.0)}") 
     
     if word_frequencies and statistics.get('total_words', 0) > 0:
-        print(f"\n🏆 Top 10 Most Common Words:")
+        # num_common_words_to_display is used in analyze_text_complete to create word_frequencies
+        # So, the length of word_frequencies dict is the number to display.
+        print(f"\n🏆 Top {len(word_frequencies)} Most Common Words:")
         for i, (word, count) in enumerate(word_frequencies.items(), 1):
-            percentage = (count / statistics['total_words']) * 100
+            percentage: float = (count / statistics['total_words']) * 100
             print(f"  {i:2d}. '{word}' - {count} times ({percentage:.1f}%)")
     elif not word_frequencies:
         print("No word frequencies to display (perhaps all words were stop words or file was empty after cleaning).")
 
 
-def display_sentence_analysis(sentence_analysis):
+def display_sentence_analysis(sentence_analysis: Dict[str, Any]) -> None:
     """Display sentence analysis results."""
     print_section("📋 Sentence Analysis")
     
     print(f"📊 Total Sentences: {sentence_analysis.get('sentence_count',0)}")
     print(f"📏 Average Words per Sentence: {sentence_analysis.get('average_words_per_sentence',0.0)}")
     
-    longest = sentence_analysis.get('longest_sentence', '')
+    longest: str = sentence_analysis.get('longest_sentence', '')
     if longest:
         print(f"\n📏 Longest Sentence:")
-        print(f"   \"{longest[:100]}{'...' if len(longest) > 100 else ''}\"")
+        print(f"   \"{longest[:PREVIEW_LENGTH]}{'...' if len(longest) > PREVIEW_LENGTH else ''}\"") # Use PREVIEW_LENGTH
     
-    shortest = sentence_analysis.get('shortest_sentence', '')
+    shortest: str = sentence_analysis.get('shortest_sentence', '')
     if shortest:
         print(f"\n📏 Shortest Sentence:")
         print(f"   \"{shortest}\"")
 
-def display_readability_analysis(readability_stats):
+def display_readability_analysis(readability_stats: Dict[str, Any]) -> None:
     """Display readability analysis."""
     print_section("📖 Readability Analysis")
     
     print(f"📐 Average Word Length (of analyzed words): {readability_stats.get('avg_word_length',0.0)} characters")
-    print(f"🎯 Complexity Score: {readability_stats.get('complexity_score',0.0)}/20") # Max score isn't strictly 20, but it's a scale
+    print(f"🎯 Complexity Score: {readability_stats.get('complexity_score',0.0)}") # Removed /20 as it's not a fixed scale
     print(f"📚 Readability Level: {readability_stats.get('readability_level','Unknown')}")
     
-    level = readability_stats.get('readability_level')
+    level: Optional[str] = readability_stats.get('readability_level')
     if level == 'Easy':
         print("   💡 This text is easy to read and understand.")
     elif level == 'Moderate':
@@ -651,29 +690,29 @@ def display_readability_analysis(readability_stats):
         print("   💡 Readability level could not be determined.")
 
 
-def display_interesting_patterns(patterns):
+def display_interesting_patterns(patterns: Dict[str, Any]) -> None:
     """Display interesting patterns found in the text."""
     print_section("🔍 Interesting Patterns")
     
     print(f"🎨 Word Variety (analyzed words): {patterns.get('word_variety',0.0)}% (unique words / total analyzed words)")
     
-    repeated = patterns.get('repeated_words', [])
+    repeated: List[Tuple[str, int]] = patterns.get('repeated_words', [])
     if repeated:
         print(f"\n🔄 Most Repeated Words (among analyzed):")
         for word, count in repeated[:5]: # Show top 5
             print(f"   '{word}' appears {count} times")
     
-    long_w = patterns.get('long_words', [])
+    long_w: List[str] = patterns.get('long_words', [])
     if long_w:
         print(f"\n📏 Long Words (7+ characters, among analyzed):")
         print(f"   {', '.join(long_w[:8])}") # Show up to 8
     
-    short_w = patterns.get('short_words', [])
+    short_w: List[str] = patterns.get('short_words', [])
     if short_w:
         print(f"\n🔤 Short Words (1-2 characters, among analyzed):")
         print(f"   {', '.join(short_w[:10])}") # Show up to 10
 
-def display_complete_analysis(analysis_results):
+def display_complete_analysis(analysis_results: Dict[str, Any]) -> None:
     """Display complete text analysis in a professional format."""
     if 'error' in analysis_results and analysis_results['error']:
         print(f"❌ Analysis Error: {analysis_results['error']}")
@@ -690,37 +729,19 @@ def display_complete_analysis(analysis_results):
     if 'sentence_analysis' in analysis_results:
         display_sentence_analysis(analysis_results['sentence_analysis'])
     
-    # Calculate and display readability & patterns based on potentially filtered word_counts
     if 'word_analysis' in analysis_results and 'sentence_analysis' in analysis_results:
-        word_counts_data = analysis_results['word_analysis'].get('word_frequencies', {})
-        # word_counts_data is already a dict from most_common(10). Need full Counter for stats.
-        # This requires passing the full Counter object in analysis_results or recalculating.
-        # For now, let's assume word_analysis.statistics.most_common gives enough for a Counter
-        
-        # Reconstruct Counter for stats if word_frequencies is just top 10
-        # A better way is to pass the full Counter object in analysis_results['word_analysis']
-        # For now, this part might be inaccurate if word_frequencies is truncated.
-        # Let's assume word_analysis['statistics']['most_common'] is the full list for Counter.
-        # No, word_analysis.statistics.most_common is only top 5.
-        # The best is to pass the full word_counts Counter object through analysis_results.
-        # Let's modify analyze_text_complete to include the full Counter.
-        
-        # This part needs the full word_counts.
-        # analyze_text_complete should be modified to return the full word_counts Counter object.
-        # Let's assume it's available as analysis_results['word_analysis']['full_word_counts']
-        
-        full_word_counts = analysis_results.get('word_analysis',{}).get('full_word_counts_obj', Counter())
+        full_word_counts: Counter[str] = analysis_results.get('word_analysis',{}).get('full_word_counts_obj', Counter())
 
         if full_word_counts:
-            text_for_readability = analysis_results.get('original_text', '') # Use original for context
-            readability_stats = calculate_readability_stats(
-                text_for_readability, # Pass original text
-                full_word_counts, # Pass full counter
+            text_for_readability: str = analysis_results.get('original_text', '') 
+            readability_stats: Dict[str, Any] = calculate_readability_stats(
+                text_for_readability, 
+                full_word_counts, 
                 analysis_results['sentence_analysis']
             )
             display_readability_analysis(readability_stats)
             
-            patterns = find_interesting_patterns(full_word_counts, text_for_readability)
+            patterns: Dict[str, Any] = find_interesting_patterns(full_word_counts, text_for_readability)
             display_interesting_patterns(patterns)
         else:
             print("\nℹ️ Full word counts not available for readability and pattern analysis.")
@@ -728,24 +749,30 @@ def display_complete_analysis(analysis_results):
     print_section("✅ Analysis Complete")
     print("📝 Report generated successfully!")
 
-def save_results_to_file(frequencies_counter, num_top_words, unique_word_count, output_filename="analysis_results.txt"):
+def save_results_to_file(
+    frequencies_counter: Counter[str], 
+    num_top_words: int, 
+    unique_word_count: int, 
+    output_filename: str = DEFAULT_RESULTS_FILENAME
+) -> None:
     """
     Saves analysis results to a file. (Enhancement 3 from Module 4B)
     
     Args:
-        frequencies_counter (Counter): Word frequency Counter object.
+        frequencies_counter (Counter[str]): Word frequency Counter object.
         num_top_words (int): Number of top words to save.
         unique_word_count (int): Total number of unique words.
         output_filename (str): Name of the file to save results.
     """
     try:
-        with open(output_filename, 'w', encoding='utf-8') as f:
+        # Ensure output_filename is a Path object for open()
+        output_path: Path = Path(output_filename)
+        with open(output_path, 'w', encoding='utf-8') as f:
             f.write("Text Analysis Results\n")
             f.write("=" * 30 + "\n\n")
             
-            # Ensure num_top_words is not greater than available unique words for most_common
-            actual_top_n = min(num_top_words, unique_word_count)
-            most_common = frequencies_counter.most_common(actual_top_n)
+            actual_top_n: int = min(num_top_words, unique_word_count)
+            most_common: List[Tuple[str, int]] = frequencies_counter.most_common(actual_top_n)
             
             f.write(f"Top {actual_top_n} most common words:\n")
             f.write("-" * 30 + "\n")
@@ -756,39 +783,39 @@ def save_results_to_file(frequencies_counter, num_top_words, unique_word_count, 
             f.write("-" * 30 + "\n")
             f.write(f"Total unique words: {unique_word_count}\n")
             
-            if 'total_words' in frequencies_counter: # Check if it's a pre-calculated stat dict
-                 total_words_val = frequencies_counter['total_words']
-            else: # It's a Counter object
-                 total_words_val = sum(frequencies_counter.values())
+            total_words_val: int
+            # This check is a bit fragile. Assumes Counter won't have 'total_words' as a key.
+            # Better to rely on sum(frequencies_counter.values())
+            total_words_val = sum(frequencies_counter.values())
 
             f.write(f"Total words (in analysis): {total_words_val}\n\n")
             f.write("Analysis complete.\n")
         
-        print(f"\n✅ Results successfully saved to {output_filename}")
-    except IOError:
-        print(f"\n❌ Error: Could not write results to {output_filename}.")
+        print(f"\n✅ Results successfully saved to {output_path}")
+    except IOError: # More specific exception
+        print(f"\n❌ Error: Could not write results to {output_filename}. Check permissions or path.")
     except Exception as e:
         print(f"\n❌ An unexpected error occurred while saving results: {e}")
 
-def display_summary(analysis_results):
+def display_summary(analysis_results: Dict[str, Any]) -> None:
     """Display a quick summary of the analysis."""
     if 'error' in analysis_results and analysis_results['error']:
         print(f"❌ Error: {analysis_results['error']}")
         return
     
-    general = analysis_results.get('general_stats', {})
-    word_analysis = analysis_results.get('word_analysis', {})
-    stats = word_analysis.get('statistics', {}) # word_stats
+    general: Dict[str, Any] = analysis_results.get('general_stats', {})
+    word_analysis: Dict[str, Any] = analysis_results.get('word_analysis', {})
+    stats: Dict[str, Any] = word_analysis.get('statistics', {}) 
     
     print("\n" + "="*40)
     print("📊 QUICK SUMMARY")
     print("="*40)
     print(f"📄 Characters (raw): {general.get('character_count', 0):,}")
-    print(f"📝 Words (analyzed): {stats.get('total_words', 0):,}") # total_words from word_stats
+    print(f"📝 Words (analyzed): {stats.get('total_words', 0):,}") 
     print(f"📋 Sentences: {general.get('sentence_count', 0):,}")
     print(f"🎯 Unique Words (analyzed): {stats.get('unique_words', 0):,}")
     
-    most_common_list = stats.get('most_common', []) # This is top 5 from get_word_count_stats
+    most_common_list: List[Tuple[str, int]] = stats.get('most_common', []) 
     if most_common_list:
         top_word, count = most_common_list[0]
         print(f"🏆 Most Common Word: '{top_word}' ({count} times)")
@@ -799,13 +826,13 @@ def display_summary(analysis_results):
 # MAIN INTEGRATION & TESTING (Module 3E / Enhanced in 4B)
 # =============================================================================
 
-def run_comprehensive_test():
+def run_comprehensive_test() -> bool:
     """Run comprehensive testing of all components."""
     # This function would need updates if parameters of core functions change.
     # For now, keeping it as is from Module 3E.
     print_header("🧪 COMPREHENSIVE TESTING SUITE 🧪")
     
-    test_results = {
+    test_results: Dict[str, bool] = {
         'file_io': False,
         'text_processing': False,
         'analysis': False,
@@ -823,16 +850,17 @@ def run_comprehensive_test():
     # Test 2: Text Processing
     print_section("🔄 Testing Text Processing Pipeline")
     try:
-        test_text = "Hello world! This is a test with the word test."
+        test_text: str = "Hello world! This is a test with the word test."
         # Test with stop words off for baseline
-        word_counts_test = count_words(test_text, use_stop_words=False)
-        sentence_count_test = count_sentences(test_text)
+        word_counts_test: Counter[str] = count_words(test_text, use_stop_words=False)
+        sentence_count_test: int = count_sentences(test_text)
         
         if word_counts_test.get('test', 0) == 2 and sentence_count_test > 0:
             print("✅ Text processing (no stop words) functional.")
             # Test with stop words on
-            word_counts_sw_test = count_words(test_text, use_stop_words=True)
-            if 'is' not in word_counts_sw_test and 'the' not in word_counts_sw_test : # 'is', 'the', 'a' are stop words
+            word_counts_sw_test: Counter[str] = count_words(test_text, use_stop_words=True)
+            # Check against STOP_WORDS set directly for robustness
+            if not any(sw in word_counts_sw_test for sw in STOP_WORDS if sw in word_counts_test):
                  print("✅ Text processing (with stop words) functional.")
                  test_results['text_processing'] = True
             else:
@@ -845,8 +873,8 @@ def run_comprehensive_test():
     # Test 3: Analysis
     print_section("📊 Testing Analysis Functions")
     try:
-        test_text_analysis = "The quick brown fox. Jumps over the lazy dog."
-        results_analysis = analyze_text_complete(test_text_analysis, use_stop_words=False) # Test without stop words
+        test_text_analysis: str = "The quick brown fox. Jumps over the lazy dog."
+        results_analysis: Dict[str, Any] = analyze_text_complete(test_text_analysis, use_stop_words=False) # Test without stop words
         
         if 'error' not in results_analysis and results_analysis.get('general_stats',{}).get('word_count',0) > 0:
             print("✅ Analysis functions working.")
@@ -865,9 +893,9 @@ def run_comprehensive_test():
         print("❌ Display functions not found.")
         
     print_section("🎯 Test Results Summary")
-    all_passed = all(test_results.values())
+    all_passed: bool = all(test_results.values())
     for component, passed in test_results.items():
-        status = "✅ PASS" if passed else "❌ FAIL"
+        status: str = "✅ PASS" if passed else "❌ FAIL"
         print(f"{component.replace('_', ' ').title()}: {status}")
     
     if all_passed:
@@ -877,7 +905,7 @@ def run_comprehensive_test():
     return all_passed
 
 
-def main():
+def main() -> None:
     """Main execution function - Complete integrated application."""
     print_header("🚀 TEXT ANALYZER - COMPLETE VERSION 🚀")
     print("Welcome to the comprehensive text analysis tool!")
@@ -898,19 +926,26 @@ def main():
             
             if choice == "1":
                 # Main analysis workflow
-                filepath_config, num_common_words_config, use_stop_words_config = get_user_input_config()
+                # Filepath is now fixed for this option.
+                filepath_config: str = str(FIXED_TARGET_FILEPATH)
+                print(f"ℹ️ Analyzing fixed file: {filepath_config}")
+
+                num_common_words_config: int
+                use_stop_words_config: bool
+                num_common_words_config, use_stop_words_config = get_user_input_config()
                 
-                # Validate filepath from get_user_input_config before reading
+                # Validate the fixed filepath
                 is_valid_path, path_message = validate_file_path(filepath_config)
                 if not is_valid_path:
-                    print(f"❌ {path_message}")
+                    print(f"❌ Error with fixed file path '{filepath_config}': {path_message}")
+                    print("Please ensure 's.txt' exists in the script directory.")
                     print("Returning to main menu.")
                     continue
 
-                content = read_file(filepath_config) # Use read_file directly
+                content: str = read_file(filepath_config)
                 
                 if not content:
-                    print("❌ No content loaded (file might be empty or unreadable). Returning to main menu.")
+                    print(f"❌ No content loaded from '{filepath_config}' (file might be empty or unreadable). Returning to main menu.")
                     continue
                 
                 print("\n🔄 Running complete analysis...")
