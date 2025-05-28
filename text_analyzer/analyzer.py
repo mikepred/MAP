@@ -51,6 +51,88 @@ def analyze_word_lengths(tokens: List[str]) -> Counter[int]: # New from Module 4
     # Display logic for word lengths will be in display.py.
     # This function definition in analyzer.py is now removed.
 
+
+# =============================================================================
+# INTERNAL HELPER FOR ANALYSIS AND DISPLAY (Refactored Function)
+# =============================================================================
+def _perform_analysis_and_display(file_content: str, source_filename_hint: str) -> None:
+    """
+    Performs text analysis, displays results, and handles saving.
+    This function consolidates common logic from file handling options.
+    """
+    num_common_words_cfg, use_stop_words_cfg = get_user_input_config()
+
+    display.print_section("🔄 Running complete analysis...")
+    
+    results, analysis_duration = time_function(
+        analysis.analyze_text_complete,
+        file_content,
+        use_stop_words=use_stop_words_cfg,
+        num_common_words_to_display=num_common_words_cfg
+    )
+
+    # Print stop word status AFTER analysis, using the count from results
+    if use_stop_words_cfg:
+        removed_count = results.get('word_analysis', {}).get('removed_stop_words_count', 0)
+        if removed_count > 0:
+            print(f"ℹ️ Removed {removed_count} stop words.")
+        else: 
+            print("ℹ️ Stop word removal is ON (no stop words found or removed).")
+    else:
+        print("ℹ️ Stop word removal is OFF.")
+    
+    print(f"\n⏱️ Text analysis pipeline took: {analysis_duration:.4f} seconds")
+
+    if results.get('error'): # Simplified: Use dict.get() to check for 'error'
+        print(f"❌ Analysis error: {results['error']}")
+        return # Exit if analysis failed
+
+    # Display options
+    print("\n📊 Analysis complete! Choose display format:")
+    print("1. Complete Report")
+    print("2. Quick Summary")
+    print("3. Both")
+    display_choice = input("Enter choice (1-3): ").strip()
+    if display_choice == "1":
+        display.display_complete_analysis(results)
+    elif display_choice == "2":
+        display.display_summary(results)
+    elif display_choice == "3":
+        display.display_summary(results)
+        display.display_complete_analysis(results)
+    else:
+        print("⚠️ Invalid display choice, showing summary:")
+        display.display_summary(results)
+
+    processed_tokens_len_analysis = results.get('processed_tokens', [])
+    # Call analysis.analyze_word_lengths to get the Counter object
+    custom_word_length_counts = analysis.analyze_word_lengths(processed_tokens_len_analysis)
+    if custom_word_length_counts: # Check if Counter is not empty
+        display.display_word_length_analysis(custom_word_length_counts, len(processed_tokens_len_analysis))
+
+    # Ask to save results
+    # Simplified: Use nested dict.get() for safer access
+    if results.get('word_analysis', {}).get('full_word_counts_obj'):
+        while True:
+            save_choice = input("\n💾 Save analysis results to file? (yes/no, default: no): ").strip().lower()
+            if not save_choice or save_choice == 'no':
+                break
+            elif save_choice == 'yes':
+                # Use source_filename_hint to create a meaningful default
+                # e.g. "s_txt_results.txt" or "custom_analysis_results.txt"
+                default_out_fn = f"{source_filename_hint.replace('.txt', '')}_{cfg.DEFAULT_RESULTS_FILENAME}"
+                out_fn_input = input(f"Enter output filename (default: {default_out_fn}): ").strip()
+                if not out_fn_input:
+                    out_fn_input = default_out_fn
+                
+                freq_ctr = results['word_analysis']['full_word_counts_obj']
+                n_save = num_common_words_cfg 
+                unique_save = len(freq_ctr)
+                file_io.save_results_to_file(freq_ctr, n_save, unique_save, out_fn_input)
+                break
+            else:
+                print("⚠️ Invalid choice. Please enter 'yes' or 'no'.")
+
 # =============================================================================
 # USER INPUT CONFIGURATION (Remains in analyzer.py as it's UI related for main script)
 # =============================================================================
@@ -153,8 +235,13 @@ def run_comprehensive_test() -> bool:
         assert tokens == expected_tokens_no_sw, f"Tokenization failed: {tokens}"
         
         # Test stop word removal
-        tokens_no_stopwords = tp.remove_stop_words(tokens)
-        assert tokens_no_stopwords == expected_tokens_with_sw, f"Stop word removal failed: {tokens_no_stopwords}"
+        # tp.remove_stop_words now returns a tuple (filtered_tokens, count_removed)
+        filtered_tokens, removed_count_test = tp.remove_stop_words(tokens)
+        assert filtered_tokens == expected_tokens_with_sw, f"Stop word removal failed: expected {expected_tokens_with_sw}, got {filtered_tokens}"
+        # Optionally, assert on removed_count_test if we have a specific expectation for it
+        # For this test string "hello world this is a test with the test words"
+        # and stop words like ['this', 'is', 'a', 'with', 'the'], count should be 5
+        assert removed_count_test == 5, f"Stop word removal count failed: expected 5, got {removed_count_test}"
         
         # Test count_words (which includes cleaning and tokenizing)
         counts_no_sw = tp.count_words(test_text_proc, use_stop_words=False)
@@ -190,7 +277,7 @@ def run_comprehensive_test() -> bool:
         
         # Test analyze_text_complete (a more integrated test)
         complete_results = analysis.analyze_text_complete(test_text_analysis, use_stop_words=False, num_common_words_to_display=2)
-        assert 'error' not in complete_results or not complete_results['error'], f"analyze_text_complete returned error: {complete_results.get('error')}"
+        assert not complete_results.get('error'), f"analyze_text_complete returned error: {complete_results.get('error')}" # Simplified
         assert complete_results.get('general_stats', {}).get('sentence_count') == 2, "analyze_text_complete: general_stats.sentence_count failed"
         # Word count from analyze_text_complete uses advanced cleaning, so it might differ from simple sentence word counts
         # For "First sentence. Second sentence is a bit longer, yes it is!"
@@ -235,171 +322,33 @@ def run_comprehensive_test() -> bool:
 
 def _handle_custom_file_option() -> None:
     """Handles the logic for menu option 2: Analyze Custom Text File."""
-    custom_filepath_content = file_io.load_text_file()
+    custom_filepath_content = file_io.load_text_file() # Assumed to return only content for now
     if custom_filepath_content:
-        num_common_words_cfg, use_stop_words_cfg = get_user_input_config()
-        display.print_section("🔄 Running complete analysis...")
-        # pipeline_start_time = time.time() # Replaced by time_function call
-        if use_stop_words_cfg:
-            print("ℹ️ Stop word removal is ON.")
-        else:
-            print("ℹ️ Stop word removal is OFF.")
-        
-        results, analysis_duration = time_function(
-            analysis.analyze_text_complete,
-            custom_filepath_content,
-            use_stop_words=use_stop_words_cfg,
-            num_common_words_to_display=num_common_words_cfg
-        )
-        # pipeline_end_time = time.time() # Replaced by time_function call
-        print(f"\n⏱️ Text analysis pipeline took: {analysis_duration:.4f} seconds")
-
-        if 'error' in results and results['error']:
-            print(f"❌ Analysis error: {results['error']}")
-        else:
-            # Display options
-            print("\n📊 Analysis complete! Choose display format:")
-            print("1. Complete Report")
-            print("2. Quick Summary")
-            print("3. Both")
-            display_choice = input("Enter choice (1-3): ").strip()
-            if display_choice == "1":
-                display.display_complete_analysis(results)
-            elif display_choice == "2":
-                display.display_summary(results)
-            elif display_choice == "3":
-                display.display_summary(results)
-                display.display_complete_analysis(results)
-            else:
-                print("⚠️ Invalid display choice, showing summary:")
-                display.display_summary(results)
-
-            processed_tokens_len_analysis = results.get('processed_tokens', [])
-            # Ensure word_length_counts_obj is correctly populated in analysis_results by analyze_text_complete
-            # For now, let's assume analyze_word_lengths from analysis module returns the counter
-            custom_word_length_counts = analysis.analyze_word_lengths(processed_tokens_len_analysis)
-            if custom_word_length_counts: # Check if the counter is not empty
-                display.display_word_length_analysis(custom_word_length_counts, len(processed_tokens_len_analysis))
-
-            if 'word_analysis' in results and results['word_analysis'].get('full_word_counts_obj'):
-                while True:
-                    save_choice = input("\n💾 Save analysis results to file? (yes/no, default: no): ").strip().lower()
-                    if not save_choice or save_choice == 'no':
-                        break
-                    elif save_choice == 'yes':
-                        default_out_fn = f"custom_{cfg.DEFAULT_RESULTS_FILENAME}"
-                        out_fn_input = input(f"Enter output filename (default: {default_out_fn}): ").strip()
-                        if not out_fn_input:
-                            out_fn_input = default_out_fn
-                        
-                        freq_ctr = results['word_analysis']['full_word_counts_obj']
-                        n_save = num_common_words_cfg
-                        unique_save = len(freq_ctr)
-                        file_io.save_results_to_file(freq_ctr, n_save, unique_save, out_fn_input)
-                        break
-                    else:
-                        print("⚠️ Invalid choice. Please enter 'yes' or 'no'.")
+        # Using "custom_analysis" as source_filename_hint as per instructions
+        _perform_analysis_and_display(custom_filepath_content, "custom_analysis")
     else:
         print("❌ No content loaded from custom file. Returning to main menu.")
 
 
 def _handle_analyze_file_option() -> None:
     """Handles the logic for menu option 1: Analyze Text File."""
-    # Filepath is now fixed for this option.
     filepath_config: str = str(cfg.FIXED_TARGET_FILEPATH)
     print(f"ℹ️ Analyzing fixed file: {filepath_config}")
 
-    num_common_words_config: int
-    use_stop_words_config: bool
-    # get_user_input_config is in this file (analyzer.py)
-    num_common_words_config, use_stop_words_config = get_user_input_config()
-    
-    # Validate the fixed filepath
     is_valid_path, path_message = file_io.validate_file_path(filepath_config)
     if not is_valid_path:
         print(f"❌ Error with fixed file path '{filepath_config}': {path_message}")
-        print("Please ensure 's.txt' exists in the script directory.")
+        print(f"Please ensure '{cfg.FIXED_TARGET_FILENAME}' exists in the script directory.") 
         print("Returning to main menu.")
         return
 
-    content: str = file_io.read_file(filepath_config)
+    content: Optional[str] = file_io.read_file(filepath_config) 
     
-    if not content:
-        print(f"❌ No content loaded from '{filepath_config}' (file might be empty or unreadable). Returning to main menu.")
-        return
-    
-    print("\n🔄 Running complete analysis...")
-    # pipeline_start_time = time.time() # Replaced by time_function call
-
-    if use_stop_words_config:
-        print("ℹ️ Stop word removal is ON.")
+    if content is not None:
+        _perform_analysis_and_display(content, cfg.FIXED_TARGET_FILENAME)
     else:
-        print("ℹ️ Stop word removal is OFF.")
-    
-    results, analysis_duration = time_function(
-        analysis.analyze_text_complete,
-        content, 
-        use_stop_words=use_stop_words_config, 
-        num_common_words_to_display=num_common_words_config
-    )
-    # pipeline_end_time = time.time() # Replaced by time_function call
-    print(f"\n⏱️ Text analysis pipeline took: {analysis_duration:.4f} seconds")
-
-    if 'error' in results and results['error']:
-        print(f"❌ Analysis error: {results['error']}")
-        return
-    
-    # Display options
-    print("\n📊 Analysis complete! Choose display format:")
-    print("1. Complete Report")
-    print("2. Quick Summary")
-    print("3. Both")
-    
-    display_choice_input = input("Enter choice (1-3): ").strip() # Renamed variable
-    
-    if display_choice_input == "1":
-        display.display_complete_analysis(results) # Updated
-    elif display_choice_input == "2":
-        display.display_summary(results) # Updated
-    elif display_choice_input == "3":
-        display.display_summary(results) # Updated
-        display.display_complete_analysis(results) # Updated
-    else: # Default to summary if invalid choice
-        print("⚠️ Invalid display choice, showing summary:")
-        display.display_summary(results) # Updated
-
-    # Word Length Analysis display (M4C)
-    processed_tokens_for_length_analysis = results.get('processed_tokens', [])
-    # Call analysis.analyze_word_lengths to get the Counter object
-    word_length_counts_data = analysis.analyze_word_lengths(processed_tokens_for_length_analysis)
-    if word_length_counts_data: # Check if Counter is not empty
-        display.display_word_length_analysis(word_length_counts_data, len(processed_tokens_for_length_analysis)) # Updated
-
-    # Ask to save results
-    if 'word_analysis' in results and results['word_analysis'].get('full_word_counts_obj'):
-        while True:
-            save_choice = input("\n💾 Save analysis results to file? (yes/no, default: no): ").strip().lower()
-            if not save_choice or save_choice == 'no':
-                break
-            elif save_choice == 'yes':
-                default_output_filename = cfg.DEFAULT_RESULTS_FILENAME
-                output_filename_input = input(f"Enter output filename (default: {default_output_filename}): ").strip()
-                if not output_filename_input:
-                    output_filename_input = default_output_filename
-                
-                # Prepare data for save_results_to_file
-                freq_counter = results['word_analysis']['full_word_counts_obj']
-                # num_common_words_config is the number of words user wanted to *display*
-                # For saving, we can use the same or decide on a fixed number, e.g., all or top N.
-                # Let's use num_common_words_config for consistency with display.
-                n_to_save = num_common_words_config 
-                unique_count_to_save = len(freq_counter)
-                
-                file_io.save_results_to_file(freq_counter, n_to_save, unique_count_to_save, output_filename_input) # Updated
-                break
-            else:
-                print("⚠️ Invalid choice. Please enter 'yes' or 'no'.")
-
+        print(f"❌ No content loaded from '{filepath_config}' (file might be empty or unreadable). Returning to main menu.")
+        # No return here, as the function will end.
 
 def main() -> None:
     """Main execution function - Complete integrated application."""

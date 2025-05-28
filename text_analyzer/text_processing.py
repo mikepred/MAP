@@ -6,7 +6,7 @@ Includes cleaning, tokenization, stop word removal, and word counting.
 import re
 import string
 from collections import Counter
-from typing import Optional, List
+from typing import Optional, List, Tuple
 
 from . import config as cfg
 
@@ -68,16 +68,16 @@ def tokenize_text(text: Optional[str]) -> List[str]:
         return []
     return text.split()
 
-def remove_stop_words(tokens: List[str]) -> List[str]:
+def remove_stop_words(tokens: List[str]) -> Tuple[List[str], int]:
     """
     Removes common stop words from a list of tokens.
+    Returns the filtered list of tokens and the count of removed stop words.
     """
     original_token_count: int = len(tokens)
     filtered_tokens: List[str] = [token for token in tokens if token not in cfg.STOP_WORDS]
     removed_count: int = original_token_count - len(filtered_tokens)
-    if removed_count > 0:
-        print(f"ℹ️ Removed {removed_count} stop words.")
-    return filtered_tokens
+    # The print statement is removed as per requirements.
+    return filtered_tokens, removed_count
 
 def count_words(text: Optional[str], use_stop_words: bool = False) -> Counter[str]:
     """
@@ -100,7 +100,7 @@ def count_words(text: Optional[str], use_stop_words: bool = False) -> Counter[st
     # words = [word for word in words if len(word) > 0] # tokenize_text should already handle this by text.split() behavior
 
     if use_stop_words:
-        words = remove_stop_words(words)
+        words, _ = remove_stop_words(words) # Unpack tuple, ignore count here as it's not used by count_words
         
     word_counts: Counter[str] = Counter(words)
     return word_counts

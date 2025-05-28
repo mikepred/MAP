@@ -27,7 +27,7 @@ def get_word_count_stats(word_counts: Counter[str]) -> Dict[str, Any]:
     total_words: int = sum(word_counts.values())
     unique_words: int = len(word_counts)
     most_common: List[Tuple[str, int]] = word_counts.most_common(cfg.DEFAULT_SUMMARY_MOST_COMMON_WORDS_COUNT)
-    average_frequency: float = total_words / unique_words if unique_words > 0 else 0.0
+    average_frequency: float = total_words / unique_words if unique_words else 0.0 # Simplified: truthiness of unique_words
     
     return {
         'total_words': total_words,
@@ -71,7 +71,7 @@ def analyze_sentences(text: Optional[str]) -> Dict[str, Any]:
     for sentence_str in sentences:
         # Use clean_text_for_word_tokenization for word counting within sentences
         words_in_sentence: List[str] = tp.clean_text_for_word_tokenization(sentence_str, advanced=False).split()
-        words_in_sentence = [word for word in words_in_sentence if len(word) > 0]
+        words_in_sentence = [word for word in words_in_sentence if word] # Simplified: if word (non-empty string)
         sentence_word_counts.append(len(words_in_sentence))
     
     average_words: float = sum(sentence_word_counts) / len(sentence_word_counts) if sentence_word_counts else 0.0
@@ -104,6 +104,7 @@ def analyze_text_complete(
             'readability_stats': {}, 'interesting_patterns': {}
         }
     
+    removed_stop_words_count: int = 0  # Initialize count
     try:
         text_for_sentence_structure: str = tp.preprocess_text_for_sentence_analysis(text)
         sentence_stats: Dict[str, Any] = analyze_sentences(text_for_sentence_structure)
@@ -113,7 +114,8 @@ def analyze_text_complete(
         
         processed_tokens: List[str]
         if use_stop_words:
-            processed_tokens = tp.remove_stop_words(tokens_after_cleaning)
+            # remove_stop_words now returns (filtered_tokens, count)
+            processed_tokens, removed_stop_words_count = tp.remove_stop_words(tokens_after_cleaning)
         else:
             processed_tokens = tokens_after_cleaning
         
@@ -139,15 +141,20 @@ def analyze_text_complete(
         if final_word_counts:
             readability_stats_result = calculate_readability_stats(text, final_word_counts, sentence_stats)
             interesting_patterns_result = find_interesting_patterns(final_word_counts, text)
+        
+        # Calculate word length counts using the processed tokens
+        word_length_counts_obj: Counter[int] = analyze_word_lengths(processed_tokens)
 
         return {
         'word_analysis': {
             'word_frequencies': dict(final_word_counts.most_common(num_to_display)),
             'statistics': word_stats, 
             'unique_words_sample': unique_words_list[:cfg.DEFAULT_UNIQUE_WORDS_SAMPLE_DISPLAY_LIMIT],
-            'full_word_counts_obj': final_word_counts 
+            'full_word_counts_obj': final_word_counts,
+            'removed_stop_words_count': removed_stop_words_count  # Add count here
         },
         'processed_tokens': processed_tokens, 
+        'word_length_counts_obj': word_length_counts_obj, # Add word length counts object
             'sentence_analysis': sentence_stats,
             'general_stats': general_stats,
             'original_text': text, # Useful for some analyses or display
@@ -176,7 +183,7 @@ def calculate_readability_stats(text: str, word_counts: Counter[str], sentence_a
     
     total_chars_in_counted_words: int = sum(len(word) * count for word, count in word_counts.items())
     total_counted_words: int = sum(word_counts.values())
-    avg_word_length: float = total_chars_in_counted_words / total_counted_words if total_counted_words > 0 else 0.0
+    avg_word_length: float = total_chars_in_counted_words / total_counted_words if total_counted_words else 0.0 # Simplified
     
     avg_sentence_length: float = sentence_analysis.get('average_words_per_sentence', 0.0)
     complexity_score: float = (avg_word_length * 0.6) + (avg_sentence_length * 0.4)
@@ -206,7 +213,7 @@ def find_interesting_patterns(word_counts: Counter[str], text: str) -> Dict[str,
     
     total_words: int = sum(word_counts.values())
     unique_words_count: int = len(word_counts)
-    patterns['word_variety'] = round(unique_words_count / total_words * 100, 1) if total_words > 0 else 0.0
+    patterns['word_variety'] = round(unique_words_count / total_words * 100, 1) if total_words else 0.0 # Simplified
     
     return patterns
 

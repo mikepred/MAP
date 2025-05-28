@@ -37,7 +37,8 @@ def display_general_statistics(stats: Dict[str, Any]) -> None:
     print(f"📋 Total Sentences: {stats.get('sentence_count', 0):,}")
     print(f"📄 Paragraphs: {stats.get('paragraph_count', 0):,}")
     
-    if stats.get('sentence_count', 0) > 0 and stats.get('word_count', 0) > 0 :
+    # Simplified boolean check using truthiness of numbers for the counts
+    if stats.get('sentence_count') and stats.get('word_count'):
         words_per_sentence: float = stats['word_count'] / stats['sentence_count']
         print(f"📏 Average Words per Sentence: {words_per_sentence:.1f}")
 
@@ -51,7 +52,8 @@ def display_word_analysis(word_analysis_data: Dict[str, Any]) -> None: # Renamed
     print(f"🎯 Unique Words: {statistics.get('unique_words', 0):,}")
     print(f"📊 Total Word Count (in analysis): {statistics.get('total_words', 0):,}")
     
-    if word_frequencies and statistics.get('total_words', 0) > 0:
+    # Simplified boolean check for statistics.get('total_words')
+    if word_frequencies and statistics.get('total_words'):
         print(f"\n🏆 Top {len(word_frequencies)} Most Common Words:")
         for i, (word, count) in enumerate(word_frequencies.items(), 1):
             percentage: float = (count / statistics['total_words']) * 100
