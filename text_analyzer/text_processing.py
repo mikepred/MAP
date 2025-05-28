@@ -104,3 +104,38 @@ def count_words(text: Optional[str], use_stop_words: bool = False) -> Counter[st
         
     word_counts: Counter[str] = Counter(words)
     return word_counts
+
+# =============================================================================
+# N-GRAM PROCESSING FUNCTIONS (New for Module 4C)
+# =============================================================================
+
+from nltk.util import ngrams as nltk_ngrams # Use a more specific import alias
+
+def generate_ngrams(tokens: List[str], n_values: List[int]) -> dict[int, List[Tuple[str, ...]]]:
+    """
+    Generates n-grams for a list of tokens for specified n-values.
+
+    Args:
+        tokens (List[str]): A list of text tokens.
+        n_values (List[int]): A list of integers specifying the desired n-gram sizes (e.g., [2, 3] for bigrams and trigrams).
+
+    Returns:
+        dict[int, List[Tuple[str, ...]]]: A dictionary where keys are the n-values
+        and values are lists of the corresponding n-gram tuples.
+        Returns an empty list for an n-value if the number of tokens is less than n.
+    """
+    if not tokens or not n_values:
+        return {}
+
+    output_ngrams: dict[int, List[Tuple[str, ...]]] = {}
+    for n in n_values:
+        if n <= 0:  # N-gram size must be positive
+            output_ngrams[n] = []
+            continue
+        if len(tokens) < n:
+            output_ngrams[n] = []  # Not enough tokens to form n-grams of this size
+        else:
+            # nltk_ngrams returns a generator, convert it to a list of tuples
+            output_ngrams[n] = list(nltk_ngrams(tokens, n))
+            
+    return output_ngrams

@@ -8,6 +8,38 @@
 > **"Every journey into AI begins with understanding text."**  
 > *Transform raw text into insights with Python*
 
+## Setup and Installation
+
+To get your environment ready to run the Text Analyzer, follow these steps:
+
+1.  **Install Dependencies:**
+    The project relies on several Python libraries. You can install them using pip and the provided requirements file:
+    ```bash
+    pip install -r text_analyzer/requirements.txt
+    ```
+    This will install `Flask`, `nltk`, `spacy`, and `textstat`.
+
+2.  **Download NLTK Resources:**
+    The Natural Language Toolkit (NLTK) needs specific resources for tokenization (punkt), stop word removal (stopwords), and sentiment analysis (vader_lexicon). You can download these by running the following Python code:
+    ```python
+    import nltk
+    nltk.download('punkt')
+    nltk.download('stopwords')
+    nltk.download('vader_lexicon')
+    ```
+    Alternatively, you can use the command line:
+    ```bash
+    python -m nltk.downloader punkt stopwords vader_lexicon
+    ```
+
+3.  **Download spaCy Language Model:**
+    SpaCy uses statistical models for various NLP tasks. For this project, we use the small English model. Download it using:
+    ```bash
+    python -m spacy download en_core_web_sm
+    ```
+
+Once these steps are completed, you'll be ready to explore the full capabilities of the Text Analyzer.
+
 ## 📊 What You'll Build
 
 This project guides you through building a command-line Python application that performs a comprehensive analysis of a given text file. It demonstrates key concepts in text processing and Natural Language Processing (NLP).
@@ -157,6 +189,7 @@ Average word length: 5.4 letters
 
 💾 Save analysis results to file? (yes/no, default: no): no
 ```
+Note: The full analysis report now also includes N-gram frequencies, sentiment scores, detailed POS statistics (including lexical density), named entity recognition results, and a comprehensive list of standardized readability indices.
 
 ## 🎯 Learning Objectives
 
@@ -170,9 +203,11 @@ By completing this project and following the associated lesson plan, you will:
 *   Develop skills in conditional logic for configurable behavior (e.g., stop word removal).
 *   Gain experience in structuring a Python application with multiple modules (`analyzer.py`, `analysis.py`, `text_processing.py`, `file_io.py`, `display.py`, `config.py`).
 *   Practice creating clear and informative user interfaces (CLI-based).
-*   Understand how to perform comprehensive text analysis, including word frequencies, sentence analysis, readability, and pattern detection.
+*   Understand how to perform comprehensive text analysis, including word frequencies, sentence analysis, various readability metrics (custom and standardized), pattern detection, N-gram analysis, sentiment scoring, POS tagging with lexical density, and named entity recognition.
 *   Learn to format and display complex data in a readable manner.
 *   Appreciate the importance of error handling and user input validation.
+*   Gain familiarity with NLP concepts like N-grams, sentiment analysis, Part-of-Speech tagging, lexical density, and Named Entity Recognition.
+*   Understand the application and interpretation of standard readability indices (e.g., Flesch-Kincaid, Gunning Fog).
 *   See how basic text processing techniques form the building blocks for more advanced NLP tasks and LLMs.
 
 ## 🎓 Prerequisites
@@ -246,8 +281,12 @@ The `text_analyzer` package provides a comprehensive script to perform text anal
     *   **Word Length Distribution:** Analyzes and displays the distribution of word lengths.
     *   **Sentence Analysis:** Counts sentences, calculates average words per sentence, and identifies the longest and shortest sentences.
     *   **General Statistics:** Provides counts for characters (with/without spaces), words, sentences, and paragraphs.
-    *   **Readability Assessment:** Calculates average word length and a complexity score, then provides a qualitative readability level (e.g., Easy, Moderate).
+    *   **Readability Assessment:** Calculates average word length, a custom complexity score, a qualitative readability level (e.g., Easy, Moderate), and a suite of standardized readability indices (Flesch Reading Ease, Flesch-Kincaid Grade, Gunning Fog, SMOG Index, Coleman-Liau Index, Dale-Chall Readability Score, Automated Readability Index).
     *   **Pattern Detection:** Identifies word variety, most repeated words, and samples of long/short words.
+    *   **N-gram Frequencies:** Calculates and displays frequencies for common N-grams (Bigrams and Trigrams).
+    *   **Sentiment Analysis:** Provides sentiment scores (Positive, Negative, Neutral, Compound) using VADER.
+    *   **Part-of-Speech (POS) Tag Statistics:** Shows counts of different POS tags, lists the most common tags, and calculates lexical density (percentage of content words).
+    *   **Named Entity Recognition (NER) Statistics:** Identifies and counts named entities (like people, organizations, locations), lists the most common entity types, and provides examples.
 6.  **Results Display:** Presents the analysis in a structured format, offering:
     *   A quick summary.
     *   A complete detailed report.
@@ -345,12 +384,13 @@ You'll know you've mastered this project when you can:
 
 *   Explain the role and interaction of each module in the `text_analyzer` package.
 *   Successfully run the script to analyze both the default (`s.txt`) and custom (`sample.txt`) files.
-*   Understand and interpret all sections of the generated analysis report.
+*   Understand and interpret all sections of the generated analysis report, including N-gram frequencies, sentiment scores, POS tags, lexical density, NER results, and standardized readability indices.
 *   Modify the `STOP_WORDS` set in `config.py` and observe its effect on the analysis.
 *   Explain how the script handles potential errors like file not found or invalid user input.
 *   Trace the flow of data from file input, through processing and analysis, to display and optional saving.
 *   Articulate how configurable options (top words, stop words) affect the outcome.
 *   Relate at least three functions in the codebase to preprocessing steps in a typical LLM pipeline.
+*   Explain the purpose and a basic interpretation of at least two new NLP features (e.g., "What does a high lexical density suggest?", "What kind of information does NER provide?").
 *   Implement a small new feature or enhancement from the "Further Exploration" list.
 
 ## 💡 Further Exploration
@@ -358,14 +398,13 @@ You'll know you've mastered this project when you can:
 Once you've mastered the current functionalities, consider these enhancements:
 
 *   **Advanced Tokenization:** Explore more sophisticated tokenization methods (e.g., using regular expressions for hyphenated words, contractions).
-*   **N-gram Analysis:** Extend frequency analysis to include bigrams (two-word phrases) or trigrams.
-*   **Sentiment Analysis:** Implement a basic sentiment scoring mechanism (e.g., based on a predefined list of positive/negative words).
-*   **Part-of-Speech (POS) Tagging:** Integrate a simple POS tagger to identify nouns, verbs, adjectives, etc.
 *   **File Input Flexibility:** Allow users to paste text directly instead of only providing a file path.
 *   **Output Formats:** Offer different output formats for saved results (e.g., CSV, JSON).
 *   **Configuration File:** Load default settings from a configuration file (e.g., `config.ini` or `config.json`).
 *   **GUI:** Develop a simple graphical user interface (e.g., using Tkinter, PyQt, or a web framework like Flask/Django).
-*   **More Sophisticated Readability Scores:** Implement established readability formulas like Flesch-Kincaid or Gunning Fog.
 *   **Explore NLP Libraries:** Experiment with libraries like NLTK, spaCy, or TextBlob to see how they handle these tasks more robustly.
+*   **Corpus Analysis:** Extend the tool to analyze a collection of documents and perform comparative analysis or calculate corpus-wide statistics like TF-IDF (see `text_analyzer.analysis.calculate_tfidf_scores_corpus` for a conceptual starting point).
+*   **Topic Modeling:** Implement basic topic modeling (e.g., using LDA with libraries like Gensim or scikit-learn) to identify latent topics in the text.
+*   **Advanced Error Handling:** Implement more granular error handling and user feedback for NLP-specific issues (e.g., language detection if text is not English, better reporting for very short texts).
 
 Happy analyzing!

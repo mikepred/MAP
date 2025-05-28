@@ -199,6 +199,30 @@ class TextAnalyzerGUI:
         output.append(f"Average Word Length: {rs.get('avg_word_length', 'N/A')} characters")
         output.append(f"Complexity Score: {rs.get('complexity_score', 'N/A')}")
         output.append(f"Readability Level: {rs.get('readability_level', 'N/A')}")
+        
+        # Display Standardized Readability Indices (New for Module 4G)
+        output.append("\n  Standardized Readability Indices:")
+        standard_indices = {
+            "flesch_reading_ease": "Flesch Reading Ease",
+            "flesch_kincaid_grade": "Flesch-Kincaid Grade Level",
+            "gunning_fog": "Gunning Fog Index",
+            "smog_index": "SMOG Index",
+            "coleman_liau_index": "Coleman-Liau Index",
+            "dale_chall_readability_score": "Dale-Chall Readability Score",
+            "automated_readability_index": "Automated Readability Index (ARI)"
+        }
+        readability_error = rs.get('error')
+        if readability_error:
+            output.append(f"    Note: {readability_error}")
+        
+        all_std_indices_na_gui = True
+        for key, name in standard_indices.items():
+            score = rs.get(key, 'N/A')
+            output.append(f"    - {name}: {score}")
+            if score != 'N/A':
+                all_std_indices_na_gui = False
+        if all_std_indices_na_gui and not readability_error:
+            output.append("    (Standardized indices N/A, possibly due to short or unsuitable text.)")
 
         # Word Length Distribution
         # The 'word_length_counts_obj' is directly available in results
@@ -232,6 +256,82 @@ class TextAnalyzerGUI:
         else:
             output.append("  No long words found.")
 
+        # N-gram Frequencies (Module 4C)
+        output.append("\n--- N-gram Frequencies ---")
+        ngram_data = results.get('ngram_frequencies', {})
+        if not ngram_data:
+            output.append("N-gram data not available.")
+        else:
+            for ngram_type, ngrams_list in ngram_data.items():
+                output.append(f"  {ngram_type.capitalize()}:")
+                if ngrams_list:
+                    for ngram, count in ngrams_list:
+                        output.append(f"    - \"{ngram}\": {count}")
+                else:
+                    output.append(f"    No {ngram_type.lower()} found.")
+        
+        # Sentiment Analysis (Module 4D)
+        output.append("\n--- Sentiment Analysis (VADER) ---")
+        sentiment_data = results.get('sentiment_analysis', {})
+        if sentiment_data.get('error'):
+            output.append(f"Error in sentiment analysis: {sentiment_data['error']}")
+        elif not sentiment_data or 'compound' not in sentiment_data:
+            output.append("Sentiment data not available or incomplete.")
+        else:
+            output.append(f"  Positive Score: {sentiment_data.get('pos', 0.0):.3f}")
+            output.append(f"  Neutral Score: {sentiment_data.get('neu', 0.0):.3f}")
+            output.append(f"  Negative Score: {sentiment_data.get('neg', 0.0):.3f}")
+            output.append(f"  Compound Score: {sentiment_data.get('compound', 0.0):.3f}")
+            compound_score = sentiment_data.get('compound', 0.0)
+            overall_sentiment = "Neutral"
+            if compound_score >= 0.05:
+                overall_sentiment = "Positive"
+            elif compound_score <= -0.05:
+                overall_sentiment = "Negative"
+            output.append(f"  Overall Sentiment: {overall_sentiment}")
+
+        # Part-of-Speech (POS) Tagging (Module 4E & 4H)
+        output.append("\n--- Part-of-Speech (POS) Tagging (spaCy) ---")
+        pos_data = results.get('pos_analysis', {})
+        if pos_data.get('error'):
+            output.append(f"Error in POS analysis: {pos_data['error']}")
+        elif not pos_data or pos_data.get('total_pos_tags', 0) == 0:
+            output.append("POS data not available or no tags found.")
+        else:
+            output.append(f"  Total POS Tags (excluding punctuation/spaces): {pos_data.get('total_pos_tags', 0):,}")
+            if pos_data.get('most_common_pos'):
+                output.append("  Most Common POS Tags:")
+                for tag, count in pos_data['most_common_pos']:
+                    percentage = (count / pos_data['total_pos_tags'] * 100) if pos_data['total_pos_tags'] > 0 else 0
+                    output.append(f"    - {tag}: {count} ({percentage:.1f}%)")
+            
+            lex_density = pos_data.get('lexical_density')
+            if lex_density is not None:
+                 output.append(f"  Lexical Density: {lex_density:.2f}% (Percentage of content words)")
+            else: # Should have default 0.0 from analysis if POS was ok
+                output.append("  Lexical Density: N/A")
+
+
+        # Named Entity Recognition (NER) (Module 4F)
+        output.append("\n--- Named Entity Recognition (NER) (spaCy) ---")
+        ner_data = results.get('ner_analysis', {})
+        if ner_data.get('error'):
+            output.append(f"Error in NER analysis: {ner_data['error']}")
+        elif not ner_data or ner_data.get('total_entities', 0) == 0:
+            output.append("NER data not available or no entities found.")
+        else:
+            output.append(f"  Total Named Entity Mentions: {ner_data.get('total_entities', 0):,}")
+            if ner_data.get('most_common_entity_types'):
+                output.append("  Most Common Entity Types:")
+                entities_by_type = ner_data.get('entities_by_type', {})
+                for entity_type, count in ner_data['most_common_entity_types']:
+                    examples = entities_by_type.get(entity_type, [])
+                    example_str = ""
+                    if examples:
+                        display_examples = [ex[:30] + '...' if len(ex) > 30 else ex for ex in examples[:3]]
+                        example_str = f" (e.g., {', '.join(display_examples)})"
+                    output.append(f"    - {entity_type}: {count} mentions{example_str}")
+        
         return "\n".join(output)
 
     def save_results(self):
