@@ -274,6 +274,40 @@ The `text_analyzer` package provides a comprehensive script to perform text anal
     *   Select a display format for the results.
     *   Optionally save the results.
 
+## 🌐 Web Application Interface
+
+In addition to the command-line interface, this project also includes a web-based interface powered by Flask.
+
+### Dependencies for Web App
+
+*   **Flask**: The web application requires Flask. This dependency is listed in `text_analyzer/requirements.txt`.
+*   **Installation/Update**: To install or update all necessary dependencies for both the CLI and web app, run the following command from the root directory of the project:
+    ```bash
+    pip install -r text_analyzer/requirements.txt
+    ```
+
+### Running the Web App
+
+1.  **Navigate to Project Root**: Ensure you are in the root directory of the project (the same directory that contains `webapp.py` and the `text_analyzer` folder).
+2.  **Run the Flask App**: Execute the following command:
+    ```bash
+    python webapp.py
+    ```
+3.  **Access in Browser**: Open your web browser and go to `http://127.0.0.1:5000/`. You should see the Text Analyzer web interface.
+
+### Using the Web Interface
+
+The web interface provides a user-friendly way to analyze text:
+
+1.  **Provide Text**:
+    *   **Paste Text**: You can directly paste the text you want to analyze into the large textarea provided.
+    *   **Upload File**: Alternatively, you can click the "Choose File" or "Browse" button (browser-dependent) to select a `.txt` file from your computer.
+2.  **Configure Analysis Options**:
+    *   **Number of top words**: Specify how many of the most frequent words you want to see in the results (defaults to 10).
+    *   **Remove stop words?**: Check this box (default is checked) to exclude common English stop words (like "the", "is", "in") from the analysis for a more focused look at content-bearing words.
+3.  **Submit for Analysis**: Click the "Analyze" button.
+4.  **View Results**: The analysis results will be displayed directly on the page below the form. If there are any errors (e.g., no text provided), an error message will be shown.
+
 ## 🐛 Common Issues & Solutions
 
 | Problem | Solution |

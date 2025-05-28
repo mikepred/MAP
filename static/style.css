@@ -1,0 +1,91 @@
+body {
+    font-family: sans-serif;
+    line-height: 1.6;
+    margin: 20px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+form div {
+    margin-bottom: 15px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+textarea, input[type="number"], input[type="file"] {
+    width: calc(100% - 22px); /* Adjust width considering padding and border */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box; /* Important for width calculation */
+}
+
+textarea {
+    resize: vertical;
+}
+
+button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+#results_area {
+    margin-top: 20px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#results_area pre {
+    background-color: #e9ecef;
+    padding: 15px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    white-space: pre-wrap; /* Ensures content respects newlines and wraps if too long */
+    word-wrap: break-word; /* Breaks long words to prevent horizontal scroll */
+    font-family: monospace;
+}
+
+.error_message {
+    color: #D8000C; /* Red for errors */
+    background-color: #FFD2D2; /* Light red background */
+    border: 1px solid #D8000C;
+    padding: 10px; /* Ensure padding is applied */
+    border-radius: 4px; /* Consistent with other pre blocks */
+    font-weight: bold;
+    white-space: pre-wrap; /* Ensure error messages also wrap */
+    word-wrap: break-word;
+    font-family: monospace; /* Consistent font */
+}
