@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Text Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Text Analyzer</h1>
+
+    <form method="POST" action="/analyze" enctype="multipart/form-data">
+        <div>
+            <label for="text_input">Paste Text:</label><br>
+            <textarea id="text_input" name="text_input" rows="10" cols="80"></textarea>
+        </div>
+        <br>
+        <div>
+            <label for="file_input">Or Upload File:</label><br>
+            <input type="file" id="file_input" name="file_input">
+        </div>
+        <br>
+        <div>
+            <label for="top_words">Number of top words:</label>
+            <input type="number" id="top_words" name="top_words" value="10">
+        </div>
+        <br>
+        <div>
+            <input type="checkbox" id="remove_stopwords" name="remove_stopwords" value="true" checked>
+            <label for="remove_stopwords">Remove stop words?</label>
+        </div>
+        <br>
+        <button type="submit">Analyze</button>
+    </form>
+
+    <h2>Results:</h2>
+    <div id="results_area">
+        {% if error_message %}
+            <pre class="error_message">{{ error_message }}</pre>
+        {% elif results %}
+            <pre>{{ results|safe }}</pre>
+        {% else %}
+            <pre>Analysis results will appear here.</pre>
+        {% endif %}
+    </div>
+</body>
+</html>
