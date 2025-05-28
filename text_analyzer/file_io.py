@@ -39,6 +39,7 @@ def read_file(filename: Union[str, Path]) -> str:
         file_to_read: Path = Path(filename)
         with open(file_to_read, 'r', encoding='utf-8') as file:
             content: str = file.read()
+            # Ensured f-strings are used, which they already were.
             print(f"✅ Successfully read file: {file_to_read}")
             print(f"📄 File size: {len(content)} characters")
             return content
@@ -48,19 +49,19 @@ def read_file(filename: Union[str, Path]) -> str:
         print("💡 Please check the filename and path.")
         return ""
     except PermissionError:
-        print(f"❌ Error: No permission to read '{filename}'.")
+        print(f"❌ Error: No permission to read file '{filename}'.") # Added "file" for clarity
         print("💡 Check file permissions or try running as administrator.")
         return ""
     except UnicodeDecodeError:
-        print(f"❌ Error: Unable to decode '{filename}' as text.")
-        print("💡 File might be binary or use different encoding.")
+        print(f"❌ Error: Unable to decode file '{filename}' as text.") # Added "file" for clarity
+        print("💡 File might be binary or use a different encoding.") # Slightly rephrased
         return ""
     except IsADirectoryError:
-        print(f"❌ Error: '{filename}' is a directory, not a file.")
+        print(f"❌ Error: Path '{filename}' is a directory, not a file.") # Added "Path" for clarity
         print("💡 Please specify a file, not a folder.")
         return ""
     except Exception as e:
-        print(f"❌ Unexpected error reading '{filename}': {e}")
+        print(f"❌ Unexpected error reading file '{filename}': {type(e).__name__} - {e}") # Added type of exception
         print("💡 Please try again or contact support.")
         return ""
 
@@ -185,8 +186,8 @@ def save_results_to_file(
             f.write(f"Top {actual_top_n} most common words:\n")
             f.write("-" * 30 + "\n")
             
-            for word, count_val in most_common: # Renamed count to count_val
-                f.write(f"{word:15} : {count_val:3d}\n")
+            for word, count_value in most_common: # Renamed count_val to count_value for clarity
+                f.write(f"{word:15} : {count_value:3d}\n")
             
             f.write("-" * 30 + "\n")
             f.write(f"Total unique words: {unique_word_count}\n")
