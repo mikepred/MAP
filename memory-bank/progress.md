@@ -27,7 +27,8 @@ This document outlines what currently works, what is left to build, the current 
     * Reviewed Module 5 documentation.
     * Installed NLTK and spaCy libraries and necessary data/models.
     * Created and executed `text_analyzer/explore_nlp_libraries.py`.
-  * **Refactoring for Pythonic Best Practices (Current Session)**: Applied type hints, defined module-level constants, standardized path handling with `pathlib`, consolidated text cleaning functions, centralized all analysis logic within `analyze_text_complete()`, refactored `main()` for better menu handling (including adding a custom file analysis option), removed redundant functions, and pre-compiled regular expressions. The main analysis input file for one menu option remains `text_analyzer/s.txt`.
+    * **Refactoring for Pythonic Best Practices (Current Session)**: Applied type hints, defined module-level constants, standardized path handling with `pathlib`, consolidated text cleaning functions, centralized all analysis logic within `analyze_text_complete()`, refactored `main()` for better menu handling (including adding a custom file analysis option), removed redundant functions, and pre-compiled regular expressions. The main analysis input file for one menu option remains `text_analyzer/s.txt`.
+  * **File Encoding Robustness**: Successfully resolved `UnicodeDecodeError` for files like `dict-sample.txt` by updating `text_analyzer/file_io.py` to use `iso-8859-1` encoding, enhancing the tool's ability to handle various text file encodings.
 
 * **Git Branch Visualizer Project (`branch_visualizer.py`) - On `main` branch**:
   * The script is functional for its core purpose of generating Mermaid `gitGraph` syntax for local branches.
@@ -63,7 +64,8 @@ This document outlines what currently works, what is left to build, the current 
 * **Overall Project**: The `main` branch is now the stable, up-to-date representation of the project, incorporating all completed work on the Text Analyzer (including Module 4 enhancements and initial Module 5C exploration) and the functional Git Branch Visualizer.
 * **Text Analyzer**: Fully functional as per Modules 1-4, with initial Module 5C exploration completed, all on the `main` branch.
 * **Git Branch Visualizer**: Functional on the `main` branch.
-* **Memory Bank**: Currently being updated to reflect the `develop` to `main` merge and overall project status.
+* **Text Analyzer File Handling**: `text_analyzer/file_io.py` updated to use `iso-8859-1` encoding, resolving previous `UnicodeDecodeError` issues with certain files.
+* **Memory Bank**: Update nearly complete, reflecting recent `UnicodeDecodeError` fix and overall project status.
 * **Git Branches**:
   * `main`: Up-to-date locally and on `origin/main`. Contains all merged features.
   * `develop`: Up-to-date locally and on `origin/develop`, synchronized with `main`.
@@ -94,3 +96,4 @@ This document outlines what currently works, what is left to build, the current 
   * Currently updating Memory Bank files (`activeContext.md`, `progress.md`, `techContext.md`) to reflect this major integration and current project state.
   * **Resolved markdownlint errors across the project.**
   * **Refactored `analyzer.py` for Pythonic best practices (Current Session)**: This involved updates to type hinting, constants, path handling, cleaning function consolidation, centralization of analysis logic in `analyze_text_complete()`, `main()` menu refactoring (including adding a custom file analysis option), removal of redundant functions, and pre-compilation of regular expressions.
+  * **Addressed `UnicodeDecodeError` in Text Analyzer**: Investigated and resolved an encoding issue when reading `dict-sample.txt` by modifying `text_analyzer/file_io.py` to use `iso-8859-1` encoding.

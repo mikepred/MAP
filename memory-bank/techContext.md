@@ -8,7 +8,7 @@ This document covers the technologies used in the project, the development setup
 
 * **Python**: Version 3.7 or higher is required.
 * **Standard Library**:
-  * `os`, `pathlib`: For file system interactions (Module 3B onwards).
+  * `os`, `pathlib`: For file system interactions (Module 3B onwards). File reading (`file_io.py`) uses `iso-8859-1` encoding by default to improve compatibility with various text file encodings.
   * `collections`: The `Counter` class for efficient word frequency counting (Module 3C onwards).
   * `string`: The `string.punctuation` constant and `str.maketrans()` method for text cleaning (Module 3C onwards).
   * `re`: The regular expression module for advanced text cleaning and sentence splitting (Module 3C onwards).

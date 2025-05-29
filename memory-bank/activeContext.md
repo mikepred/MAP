@@ -4,9 +4,16 @@ This document outlines the current work focus, recent changes, and next steps fo
 
 ## Current Work Focus
 
-The primary focus is **updating the Cline Memory Bank** to reflect the latest project status, including the successful `develop` to `main` branch merge and recent `analyzer.py` refactorings.
+The primary focus is **completing the update of the Cline Memory Bank** after resolving a file encoding issue in the Text Analyzer.
 
 ## Recent Changes
+
+*   **Text Analyzer: Resolved `UnicodeDecodeError` for `dict-sample.txt`**:
+    *   Encountered `UnicodeDecodeError` when `text_analyzer` attempted to read `dict-sample.txt`.
+    *   Initial investigation showed `text_analyzer/file_io.py` was already using `utf-8` encoding.
+    *   The `read_file` tool successfully read `dict-sample.txt`, suggesting the file was not strictly UTF-8 but readable with another encoding.
+    *   Modified `text_analyzer/file_io.py` in the `read_file` function to use `iso-8859-1` encoding instead of `utf-8`.
+    *   User confirmed this change resolved the `UnicodeDecodeError` when running `text_analyzer` with `dict-sample.txt`.
 
 *   **Git Workflow: `develop` Branch Integrated into `main`**:
     *   Successfully merged the `develop` branch into the `main` branch.
@@ -56,12 +63,12 @@ The primary focus is **updating the Cline Memory Bank** to reflect the latest pr
 ## Pending Tasks & Next Steps
 
 1.  **Finalize Memory Bank Update (Current Task)**:
-    *   Update `memory-bank/activeContext.md` (this file) - *This update is in progress.*
-    *   Update `memory-bank/progress.md` to reflect the latest status and remove completed refactoring items.
-    *   Review other memory bank files (`projectbrief.md`, `productContext.md`, `systemPatterns.md`, `techContext.md`) for any minor consistency updates.
+    *   Update `memory-bank/activeContext.md` (this file) - *This update is complete.*
+    *   Update `memory-bank/progress.md` to reflect the `UnicodeDecodeError` fix and current status.
+    *   Confirm other memory bank files (`projectbrief.md`, `productContext.md`, `systemPatterns.md`, `techContext.md`) are consistent (reviewed, `techContext.md` was updated).
 
 2.  **Commit Memory Bank Updates**:
-    *   Commit all changes made to the memory bank files.
+    *   Commit all changes made to the memory bank files and `text_analyzer/file_io.py`.
 
 3.  **Continue with Text Analyzer - Module 5C "Immediate Next Steps" (on `main` or a new feature branch)**:
     *   Decide on and proceed with Step 2 (Experiment with Real-World Data) or Step 3 (Build an Enhanced Version of Your Project / New Small Project) from Module 5C.

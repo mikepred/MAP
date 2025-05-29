@@ -37,7 +37,7 @@ def read_file(filename: Union[str, Path]) -> str:
     """Read text from a file with comprehensive error handling."""
     try:
         file_to_read: Path = Path(filename)
-        with open(file_to_read, 'r', encoding='utf-8') as file:
+        with open(file_to_read, 'r', encoding='iso-8859-1') as file:
             content: str = file.read()
             # Ensured f-strings are used, which they already were.
             print(f"✅ Successfully read file: {file_to_read}")

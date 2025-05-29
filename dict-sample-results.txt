@@ -1,0 +1,35 @@
+Text Analysis Results
+==============================
+
+Top 25 most common words:
+------------------------------
+your            : 596
+etymology       : 311
+n               : 252
+as              : 246
+from            : 238
+pronounced      : 230
+all             : 226
+if              : 188
+life            : 157
+out             : 157
+which           : 152
+their           : 149
+how             : 146
+like            : 138
+just            : 137
+into            : 136
+up              : 128
+only            : 126
+when            : 125
+even            : 123
+time            : 122
+what            : 120
+so              : 119
+feel            : 117
+back            : 116
+------------------------------
+Total unique words: 7375
+Total words (in analysis): 27083
+
+Analysis complete.
