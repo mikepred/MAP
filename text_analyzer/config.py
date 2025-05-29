@@ -56,3 +56,12 @@ DEFAULT_DISPLAY_REPEATED_WORDS_LIMIT: int = 5 # For display_interesting_patterns
 DEFAULT_DISPLAY_LONG_WORDS_LIMIT: int = 8
 DEFAULT_DISPLAY_SHORT_WORDS_LIMIT: int = 10
 DEFAULT_UNIQUE_WORDS_SAMPLE_DISPLAY_LIMIT: int = 10 # For analyze_text_complete unique_words_sample
+
+# Constants for N-gram analysis (New for Module 4C)
+DEFAULT_NGRAM_N_VALUES: list[int] = [2, 3]  # Calculate bigrams and trigrams by default
+DEFAULT_NGRAM_DISPLAY_COUNT: int = 10      # Number of most common N-grams to display/store
+
+# Constants for POS Tagging and NER (New for Modules 4E, 4F, 4H)
+CONTENT_POS_TAGS: Set[str] = {'NOUN', 'VERB', 'ADJ', 'ADV'} # POS tags considered as content words for lexical density
+DEFAULT_POS_DISPLAY_COUNT: int = 10        # Number of most common POS tags to display
+DEFAULT_NER_DISPLAY_COUNT: int = 5         # Number of most common NER entity types to display with examples

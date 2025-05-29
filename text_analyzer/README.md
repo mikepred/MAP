@@ -38,8 +38,14 @@ Total Sentences: 3
 Average Sentence Length: 10.3 words
 Longest Sentence: "This tool provides comprehensive insights from textual data through multiple analysis modules." (13 words)
 
---- Readability (Flesch-Kincaid Grade Level) ---
-Grade Level: 8.5
+--- Readability (Flesch-Kincaid Grade Level & other standard indices) ---
+Grade Level: 8.5 
+(Note: The report also includes Flesch Reading Ease, Gunning Fog, SMOG, etc.)
+
+--- Sentiment Analysis (VADER) ---
+Overall Sentiment: Positive (Compound: 0.85)
+
+(Note: The full report also includes N-gram frequencies, detailed POS statistics with lexical density, and named entity recognition results.)
 ```
 
 ## 🎯 Learning Objectives
@@ -116,8 +122,12 @@ The `text_analyzer` package offers a comprehensive suite of features:
 3.  **Multiple Analysis Types:**
     *   **Word Frequency Analysis:** Identify the most common words.
     *   **Sentence Analysis:** Get total sentence count, average sentence length, and identify the longest and shortest sentences.
-    *   **Readability Scores:** Calculate metrics like the Flesch-Kincaid Grade Level to assess text complexity.
+    *   **Comprehensive Readability Assessment:** Calculates a custom complexity score and a suite of standardized readability indices (Flesch Reading Ease, Flesch-Kincaid Grade, Gunning Fog, SMOG Index, Coleman-Liau Index, Dale-Chall Readability Score, Automated Readability Index).
     *   **Common Text Patterns:** Extract predefined patterns (e.g., dates, emails - configurable via `config.py`).
+    *   **N-gram Frequencies:** Analyzes and displays common N-grams (Bigrams and Trigrams).
+    *   **Sentiment Analysis:** Determines overall sentiment (Positive, Negative, Neutral) using VADER, providing detailed scores.
+    *   **Part-of-Speech (POS) Tagging:** Identifies POS tags, lists the most common ones, and calculates Lexical Density (the percentage of content words like nouns, verbs, adjectives, adverbs).
+    *   **Named Entity Recognition (NER):** Detects and categorizes named entities (such as persons, organizations, locations), showing common types and examples.
 4.  **Save Results:** Option to save the detailed analysis output to a text file for later review.
 5.  **Modular Design:** Each part of the analysis pipeline (I/O, processing, analysis, display) is handled by a separate module, making the codebase easy to understand, maintain, and extend.
 
@@ -179,15 +189,16 @@ You'll know you've successfully understood this `text_analyzer` tool when you ca
 
 Once you have a solid understanding of the `text_analyzer` package, you might consider these enhancements:
 
--   **Add New Analysis Modules:** Implement new types of text analysis in `analysis.py`, such as:
-    *   Part-of-speech tagging.
-    *   Named entity recognition.
-    *   Sentiment analysis (basic keyword-based or using a simple library).
-    *   N-gram frequency analysis (bigrams, trigrams).
--   **Improve Existing Algorithms:** Refine the algorithms in `analysis.py` or `text_processing.py`. For example, improve the readability formula or add more sophisticated cleaning options.
--   **Integrate Other Data Sources:** Modify `file_io.py` to support reading from URLs or other text-based formats.
--   **Enhance Configuration:** Allow more configurations to be set via command-line arguments or a more interactive configuration process.
--   **Develop a Simple GUI:** Use a library like Tkinter or PyQt to create a graphical user interface for the tool.
+-   **Improve Existing Algorithms:** Refine the algorithms in `analysis.py` or `text_processing.py`. For example, add more sophisticated cleaning options, explore alternative tokenization strategies, or enhance pattern detection.
+-   **Integrate Other Data Sources:** Modify `file_io.py` to support reading from URLs or other text-based formats (e.g., PDF with an additional library).
+-   **Enhance Configuration:** Allow more configurations to be set via command-line arguments or a more interactive configuration process within the CLI.
+-   **Develop a Simple GUI:** Use a library like Tkinter or PyQt to create a graphical user interface for the tool (Note: A basic Tkinter GUI is provided in `gui.py` in the root, which could be enhanced or used as a model).
 -   **Output to Different Formats:** Extend `file_io.py` and `display.py` to allow saving results in formats like CSV or JSON.
+-   **Corpus-Level Analysis:** Extend the tool to handle a collection of documents. This could involve:
+    *   Calculating TF-IDF scores across the corpus (see `analysis.calculate_tfidf_scores_corpus` for a conceptual start).
+    *   Performing comparative analysis between documents.
+-   **Advanced Topic Modeling:** Implement topic modeling techniques (e.g., LDA using Gensim or scikit-learn) to discover latent topics within the text or corpus.
+-   **Customizable NER Patterns:** Allow users to define custom entity patterns via `config.py` for spaCy's `EntityRuler`.
+-   **Language Detection and Handling:** Add functionality to detect the language of the input text and potentially adapt analysis or warn if it's not English (as current models are English-focused).
 
 This tool provides a solid foundation for experimenting with various text analysis techniques. Happy analyzing!
