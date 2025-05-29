@@ -1,0 +1,224 @@
+============================================================
+                  📊 TEXT ANALYSIS REPORT 📊
+============================================================
+
+📊 General Statistics
+--------------------
+📄 Total Characters (raw): 242,819
+🔤 Characters (raw, no spaces): 202,251
+📝 Total Words (after cleaning/stop words): 27,083
+📋 Total Sentences: 2,890
+📄 Paragraphs: 870
+📏 Average Words per Sentence: 9.4
+
+🔤 Word Frequency Analysis
+-------------------------
+🎯 Unique Words: 7,375
+📊 Total Word Count (in analysis): 27,083
+
+🏆 Top 25 Most Common Words:
+   1. 'your' - 596 times (2.2%)
+   2. 'etymology' - 311 times (1.1%)
+   3. 'n' - 252 times (0.9%)
+   4. 'as' - 246 times (0.9%)
+   5. 'from' - 238 times (0.9%)
+   6. 'pronounced' - 230 times (0.8%)
+   7. 'all' - 226 times (0.8%)
+   8. 'if' - 188 times (0.7%)
+   9. 'life' - 157 times (0.6%)
+  10. 'out' - 157 times (0.6%)
+  11. 'which' - 152 times (0.6%)
+  12. 'their' - 149 times (0.6%)
+  13. 'how' - 146 times (0.5%)
+  14. 'like' - 138 times (0.5%)
+  15. 'just' - 137 times (0.5%)
+  16. 'into' - 136 times (0.5%)
+  17. 'up' - 128 times (0.5%)
+  18. 'only' - 126 times (0.5%)
+  19. 'when' - 125 times (0.5%)
+  20. 'even' - 123 times (0.5%)
+  21. 'time' - 122 times (0.5%)
+  22. 'what' - 120 times (0.4%)
+  23. 'so' - 119 times (0.4%)
+  24. 'feel' - 117 times (0.4%)
+  25. 'back' - 116 times (0.4%)
+
+📋 Sentence Analysis
+-------------------
+📊 Total Sentences: 2890
+📏 Average Words per Sentence: 14.1
+
+📏 Longest Sentence:
+   "the sorrow of imagining the wealth of knowledge forever lost to historyâ knowing weâll never hear th..."
+
+📏 Shortest Sentence:
+   "st"
+
+📖 Readability Analysis
+----------------------
+📐 Average Word Length (of analyzed words): 5.9 characters
+🎯 Complexity Score: 9.2
+📚 Readability Level: Moderate
+   💡 This text requires moderate reading skills.
+
+  Standardized Readability Indices:
+    - Flesch Reading Ease: 63.72
+    - Flesch-Kincaid Grade Level: 8.51
+    - Gunning Fog Index: 10.33
+    - SMOG Index: 10.68
+    - Coleman-Liau Index: 9.63
+    - Dale-Chall Readability Score: 9.23
+    - Automated Readability Index (ARI): 9.79
+
+🔍 Interesting Patterns
+----------------------
+🎨 Word Variety (analyzed words): 27.2% (unique words / total analyzed words)
+
+🔄 Most Repeated Words (among analyzed):
+   'your' appears 596 times
+   'etymology' appears 311 times
+   'n' appears 252 times
+   'as' appears 246 times
+   'from' appears 238 times
+
+📏 Long Words (7+ characters, among analyzed):
+   achenia, maddening, complex, understand, whenever, trivial, question, quickly
+
+🔤 Short Words (1-2 characters, among analyzed):
+   n, up, 1, if, nd, so, as, st, no, o
+
+--- Word Length Analysis ---
+ 1 letter(s):  339 words (  1.3%)
+ 2 letter(s):  944 words (  3.5%)
+ 3 letter(s): 2433 words (  9.0%)
+ 4 letter(s): 6212 words ( 22.9%)
+ 5 letter(s): 4310 words ( 15.9%)
+ 6 letter(s): 3454 words ( 12.8%)
+ 7 letter(s): 3167 words ( 11.7%)
+ 8 letter(s): 2164 words (  8.0%)
+ 9 letter(s): 1724 words (  6.4%)
+10 letter(s): 1046 words (  3.9%)
+11 letter(s):  436 words (  1.6%)
+12 letter(s):  305 words (  1.1%)
+13 letter(s):  176 words (  0.6%)
+14 letter(s):  113 words (  0.4%)
+15 letter(s):   77 words (  0.3%)
+16 letter(s):   55 words (  0.2%)
+17 letter(s):   45 words (  0.2%)
+18 letter(s):   30 words (  0.1%)
+19 letter(s):   21 words (  0.1%)
+20 letter(s):   13 words (  0.0%)
+21 letter(s):    9 words (  0.0%)
+22 letter(s):    3 words (  0.0%)
+23 letter(s):    4 words (  0.0%)
+24 letter(s):    1 words (  0.0%)
+28 letter(s):    1 words (  0.0%)
+31 letter(s):    1 words (  0.0%)
+
+Average word length: 5.9 letters
+--------------------------
+
+📊 Bigrams Frequencies
+---------------------
+   1. 'etymology from' - 117 times
+   2. 'as if' - 50 times
+   3. 'your life' - 48 times
+   4. 'your own' - 47 times
+   5. 'even if' - 27 times
+   6. 'etymology ancient' - 22 times
+   7. 'ancient greek' - 22 times
+   8. 'etymology latin' - 22 times
+   9. 'your head' - 22 times
+  10. 'each other' - 21 times
+
+📊 Trigrams Frequencies
+----------------------
+   1. 'etymology ancient greek' - 18 times
+   2. 'etymology middle english' - 11 times
+   3. 'as long as' - 8 times
+   4. 'no matter how' - 8 times
+   5. 'inside your head' - 7 times
+   6. 'as if youâre' - 7 times
+   7. 'makes wonder if' - 7 times
+   8. 'no way knowing' - 6 times
+   9. 'as if your' - 6 times
+  10. 'life etymology latin' - 5 times
+
+💖 Sentiment Analysis (VADER)
+----------------------------
+  Negative Score: 0.082
+  Neutral Score:  0.806
+  Positive Score: 0.112
+  Compound Score: 1.000
+
+  Overall Sentiment: Positive
+  (Interpretation based on VADER's compound score thresholds)
+
+🏷️ Part-of-Speech (POS) Tag Analysis (spaCy)
+--------------------------------------------
+Total POS Tags (excluding punctuation/spaces): 41,242
+
+Most Common POS Tags:
+   1. NOUN: 8912 times (21.6%)
+   2. VERB: 6046 times (14.7%)
+   3. ADP: 4845 times (11.7%)
+   4. PRON: 4320 times (10.5%)
+   5. DET: 3882 times (9.4%)
+   6. ADJ: 3266 times (7.9%)
+   7. ADV: 2975 times (7.2%)
+   8. AUX: 1695 times (4.1%)
+   9. PROPN: 1372 times (3.3%)
+  10. CCONJ: 1237 times (3.0%)
+
+Lexical Density: 51.40% (Percentage of content words)
+
+🌍 Named Entity Recognition (NER) Analysis (spaCy)
+-------------------------------------------------
+Total Named Entity Mentions Found: 859
+
+Most Common Entity Types:
+   1. PERSON: 203 mentions (e.g., -lee-et.â, -lee-zee-uhm.â, a.a.... anachl)
+   2. DATE: 173 mentions (e.g., 12000, 1609, 1982)
+   3. NORP: 153 mentions (e.g., american, appalachian, armenian)
+   4. CARDINAL: 139 mentions (e.g., 0, 1, 2)
+   5. TIME: 56 mentions (e.g., 5 a.m., a dark morning, a few minutes)
+
+✅ Analysis Complete
+-------------------
+📝 Report generated successfully!
+
+--- Word Length Analysis ---
+ 1 letter(s):  339 words (  1.3%)
+ 2 letter(s):  944 words (  3.5%)
+ 3 letter(s): 2433 words (  9.0%)
+ 4 letter(s): 6212 words ( 22.9%)
+ 5 letter(s): 4310 words ( 15.9%)
+ 6 letter(s): 3454 words ( 12.8%)
+ 7 letter(s): 3167 words ( 11.7%)
+ 8 letter(s): 2164 words (  8.0%)
+ 9 letter(s): 1724 words (  6.4%)
+10 letter(s): 1046 words (  3.9%)
+11 letter(s):  436 words (  1.6%)
+12 letter(s):  305 words (  1.1%)
+13 letter(s):  176 words (  0.6%)
+14 letter(s):  113 words (  0.4%)
+15 letter(s):   77 words (  0.3%)
+16 letter(s):   55 words (  0.2%)
+17 letter(s):   45 words (  0.2%)
+18 letter(s):   30 words (  0.1%)
+19 letter(s):   21 words (  0.1%)
+20 letter(s):   13 words (  0.0%)
+21 letter(s):    9 words (  0.0%)
+22 letter(s):    3 words (  0.0%)
+23 letter(s):    4 words (  0.0%)
+24 letter(s):    1 words (  0.0%)
+28 letter(s):    1 words (  0.0%)
+31 letter(s):    1 words (  0.0%)
+
+Average word length: 5.9 letters
+--------------------------
+
+💾 Save analysis results to file? (yes/no, default: no): yes
+Enter output filename (default: ../dict-sample_analysis_results.txt): dict-sample-results.txt
+
+✅ Results successfully saved to C:\root\MAP\dict-sample-results.txt

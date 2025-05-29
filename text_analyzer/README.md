@@ -23,31 +23,6 @@ Raw Text  → Lowercasing, Punctuation & Regex Cleaning → Word/Sentence Tokens
                                                                                               Pattern Matching
 ```
 
-**Example Output Snippet:**
-
-```text
---- Word Frequencies (Top 5) ---
-1. text: 3 occurrences
-2. analysis: 2 occurrences
-3. tool: 1 occurrence
-4. provides: 1 occurrence
-5. insights: 1 occurrence
-
---- Sentence Analysis ---
-Total Sentences: 3
-Average Sentence Length: 10.3 words
-Longest Sentence: "This tool provides comprehensive insights from textual data through multiple analysis modules." (13 words)
-
---- Readability (Flesch-Kincaid Grade Level & other standard indices) ---
-Grade Level: 8.5 
-(Note: The report also includes Flesch Reading Ease, Gunning Fog, SMOG, etc.)
-
---- Sentiment Analysis (VADER) ---
-Overall Sentiment: Positive (Compound: 0.85)
-
-(Note: The full report also includes N-gram frequencies, detailed POS statistics with lexical density, and named entity recognition results.)
-```
-
 ## 🎯 Learning Objectives
 
 By exploring and utilizing this `text_analyzer` tool, you will:
@@ -77,41 +52,117 @@ By exploring and utilizing this `text_analyzer` tool, you will:
 
 ## 📂 Project Structure
 
-The `text_analyzer` package is organized as follows:
+The `text_analyzer` package (primarily within the `text_analyzer/` directory) and associated files are organized as follows:
 
-- `analyzer.py`: The main executable script. It provides a menu-driven command-line interface (CLI) and orchestrates the different analysis modules based on user choices.
-- `config.py`: Stores all configuration settings for the application. This includes default file paths, lists of stop words, regular expressions for text cleaning and pattern matching, and limits for displaying results (e.g., number of top words).
-- `file_io.py`: Handles all file input and output operations. This includes reading text from specified files, validating file existence, prompting the user for file paths if needed, and saving analysis results to a new file.
-- `text_processing.py`: Contains functions dedicated to preparing text for analysis. This involves text cleaning (e.g., lowercasing, removing punctuation, custom regex cleaning), tokenization (splitting text into words or sentences), and removing stop words.
-- `analysis.py`: Includes the core functions for performing various text analyses. This module calculates word frequencies, provides sentence statistics (like count, average length, longest/shortest sentences), computes readability scores (e.g., Flesch-Kincaid), and identifies common text patterns.
-- `display.py`: Responsible for formatting and presenting the analysis results to the console in a clear, human-readable format.
-- `__init__.py`: An empty file that signals to Python that the `text_analyzer` directory should be treated as a package, allowing for modular imports.
-- `requirements.txt`: Lists the external Python libraries and dependencies required for the project to run correctly (e.g., `nltk` for readability scores).
-- `sample.txt` (or `s.txt`): A sample text file provided for quick analysis and demonstration of the tool's capabilities.
-- `.clinerules/`: This directory contains lesson plans and guides designed to help understand the project's structure, functionality, and how to explore it effectively, potentially with an AI copilot.
+- `text_analyzer/analyzer.py`: The main executable script for the command-line interface (CLI). It provides a menu-driven interface and orchestrates the different analysis modules.
+- `webapp.py` (in project root): The main script for launching the Web Graphical User Interface (GUI).
+- `text_analyzer/gui.py`: The script for launching the local Desktop Graphical User Interface (GUI) using Tkinter.
+- `text_analyzer/config.py`: Stores all configuration settings for the application. This includes default file paths, lists of stop words, regular expressions for text cleaning and pattern matching, and limits for displaying results.
+- `text_analyzer/file_io.py`: Handles all file input and output operations for the CLI and core logic.
+- `text_analyzer/text_processing.py`: Contains functions dedicated to preparing text for analysis (cleaning, tokenization, stop word removal).
+- `text_analyzer/analysis.py`: Includes the core functions for performing various text analyses (word frequencies, sentence statistics, readability, patterns).
+- `text_analyzer/display.py`: Responsible for formatting and presenting the analysis results to the console for the CLI.
+- `text_analyzer/__init__.py`: An empty file that signals to Python that the `text_analyzer` directory should be treated as a package.
+- `text_analyzer/requirements.txt`: Lists the external Python libraries and dependencies required for the project to run correctly.
+- `text_analyzer/sample.txt` (or `s.txt`): Sample text files for quick analysis.
+- `templates/` (in project root): HTML templates for the `webapp.py`.
+- `static/` (in project root): CSS files for the `webapp.py`.
+- `.clinerules/`: This directory contains lesson plans and guides designed to help understand the project's structure, functionality, and how to explore it effectively.
 
-## ⚡ Quick Start
+## 🚀 How to Run the Text Analyzer
 
-### Option 1: Follow the Comprehension Lesson Plan (Recommended)
+There are three primary ways to run the Text Analyzer:
 
-For a deep dive into the tool's architecture and functionality:
-1. Navigate to the `.clinerules/` directory.
-2. Start with the main lesson plan (e.g., `comprehending_the_text_analyzer.md`) to systematically understand each component of the `text_analyzer` package.
+### Option 1: Command-Line Interface (CLI)
 
-### Option 2: Jump Right In
+This provides a menu-driven interface in your terminal.
 
-1. Ensure you have Python 3.7+ and the dependencies from `requirements.txt` installed.
-   ```bash
-   pip install -r requirements.txt 
-   ```
-2. Navigate to the `text_analyzer` project directory.
-3. Run the main analyzer script:
-   ```bash
-   python analyzer.py
-   ```
-4. Follow the on-screen menu prompts to load a file and select analyses.
+1.  **Ensure Prerequisites:**
+    *   Python 3.7+ installed.
+    *   Navigate to the project's root directory (e.g., `MAP/`).
+    *   Install dependencies:
+        ```bash
+        pip install -r text_analyzer/requirements.txt
+        ```
 
-## ✨ Core Functionality
+2.  **Run the CLI Script:**
+    From the project's root directory, execute:
+    ```bash
+    python text_analyzer/analyzer.py
+    ```
+    Or, if you are inside the `text_analyzer` directory:
+    ```bash
+    python analyzer.py
+    ```
+
+3.  **Interact:** Follow the on-screen menu prompts to load a file and select analyses. The CLI also includes an option to run built-in system tests.
+
+### Option 2: Web Graphical User Interface (Web GUI)
+
+This launches a web-based interface that you can access in your browser.
+
+1.  **Set up a Virtual Environment (Recommended):**
+    From the project's root directory (`MAP/`):
+    ```bash
+    # Create a virtual environment (e.g., named 'venv')
+    python -m venv venv
+
+    # Activate the virtual environment
+    # On Windows:
+    # venv\Scripts\activate
+    # On macOS/Linux:
+    # source venv/bin/activate
+    ```
+
+2.  **Install Dependencies (inside the virtual environment):**
+    ```bash
+    pip install -r text_analyzer/requirements.txt
+    # The webapp might have additional dependencies, ensure Flask is listed or add it
+    # pip install Flask  (if not already in requirements.txt and needed by webapp.py)
+    ```
+
+3.  **Run the Web Application:**
+    From the project's root directory:
+    ```bash
+    python webapp.py
+    ```
+
+4.  **Access in Browser:** Open your web browser and navigate to the URL provided in the terminal (usually `http://127.0.0.1:5000`).
+
+5.  **Deactivate Virtual Environment (when done):**
+    ```bash
+    deactivate
+    ```
+
+### Option 3: Desktop Graphical User Interface (Desktop GUI)
+
+This launches a local desktop application using Tkinter.
+
+1.  **Ensure Prerequisites:**
+    *   Python 3.7+ installed (Tkinter is usually included).
+    *   Navigate to the project's root directory.
+    *   Install dependencies:
+        ```bash
+        pip install -r text_analyzer/requirements.txt
+        ```
+
+2.  **Run the Desktop GUI Script:**
+    From the project's root directory:
+    ```bash
+    python text_analyzer/gui.py
+    ```
+    Or, if you are inside the `text_analyzer` directory:
+    ```bash
+    python gui.py
+    ```
+
+### Quick Start Tip: Follow the Comprehension Lesson Plan
+
+For a deep dive into the tool's architecture and functionality, especially for the CLI:
+1. Navigate to the `.clinerules/` directory within `text_analyzer/`.
+2. Start with the main lesson plan (e.g., `comprehending-text-analyzer.md`) to systematically understand each component.
+
+## ✨ Core Functionality (Common across interfaces)
 
 The `text_analyzer` package offers a comprehensive suite of features:
 
@@ -122,83 +173,250 @@ The `text_analyzer` package offers a comprehensive suite of features:
 3.  **Multiple Analysis Types:**
     *   **Word Frequency Analysis:** Identify the most common words.
     *   **Sentence Analysis:** Get total sentence count, average sentence length, and identify the longest and shortest sentences.
-    *   **Comprehensive Readability Assessment:** Calculates a custom complexity score and a suite of standardized readability indices (Flesch Reading Ease, Flesch-Kincaid Grade, Gunning Fog, SMOG Index, Coleman-Liau Index, Dale-Chall Readability Score, Automated Readability Index).
+    *   **Comprehensive Readability Assessment:** Calculates a custom complexity score and a suite of standardized readability indices.
     *   **Common Text Patterns:** Extract predefined patterns (e.g., dates, emails - configurable via `config.py`).
     *   **N-gram Frequencies:** Analyzes and displays common N-grams (Bigrams and Trigrams).
-    *   **Sentiment Analysis:** Determines overall sentiment (Positive, Negative, Neutral) using VADER, providing detailed scores.
-    *   **Part-of-Speech (POS) Tagging:** Identifies POS tags, lists the most common ones, and calculates Lexical Density (the percentage of content words like nouns, verbs, adjectives, adverbs).
-    *   **Named Entity Recognition (NER):** Detects and categorizes named entities (such as persons, organizations, locations), showing common types and examples.
-4.  **Save Results:** Option to save the detailed analysis output to a text file for later review.
-5.  **Modular Design:** Each part of the analysis pipeline (I/O, processing, analysis, display) is handled by a separate module, making the codebase easy to understand, maintain, and extend.
-
-## 🚀 How to Run the Script
-
-1.  Ensure you have Python 3.7+ installed.
-2.  Install necessary dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
-3.  Navigate to the `text_analyzer` directory in your terminal.
-4.  Run the application using:
-    ```bash
-    python analyzer.py
-    ```
-    Alternatively, if you are outside the `text_analyzer` directory but it's in your Python path, you might run it as a module (though direct script execution is more common for this setup):
-    ```bash
-    python -m text_analyzer.analyzer
-    ```
-5.  The application will start, presenting you with a menu to guide you through loading a file and selecting analysis options.
+    *   **Sentiment Analysis:** Determines overall sentiment (Positive, Negative, Neutral) using VADER.
+    *   **Part-of-Speech (POS) Tagging:** Identifies POS tags, lists the most common ones, and calculates Lexical Density.
+    *   **Named Entity Recognition (NER):** Detects and categorizes named entities.
+4.  **Save Results (CLI):** Option to save the detailed analysis output to a text file.
 
 ## 🧠 Connecting to the World of LLMs
 
 This text analyzer, while simpler than the sophisticated systems used for Large Language Models (LLMs), demonstrates several core principles crucial in the LLM lifecycle:
 
--   **Data Preprocessing:** LLMs are trained on vast quantities of text. This text undergoes extensive cleaning and normalization, similar to the functions in `text_processing.py`, but on a much larger and more complex scale. This includes lowercasing, punctuation removal, and often more advanced techniques like Unicode normalization and HTML stripping.
--   **Tokenization:** LLMs don't process raw text directly. They use advanced tokenizers (e.g., Byte Pair Encoding (BPE), WordPiece, SentencePiece) to break text into tokens (words, sub-words, or characters). Our `tokenize_text` function using `.split()` is a basic illustration of this vital step. Understanding this helps appreciate the nuances of how LLMs "see" and process language.
--   **Feature Extraction & Analysis:** While we perform explicit analyses like frequency counts and readability scores, LLMs learn to extract complex features and patterns from token sequences through their neural network layers. The statistical properties of text that our tool highlights (like word distributions and sentence structures) are foundational to what LLMs implicitly learn.
--   **Stop Word Removal:** Often, common words (stop words) are removed in NLP tasks to focus on more meaningful terms. This is a common preprocessing step that our tool also supports, reflecting practices in some NLP pipelines.
+-   **Data Preprocessing:** LLMs are trained on vast quantities of text. This text undergoes extensive cleaning and normalization, similar to the functions in `text_processing.py`.
+-   **Tokenization:** LLMs use advanced tokenizers to break text into tokens. Our `tokenize_text` function is a basic illustration of this vital step.
+-   **Feature Extraction & Analysis:** The statistical properties of text that our tool highlights are foundational to what LLMs implicitly learn.
+-   **Stop Word Removal:** A common preprocessing step in some NLP pipelines, also supported by our tool.
 
 By understanding the operations in this `text_analyzer`, you get a tangible insight into the initial data handling and analytical concepts that underpin the development and functioning of advanced LLMs.
 
 ## 📚 Understanding the Text Analyzer: A Guided Tour
 
-To help you explore and understand this `text_analyzer` package, a set of lesson plans is available in the `.clinerules/` directory. These are designed to be used ideally with an AI copilot to guide your learning.
+To help you explore and understand this `text_analyzer` package, a set of lesson plans is available in the `text_analyzer/.clinerules/` directory. These are designed to be used ideally with an AI copilot to guide your learning.
 
 The main guide, "Comprehending the Text Analyzer," is structured into modules:
 
--   **Module A: Project Overview & Setup** - High-level introduction to the tool's purpose, features, and how to get it running.
--   **Module B: Configuration & File I/O (`config.py`, `file_io.py`)** - Understanding how the tool is configured and how it handles file operations.
--   **Module C: Text Processing (`text_processing.py`)** - Diving into text cleaning, tokenization, and stop word removal.
--   **Module D: The Analysis Engine (`analysis.py`)** - Exploring how different text analyses (frequencies, sentence stats, readability, patterns) are performed.
--   **Module E: Displaying Results (`display.py`)** - How the analysis output is formatted and presented to the user.
--   **Module F: Orchestration & Main Application (`analyzer.py`)** - Understanding how the main script ties all modules together and manages user interaction.
--   **Module G: Extending the Analyzer & AI Copilot Collaboration** - Guidance on how you might extend the tool and effectively use an AI copilot for development and comprehension.
-
-These modules aim to provide a clear path to understanding the existing codebase, its design choices, and how each part contributes to the overall functionality.
+-   **Module A: Project Overview & Setup**
+-   **Module B: Configuration & File I/O (`config.py`, `file_io.py`)**
+-   **Module C: Text Processing (`text_processing.py`)**
+-   **Module D: The Analysis Engine (`analysis.py`)**
+-   **Module E: Displaying Results (`display.py`)**
+-   **Module F: Orchestration & Main Application (`analyzer.py`)**
+-   **Module G: Extending the Analyzer & AI Copilot Collaboration**
 
 ## ✅ Success Criteria
 
 You'll know you've successfully understood this `text_analyzer` tool when you can:
 
--   [ ] Explain the primary role and responsibilities of each Python module (`analyzer.py`, `config.py`, `file_io.py`, `text_processing.py`, `analysis.py`, `display.py`) in the package.
--   [ ] Run the text analyzer with different input files and configuration settings (e.g., changing the number of top words, modifying stop words) and accurately interpret the various analysis outputs.
--   [ ] Describe the general data flow: how text is read, processed, analyzed, and finally displayed by the tool.
--   [ ] Identify which module(s) you would need to investigate or modify to implement a specific enhancement (e.g., adding a new type of text analysis, changing an existing cleaning rule).
+-   [ ] Explain the primary role of each Python module.
+-   [ ] Run the text analyzer with different inputs and configurations.
+-   [ ] Describe the general data flow.
+-   [ ] Identify which module(s) to modify for specific enhancements.
 
 ## 💡 Further Exploration
 
-Once you have a solid understanding of the `text_analyzer` package, you might consider these enhancements:
-
--   **Improve Existing Algorithms:** Refine the algorithms in `analysis.py` or `text_processing.py`. For example, add more sophisticated cleaning options, explore alternative tokenization strategies, or enhance pattern detection.
--   **Integrate Other Data Sources:** Modify `file_io.py` to support reading from URLs or other text-based formats (e.g., PDF with an additional library).
--   **Enhance Configuration:** Allow more configurations to be set via command-line arguments or a more interactive configuration process within the CLI.
--   **Develop a Simple GUI:** Use a library like Tkinter or PyQt to create a graphical user interface for the tool (Note: A basic Tkinter GUI is provided in `gui.py` in the root, which could be enhanced or used as a model).
--   **Output to Different Formats:** Extend `file_io.py` and `display.py` to allow saving results in formats like CSV or JSON.
--   **Corpus-Level Analysis:** Extend the tool to handle a collection of documents. This could involve:
-    *   Calculating TF-IDF scores across the corpus (see `analysis.calculate_tfidf_scores_corpus` for a conceptual start).
-    *   Performing comparative analysis between documents.
--   **Advanced Topic Modeling:** Implement topic modeling techniques (e.g., LDA using Gensim or scikit-learn) to discover latent topics within the text or corpus.
--   **Customizable NER Patterns:** Allow users to define custom entity patterns via `config.py` for spaCy's `EntityRuler`.
--   **Language Detection and Handling:** Add functionality to detect the language of the input text and potentially adapt analysis or warn if it's not English (as current models are English-focused).
+-   Improve existing algorithms.
+-   Integrate other data sources (URLs, PDFs).
+-   Enhance configuration options.
+-   Output to different formats (CSV, JSON).
+-   Implement corpus-level analysis (TF-IDF, topic modeling).
 
 This tool provides a solid foundation for experimenting with various text analysis techniques. Happy analyzing!
+
+---
+
+## 📋 Example Full Analysis Report (CLI Output)
+
+The following is an example of the detailed report generated by the Command-Line Interface:
+
+```text
+============================================================
+                  📊 TEXT ANALYSIS REPORT 📊
+============================================================
+
+📊 General Statistics
+--------------------
+📄 Total Characters (raw): 242,819
+🔤 Characters (raw, no spaces): 202,251
+📝 Total Words (after cleaning/stop words): 27,083
+📋 Total Sentences: 2,890
+📄 Paragraphs: 870
+📏 Average Words per Sentence: 9.4
+
+🔤 Word Frequency Analysis
+-------------------------
+🎯 Unique Words: 7,375
+📊 Total Word Count (in analysis): 27,083
+
+🏆 Top 25 Most Common Words:
+   1. 'your' - 596 times (2.2%)
+   2. 'etymology' - 311 times (1.1%)
+   3. 'n' - 252 times (0.9%)
+   4. 'as' - 246 times (0.9%)
+   5. 'from' - 238 times (0.9%)
+   6. 'pronounced' - 230 times (0.8%)
+   7. 'all' - 226 times (0.8%)
+   8. 'if' - 188 times (0.7%)
+   9. 'life' - 157 times (0.6%)
+  10. 'out' - 157 times (0.6%)
+  11. 'which' - 152 times (0.6%)
+  12. 'their' - 149 times (0.6%)
+  13. 'how' - 146 times (0.5%)
+  14. 'like' - 138 times (0.5%)
+  15. 'just' - 137 times (0.5%)
+  16. 'into' - 136 times (0.5%)
+  17. 'up' - 128 times (0.5%)
+  18. 'only' - 126 times (0.5%)
+  19. 'when' - 125 times (0.5%)
+  20. 'even' - 123 times (0.5%)
+  21. 'time' - 122 times (0.5%)
+  22. 'what' - 120 times (0.4%)
+  23. 'so' - 119 times (0.4%)
+  24. 'feel' - 117 times (0.4%)
+  25. 'back' - 116 times (0.4%)
+
+📋 Sentence Analysis
+-------------------
+📊 Total Sentences: 2890
+📏 Average Words per Sentence: 14.1
+
+📏 Longest Sentence:
+   "the sorrow of imagining the wealth of knowledge forever lost to historyâ knowing weâll never hear th..."
+
+📏 Shortest Sentence:
+   "st"
+
+📖 Readability Analysis
+----------------------
+📐 Average Word Length (of analyzed words): 5.9 characters
+🎯 Complexity Score: 9.2
+📚 Readability Level: Moderate
+   💡 This text requires moderate reading skills.
+
+  Standardized Readability Indices:
+    - Flesch Reading Ease: 63.72
+    - Flesch-Kincaid Grade Level: 8.51
+    - Gunning Fog Index: 10.33
+    - SMOG Index: 10.68
+    - Coleman-Liau Index: 9.63
+    - Dale-Chall Readability Score: 9.23
+    - Automated Readability Index (ARI): 9.79
+
+🔍 Interesting Patterns
+----------------------
+🎨 Word Variety (analyzed words): 27.2% (unique words / total analyzed words)
+
+🔄 Most Repeated Words (among analyzed):
+   'your' appears 596 times
+   'etymology' appears 311 times
+   'n' appears 252 times
+   'as' appears 246 times
+   'from' appears 238 times
+
+📏 Long Words (7+ characters, among analyzed):
+   achenia, maddening, complex, understand, whenever, trivial, question, quickly
+
+🔤 Short Words (1-2 characters, among analyzed):
+   n, up, 1, if, nd, so, as, st, no, o
+
+--- Word Length Analysis ---
+ 1 letter(s):  339 words (  1.3%)
+ 2 letter(s):  944 words (  3.5%)
+ 3 letter(s): 2433 words (  9.0%)
+ 4 letter(s): 6212 words ( 22.9%)
+ 5 letter(s): 4310 words ( 15.9%)
+ 6 letter(s): 3454 words ( 12.8%)
+ 7 letter(s): 3167 words ( 11.7%)
+ 8 letter(s): 2164 words (  8.0%)
+ 9 letter(s): 1724 words (  6.4%)
+10 letter(s): 1046 words (  3.9%)
+11 letter(s):  436 words (  1.6%)
+12 letter(s):  305 words (  1.1%)
+13 letter(s):  176 words (  0.6%)
+14 letter(s):  113 words (  0.4%)
+15 letter(s):   77 words (  0.3%)
+16 letter(s):   55 words (  0.2%)
+17 letter(s):   45 words (  0.2%)
+18 letter(s):   30 words (  0.1%)
+19 letter(s):   21 words (  0.1%)
+20 letter(s):   13 words (  0.0%)
+21 letter(s):    9 words (  0.0%)
+22 letter(s):    3 words (  0.0%)
+23 letter(s):    4 words (  0.0%)
+24 letter(s):    1 words (  0.0%)
+28 letter(s):    1 words (  0.0%)
+31 letter(s):    1 words (  0.0%)
+
+Average word length: 5.9 letters
+--------------------------
+
+📊 Bigrams Frequencies
+---------------------
+   1. 'etymology from' - 117 times
+   2. 'as if' - 50 times
+   3. 'your life' - 48 times
+   4. 'your own' - 47 times
+   5. 'even if' - 27 times
+   6. 'etymology ancient' - 22 times
+   7. 'ancient greek' - 22 times
+   8. 'etymology latin' - 22 times
+   9. 'your head' - 22 times
+  10. 'each other' - 21 times
+
+📊 Trigrams Frequencies
+----------------------
+   1. 'etymology ancient greek' - 18 times
+   2. 'etymology middle english' - 11 times
+   3. 'as long as' - 8 times
+   4. 'no matter how' - 8 times
+   5. 'inside your head' - 7 times
+   6. 'as if youâre' - 7 times
+   7. 'makes wonder if' - 7 times
+   8. 'no way knowing' - 6 times
+   9. 'as if your' - 6 times
+  10. 'life etymology latin' - 5 times
+
+💖 Sentiment Analysis (VADER)
+----------------------------
+  Negative Score: 0.082
+  Neutral Score:  0.806
+  Positive Score: 0.112
+  Compound Score: 1.000
+
+  Overall Sentiment: Positive
+  (Interpretation based on VADER's compound score thresholds)
+
+🏷️ Part-of-Speech (POS) Tag Analysis (spaCy)
+--------------------------------------------
+Total POS Tags (excluding punctuation/spaces): 41,242
+
+Most Common POS Tags:
+   1. NOUN: 8912 times (21.6%)
+   2. VERB: 6046 times (14.7%)
+   3. ADP: 4845 times (11.7%)
+   4. PRON: 4320 times (10.5%)
+   5. DET: 3882 times (9.4%)
+   6. ADJ: 3266 times (7.9%)
+   7. ADV: 2975 times (7.2%)
+   8. AUX: 1695 times (4.1%)
+   9. PROPN: 1372 times (3.3%)
+  10. CCONJ: 1237 times (3.0%)
+
+Lexical Density: 51.40% (Percentage of content words)
+
+🌍 Named Entity Recognition (NER) Analysis (spaCy)
+-------------------------------------------------
+Total Named Entity Mentions Found: 859
+
+Most Common Entity Types:
+   1. PERSON: 203 mentions (e.g., -lee-et.â, -lee-zee-uhm.â, a.a.... anachl)
+   2. DATE: 173 mentions (e.g., 12000, 1609, 1982)
+   3. NORP: 153 mentions (e.g., american, appalachian, armenian)
+   4. CARDINAL: 139 mentions (e.g., 0, 1, 2)
+   5. TIME: 56 mentions (e.g., 5 a.m., a dark morning, a few minutes)
+
+✅ Analysis Complete
+-------------------
+📝 Report generated successfully!
