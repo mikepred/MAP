@@ -86,6 +86,7 @@ This launches a web-based interface that you can access in your browser.
       * Word Frequencies (Top N words): A bar chart displaying the most common words. *Click on a word in this chart to see example sentences where it appears.*
       * Sentiment Score Distribution (Positive, Neutral, Negative): A pie chart.
       * Word Length Distribution: A bar chart.
+      * User-Defined Pattern Matching: An option to specify one custom regular expression pattern (with a name) to find and display matches from the text.
 
 5.  **Deactivate Virtual Environment (when done):**
     ```bash

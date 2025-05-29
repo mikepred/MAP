@@ -32,6 +32,16 @@
             <label for="remove_stopwords">Remove stop words?</label>
         </div>
         <br>
+        <div>
+            <label for="custom_pattern_name_1">Custom Pattern Name 1 (Optional):</label>
+            <input type="text" id="custom_pattern_name_1" name="custom_pattern_name_1" placeholder="e.g., My Phone Numbers">
+        </div>
+        <div>
+            <label for="custom_pattern_regex_1">Custom Regex 1:</label>
+            <input type="text" id="custom_pattern_regex_1" name="custom_pattern_regex_1" placeholder="e.g., \d{3}-\d{3}-\d{4}">
+            <small>Enter a valid Python regex. See <a href="https://docs.python.org/3/library/re.html" target="_blank">Python re module docs</a> for syntax.</small>
+        </div>
+        <br>
         <button type="submit">Analyze</button>
     </form>
 

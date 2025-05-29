@@ -88,6 +88,7 @@ This launches a web-based interface that you can access in your browser.
         * Sentiment Distribution: A pie chart showing the proportion of positive, neutral, and negative sentiment scores.
         * Word Length Distribution: A bar chart illustrating how many words of each length are present in the text.
       * Interactive sentence exploration linked to the word frequency chart.
+      * Custom Pattern Detection: Users can input a custom regular expression along with a name to identify specific patterns in their text via the web form.
 
 5.  **Deactivate Virtual Environment (when done):**
     ```bash
