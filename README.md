@@ -82,6 +82,10 @@ This launches a web-based interface that you can access in your browser.
     ```
 
 4.  **Access in Browser:** Open your web browser and navigate to the URL provided in the terminal (usually `http://127.0.0.1:5000`).
+    The Web GUI now includes interactive charts and features to visualize and explore your text:
+      * Word Frequencies (Top N words): A bar chart displaying the most common words. *Click on a word in this chart to see example sentences where it appears.*
+      * Sentiment Score Distribution (Positive, Neutral, Negative): A pie chart.
+      * Word Length Distribution: A bar chart.
 
 5.  **Deactivate Virtual Environment (when done):**
     ```bash

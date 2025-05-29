@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>Text Analyzer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+      let originalTextForSentenceSearch = {{ original_text_content|tojson|safe if original_text_content else "''" }};
+    </script>
 </head>
 <body>
     <h1>Text Analyzer</h1>
@@ -38,9 +41,187 @@
             <pre class="error_message">{{ error_message }}</pre>
         {% elif results %}
             <pre>{{ results|safe }}</pre>
+            <canvas id="wordFrequencyChart" width="400" height="200"></canvas>
+            <canvas id="sentimentPieChart" width="400" height="200"></canvas>
+            <canvas id="wordLengthChart" width="400" height="200"></canvas>
+            <div id="sentenceDisplayArea" style="margin-top: 20px;"></div>
         {% else %}
             <pre>Analysis results will appear here.</pre>
         {% endif %}
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      async function fetchSentencesForWord(word) {
+        const displayArea = document.getElementById('sentenceDisplayArea');
+        displayArea.innerHTML = '<p>Loading sentences...</p>'; // Show loading message
+
+        if (!originalTextForSentenceSearch) {
+          displayArea.innerHTML = '<p>Error: Original text not available.</p>';
+          return;
+        }
+
+        try {
+          const response = await fetch('/get_sentences', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              text_content: originalTextForSentenceSearch,
+              word: word,
+            }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            displayArea.innerHTML = `<p>Error fetching sentences: ${errorData.error || response.statusText}</p>`;
+            return;
+          }
+
+          const data = await response.json();
+          if (data.sentences && data.sentences.length > 0) {
+            let sentencesHTML = '<h3>Sentences containing "' + word + '":</h3><ul>';
+            data.sentences.forEach(sentence => {
+              const highlightedSentence = sentence.replace(new RegExp('(\\b' + word + '\\b)', 'gi'), '<mark>$1</mark>');
+              sentencesHTML += `<li>${highlightedSentence}</li>`;
+            });
+            sentencesHTML += '</ul>';
+            displayArea.innerHTML = sentencesHTML;
+          } else {
+            displayArea.innerHTML = '<p>No sentences found containing "' + word + '".</p>';
+          }
+        } catch (error) {
+          console.error('Error in fetchSentencesForWord:', error);
+          displayArea.innerHTML = '<p>An error occurred while fetching sentences.</p>';
+        }
+      }
+
+      // Word Frequency Chart
+      const wordFreqLabels = {{ word_freq_labels|safe if word_freq_labels else '[]' }};
+      const wordFreqData = {{ word_freq_data|safe if word_freq_data else '[]' }};
+
+      if (wordFreqLabels.length > 0 && wordFreqData.length > 0) {
+        const wfCtx = document.getElementById('wordFrequencyChart').getContext('2d');
+        new Chart(wfCtx, {
+          type: 'bar',
+          data: {
+            labels: wordFreqLabels,
+            datasets: [{
+              label: 'Word Frequency',
+              data: wordFreqData,
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            },
+            onClick: function(event, elements) {
+              if (elements.length > 0) {
+                const chartElement = elements[0];
+                const clickedWord = this.data.labels[chartElement.index];
+                fetchSentencesForWord(clickedWord);
+              }
+            }
+          }
+        });
+      }
+
+      // Sentiment Pie Chart
+      const sentimentChartLabels = {{ sentiment_chart_labels|safe if sentiment_chart_labels else '[]' }};
+      const sentimentChartData = {{ sentiment_chart_data|safe if sentiment_chart_data else '[]' }};
+
+      if (sentimentChartLabels.length > 0 && sentimentChartData.length > 0 && sentimentChartData.some(score => score > 0)) {
+        const senCtx = document.getElementById('sentimentPieChart').getContext('2d');
+        new Chart(senCtx, {
+          type: 'pie',
+          data: {
+            labels: sentimentChartLabels,
+            datasets: [{
+              label: 'Sentiment Distribution',
+              data: sentimentChartData,
+              backgroundColor: [
+                'rgba(75, 192, 192, 0.2)', // Positive
+                'rgba(201, 203, 207, 0.2)', // Neutral
+                'rgba(255, 99, 132, 0.2)'  // Negative
+              ],
+              borderColor: [
+                'rgba(75, 192, 192, 1)',
+                'rgba(201, 203, 207, 1)',
+                'rgba(255, 99, 132, 1)'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Sentiment Score Distribution'
+              }
+            }
+          }
+        });
+      }
+
+      // Word Length Distribution Chart
+      const wordLenLabels = {{ word_len_labels|safe if word_len_labels else '[]' }};
+      const wordLenData = {{ word_len_data|safe if word_len_data else '[]' }};
+
+      if (wordLenLabels.length > 0 && wordLenData.length > 0) {
+        const wlCtx = document.getElementById('wordLengthChart').getContext('2d');
+        new Chart(wlCtx, {
+          type: 'bar',
+          data: {
+            labels: wordLenLabels,
+            datasets: [{
+              label: 'Word Length Distribution',
+              data: wordLenData,
+              backgroundColor: 'rgba(153, 102, 255, 0.2)',
+              borderColor: 'rgba(153, 102, 255, 1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                   display: true,
+                   text: 'Number of Words'
+                }
+              },
+              x: {
+                title: {
+                   display: true,
+                   text: 'Word Length'
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                display: true,
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Word Length Distribution'
+              }
+            }
+          }
+        });
+      }
+    </script>
 </body>
 </html>

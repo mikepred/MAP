@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify # Added jsonify
+import json 
 from text_analyzer import analysis
 from text_analyzer import config as ta_config
 from collections import Counter
@@ -258,8 +259,53 @@ def analyze_route(): # Renamed from 'analyze' to avoid conflict with the module
         remove_stopwords_flag, 
         removed_stopwords_count_actual
     )
+
+    # Extract data for chart
+    labels = list(analysis_results_dict.get('word_analysis', {}).get('word_frequencies', {}).keys())
+    data = list(analysis_results_dict.get('word_analysis', {}).get('word_frequencies', {}).values())
+
+    # Extract sentiment data for pie chart
+    sentiment_scores = analysis_results_dict.get('sentiment_analysis', {})
+    sentiment_labels = ['Positive', 'Neutral', 'Negative']
+    sentiment_data = [sentiment_scores.get('pos', 0.0), sentiment_scores.get('neu', 0.0), sentiment_scores.get('neg', 0.0)]
+
+    # Extract word length distribution for bar chart
+    word_length_counts = analysis_results_dict.get('word_length_counts_obj', Counter())
+    if word_length_counts:
+        sorted_lengths = sorted(word_length_counts.items())
+        word_length_labels = [str(item[0]) for item in sorted_lengths]
+        word_length_data = [item[1] for item in sorted_lengths]
+    else:
+        word_length_labels = []
+        word_length_data = []
     
-    return render_template('index.html', results=formatted_results_str, error_message=error_message_str) # error_message_str would be None or an input warning
+    return render_template(
+        'index.html', 
+        results=formatted_results_str, 
+        error_message=error_message_str, # error_message_str would be None or an input warning
+        word_freq_labels=json.dumps(labels),
+        word_freq_data=json.dumps(data),
+        sentiment_chart_labels=json.dumps(sentiment_labels),
+        sentiment_chart_data=json.dumps(sentiment_data),
+        word_len_labels=json.dumps(word_length_labels),
+        word_len_data=json.dumps(word_length_data),
+        original_text_content=text_content # Pass original text
+    )
+
+@app.route('/get_sentences', methods=['POST'])
+def get_sentences_route():
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'Invalid JSON payload'}), 400
+
+    text_content = data.get('text_content')
+    word = data.get('word')
+
+    if not text_content or not word:
+        return jsonify({'error': 'Missing text_content or word'}), 400
+
+    found_sentences = analysis.get_sentences_for_word(text_content, word)
+    return jsonify({'sentences': found_sentences})
 
 if __name__ == '__main__':
     app.run(debug=True)

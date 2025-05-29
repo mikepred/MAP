@@ -700,6 +700,43 @@ def find_interesting_patterns(word_counts: Counter[str], text: str) -> Dict[str,
 # If it's primarily for debugging/dev, it might not need its own module.
 # Let's keep it in analyzer.py for now, or move to a new utils.py later.
 
+def get_sentences_for_word(text_content: str, word: str) -> List[str]:
+    """
+    Finds all sentences in text_content that contain the specified word.
+
+    Args:
+        text_content (str): The text to search within.
+        word (str): The word to search for (case-insensitive, whole word).
+
+    Returns:
+        List[str]: A list of sentences containing the word. Empty if none found.
+    """
+    if not text_content or not word:
+        return []
+
+    # Sentences are split by '.', '!', '?'
+    # Using re.split to handle multiple delimiters and keep them if needed (though here we discard them)
+    # Stripping whitespace from each sentence after splitting.
+    sentences: List[str] = [s.strip() for s in re.split(r'[.!?]+', text_content) if s.strip()]
+
+    found_sentences: List[str] = []
+    # Compile regex for whole word, case-insensitive search
+    # \b ensures that we match whole words only (e.g., "cat" not "caterpillar")
+    try:
+        # Attempt to compile the regex to catch potential errors with re.escape(word) if word is unusual
+        word_regex = re.compile(r'\b' + re.escape(word) + r'\b', re.IGNORECASE)
+    except re.error:
+        # Handle cases where the word might form an invalid regex even after escaping
+        # This is unlikely with re.escape but good for robustness
+        return [] 
+
+    for sentence in sentences:
+        if word_regex.search(sentence):
+            found_sentences.append(sentence + '.') # Append period for completeness, as split removes it.
+                                                 # Consider if original punctuation is preferred.
+                                                 # For this example, adding '.' is a simplification.
+    return found_sentences
+
 # =============================================================================
 # N-GRAM ANALYSIS FUNCTIONS (New for Module 4C)
 # =============================================================================

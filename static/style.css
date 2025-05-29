@@ -89,3 +89,21 @@ button[type="submit"]:hover {
     word-wrap: break-word;
     font-family: monospace; /* Consistent font */
 }
+
+/* Styles for Sentence Display Area */
+#sentenceDisplayArea {
+    border: 1px solid #ccc;
+    padding: 15px;
+    background-color: #f9f9f9;
+    margin-top: 25px; /* Overrides previous inline 20px or adds to it depending on CSS specificity */
+    border-radius: 5px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Styles for Keyword Highlighting */
+mark {
+    background-color: #ffee58; /* Pleasant yellow for highlighting */
+    padding: 0.2em 0.1em;    /* Slight padding around the highlighted text */
+    border-radius: 3px;
+}
