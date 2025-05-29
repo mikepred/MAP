@@ -34,7 +34,7 @@ STOP_WORDS: Set[str] = {
     'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could',
     'should', 'may', 'might', 'must', 'can', 'this', 'that', 'these',
     'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him',
-    'her', 'us', 'them'
+    'her', 'us', 'them', 'n'
 }
 
 # Pre-compiled Regular Expressions for performance

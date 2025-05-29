@@ -27,9 +27,22 @@ class TextAnalyzerGUI:
         
         self.file_frame.columnconfigure(1, weight=1) # Allow filepath_label to expand
 
+        # Text Input Section
+        self.text_input_frame = ttk.LabelFrame(master, text="Paste Text Input")
+        self.text_input_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+
+        self.paste_box = scrolledtext.ScrolledText(self.text_input_frame, wrap=tk.WORD, width=78, height=10)
+        self.paste_box.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
+        
+        self.clear_paste_box_button = ttk.Button(self.text_input_frame, text="Clear Pasted Text", command=self.clear_paste_box)
+        self.clear_paste_box_button.grid(row=1, column=0, padx=5, pady=5, sticky="ew")
+
+        self.text_input_frame.rowconfigure(0, weight=1)
+        self.text_input_frame.columnconfigure(0, weight=1)
+        
         # Configuration section
         self.config_frame = ttk.LabelFrame(master, text="Configuration")
-        self.config_frame.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
+        self.config_frame.grid(row=2, column=0, padx=10, pady=10, sticky="ew")
 
         self.top_words_label = ttk.Label(self.config_frame, text="Number of top words:")
         self.top_words_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
@@ -46,11 +59,11 @@ class TextAnalyzerGUI:
 
         # Analyze button
         self.analyze_button = ttk.Button(master, text="Analyze Text", command=self.analyze_text)
-        self.analyze_button.grid(row=2, column=0, padx=10, pady=10, sticky="ew")
+        self.analyze_button.grid(row=3, column=0, padx=10, pady=10, sticky="ew")
 
         # Results display area
         self.results_frame = ttk.LabelFrame(master, text="Results")
-        self.results_frame.grid(row=3, column=0, padx=10, pady=10, sticky="nsew")
+        self.results_frame.grid(row=4, column=0, padx=10, pady=10, sticky="nsew")
         
         self.results_text = scrolledtext.ScrolledText(self.results_frame, wrap=tk.WORD, width=80, height=20)
         self.results_text.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
@@ -61,10 +74,18 @@ class TextAnalyzerGUI:
 
         # Save Results button
         self.save_button = ttk.Button(master, text="Save Results", command=self.save_results)
-        self.save_button.grid(row=4, column=0, padx=10, pady=10, sticky="ew")
+        self.save_button.grid(row=5, column=0, padx=10, pady=10, sticky="ew")
 
         master.columnconfigure(0, weight=1)
-        master.rowconfigure(3, weight=1)
+        master.rowconfigure(4, weight=1) # Results frame (now row 4)
+        master.rowconfigure(1, weight=1) # Text input frame
+
+    def clear_paste_box(self):
+        self.paste_box.delete('1.0', tk.END)
+        # Optionally, also clear self.file_content if paste box was the source
+        # For now, just clearing the box. Analysis logic will decide source.
+        self.results_text.insert(tk.END, "Pasted text cleared.\n")
+
 
     def open_file(self):
         filepath = filedialog.askopenfilename(
@@ -79,6 +100,7 @@ class TextAnalyzerGUI:
                 self.filepath_label.config(text=abs_filepath)
                 self.results_text.delete('1.0', tk.END) # Clear previous results or errors
                 self.results_text.insert(tk.END, f"File loaded: {abs_filepath}\n")
+                self.paste_box.delete('1.0', tk.END) # Clear paste box content
             except Exception as e:
                 self.file_content = None
                 self.filepath_label.config(text="Error reading file.")
@@ -90,9 +112,27 @@ class TextAnalyzerGUI:
 
     def analyze_text(self):
         self.results_text.delete('1.0', tk.END) # Clear previous results
+        
+        current_text_to_analyze = None
+        source_description = ""
 
-        if not self.file_content:
-            self.results_text.insert(tk.END, "Error: Please load a file first.\n")
+        pasted_text = self.paste_box.get("1.0", tk.END).strip()
+
+        if pasted_text:
+            current_text_to_analyze = pasted_text
+            self.file_content = pasted_text # Update internal state
+            self.filepath_label.config(text="Using pasted text.")
+            source_description = "pasted text"
+        elif self.file_content:
+            current_text_to_analyze = self.file_content
+            # self.filepath_label is already set by open_file
+            source_description = f"file: {self.filepath_label.cget('text')}"
+        else:
+            self.results_text.insert(tk.END, "Error: No text input. Please paste text or load a file.\n")
+            return
+
+        if not current_text_to_analyze: # Should be caught above, but as a safeguard
+            self.results_text.insert(tk.END, "Error: No content to analyze.\n")
             return
 
         try:
@@ -111,10 +151,10 @@ class TextAnalyzerGUI:
             self.master.update_idletasks() # Refresh UI to show message
 
             # --- Perform Text Processing and Analysis ---
-            raw_text = self.file_content
+            # raw_text = self.file_content # Now using current_text_to_analyze
             
             # Word Analysis Stream
-            text_for_words = tp.clean_text_for_word_tokenization(raw_text, advanced=True)
+            text_for_words = tp.clean_text_for_word_tokenization(current_text_to_analyze, advanced=True)
             tokens = tp.tokenize_text(text_for_words)
             
             analyzed_tokens = tokens
@@ -131,7 +171,7 @@ class TextAnalyzerGUI:
             # Call the main analysis function from analysis.py
             # This function bundles many individual analysis steps.
             analysis_results = analysis.analyze_text_complete(
-                text=raw_text,
+                text=current_text_to_analyze,
                 use_stop_words=remove_stopwords_flag,
                 num_common_words_to_display=top_n
             )

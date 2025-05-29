@@ -23,52 +23,6 @@ Raw Text  → Lowercasing, Punctuation & Regex Cleaning → Word/Sentence Tokens
                                                                                               Pattern Matching
 ```
 
-## 🎯 Learning Objectives
-
-By exploring and utilizing this `text_analyzer` tool, you will:
-
-- Understand the architecture of a modular text analysis application in Python.
-- Learn how different components (file I/O, processing, analysis, display, configuration) interact within a package.
-- Gain proficiency in interpreting various text analysis outputs, including word frequencies, sentence metrics, and readability scores.
-- Understand how to effectively use the tool's features, including configuration options for customized analysis.
-- Appreciate the connection between these text analysis techniques and the preprocessing pipelines used in Large Language Models (LLMs).
-- Learn how to navigate and understand a well-structured Python package.
-
-## 🎓 Prerequisites
-
-**What you need to know:**
-
-- [ ] Basic Python syntax (variables, functions, loops, data structures)
-- [ ] How to run Python scripts from the command line
-- [ ] Basic understanding of text files and encodings
-
-**What you'll learn by exploring this tool:**
-
-- [ ] How modules in a Python package collaborate to deliver functionality.
-- [ ] The data flow within a text analysis pipeline, from input to output.
-- [ ] How to use configuration files to customize application behavior.
-- [ ] Practical application of text processing and analysis techniques.
-- [ ] How to leverage different analysis modules for comprehensive text understanding.
-
-## 📂 Project Structure
-
-The `text_analyzer` package (primarily within the `text_analyzer/` directory) and associated files are organized as follows:
-
-- `text_analyzer/analyzer.py`: The main executable script for the command-line interface (CLI). It provides a menu-driven interface and orchestrates the different analysis modules.
-- `webapp.py` (in project root): The main script for launching the Web Graphical User Interface (GUI).
-- `text_analyzer/gui.py`: The script for launching the local Desktop Graphical User Interface (GUI) using Tkinter.
-- `text_analyzer/config.py`: Stores all configuration settings for the application. This includes default file paths, lists of stop words, regular expressions for text cleaning and pattern matching, and limits for displaying results.
-- `text_analyzer/file_io.py`: Handles all file input and output operations for the CLI and core logic.
-- `text_analyzer/text_processing.py`: Contains functions dedicated to preparing text for analysis (cleaning, tokenization, stop word removal).
-- `text_analyzer/analysis.py`: Includes the core functions for performing various text analyses (word frequencies, sentence statistics, readability, patterns).
-- `text_analyzer/display.py`: Responsible for formatting and presenting the analysis results to the console for the CLI.
-- `text_analyzer/__init__.py`: An empty file that signals to Python that the `text_analyzer` directory should be treated as a package.
-- `text_analyzer/requirements.txt`: Lists the external Python libraries and dependencies required for the project to run correctly.
-- `text_analyzer/sample.txt` (or `s.txt`): Sample text files for quick analysis.
-- `templates/` (in project root): HTML templates for the `webapp.py`.
-- `static/` (in project root): CSS files for the `webapp.py`.
-- `.clinerules/`: This directory contains lesson plans and guides designed to help understand the project's structure, functionality, and how to explore it effectively.
-
 ## 🚀 How to Run the Text Analyzer
 
 There are three primary ways to run the Text Analyzer:
@@ -161,6 +115,52 @@ This launches a local desktop application using Tkinter.
 For a deep dive into the tool's architecture and functionality, especially for the CLI:
 1. Navigate to the `.clinerules/` directory within `text_analyzer/`.
 2. Start with the main lesson plan (e.g., `comprehending-text-analyzer.md`) to systematically understand each component.
+
+## 🎯 Learning Objectives
+
+By exploring and utilizing this `text_analyzer` tool, you will:
+
+- Understand the architecture of a modular text analysis application in Python.
+- Learn how different components (file I/O, processing, analysis, display, configuration) interact within a package.
+- Gain proficiency in interpreting various text analysis outputs, including word frequencies, sentence metrics, and readability scores.
+- Understand how to effectively use the tool's features, including configuration options for customized analysis.
+- Appreciate the connection between these text analysis techniques and the preprocessing pipelines used in Large Language Models (LLMs).
+- Learn how to navigate and understand a well-structured Python package.
+
+## 🎓 Prerequisites
+
+**What you need to know:**
+
+- [ ] Basic Python syntax (variables, functions, loops, data structures)
+- [ ] How to run Python scripts from the command line
+- [ ] Basic understanding of text files and encodings
+
+**What you'll learn by exploring this tool:**
+
+- [ ] How modules in a Python package collaborate to deliver functionality.
+- [ ] The data flow within a text analysis pipeline, from input to output.
+- [ ] How to use configuration files to customize application behavior.
+- [ ] Practical application of text processing and analysis techniques.
+- [ ] How to leverage different analysis modules for comprehensive text understanding.
+
+## 📂 Project Structure
+
+The `text_analyzer` package (primarily within the `text_analyzer/` directory) and associated files are organized as follows:
+
+- `text_analyzer/analyzer.py`: The main executable script for the command-line interface (CLI). It provides a menu-driven interface and orchestrates the different analysis modules.
+- `webapp.py` (in project root): The main script for launching the Web Graphical User Interface (GUI).
+- `text_analyzer/gui.py`: The script for launching the local Desktop Graphical User Interface (GUI) using Tkinter.
+- `text_analyzer/config.py`: Stores all configuration settings for the application. This includes default file paths, lists of stop words, regular expressions for text cleaning and pattern matching, and limits for displaying results.
+- `text_analyzer/file_io.py`: Handles all file input and output operations for the CLI and core logic.
+- `text_analyzer/text_processing.py`: Contains functions dedicated to preparing text for analysis (cleaning, tokenization, stop word removal).
+- `text_analyzer/analysis.py`: Includes the core functions for performing various text analyses (word frequencies, sentence statistics, readability, patterns).
+- `text_analyzer/display.py`: Responsible for formatting and presenting the analysis results to the console for the CLI.
+- `text_analyzer/__init__.py`: An empty file that signals to Python that the `text_analyzer` directory should be treated as a package.
+- `text_analyzer/requirements.txt`: Lists the external Python libraries and dependencies required for the project to run correctly.
+- `text_analyzer/sample.txt` (or `s.txt`): Sample text files for quick analysis.
+- `templates/` (in project root): HTML templates for the `webapp.py`.
+- `static/` (in project root): CSS files for the `webapp.py`.
+- `.clinerules/`: This directory contains lesson plans and guides designed to help understand the project's structure, functionality, and how to explore it effectively.
 
 ## ✨ Core Functionality (Common across interfaces)
 
