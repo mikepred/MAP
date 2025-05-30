@@ -20,7 +20,28 @@ By building and running this script, learners gain practical experience with the
 * **Educational Value**: The project should clearly illustrate the core concepts of text processing and their relevance to NLP and LLMs.
 * **Engagement**: The project should be engaging and encourage learners to experiment with different text sources and enhancements.
 * **Clarity**: The project's output (the list of most common words) should be clear, informative, and easy to interpret.
-* **Foundation**: The project should provide a solid foundation for further exploration of NLP and LLM topics.
+* **Foundation**: The project should provide a solid foundation for further exploration of NLP and LLM topics, aligning with the initial stages of learning resources like Raschka's "Build an LLM (From Scratch)" and the "GenAI PDF."
+
+## Overarching Project: Self-Directed AI Engineering Education
+
+### Problem Statement
+The primary challenge is to effectively learn and master the complex and rapidly evolving field of AI engineering, particularly focusing on Large Language Models (LLMs), in a self-directed manner. This requires a structured approach to absorb theoretical knowledge, gain practical implementation skills, and track progress coherently.
+
+### Proposed Solution
+The solution involves a multi-faceted learning strategy:
+1.  **Conceptual Framework (SAI):** Using "SAI" (Self-directed AI learning interface/assistant/construct) as a guiding concept. The process of understanding how to build, or notionally building, components of SAI will drive the learning of underlying AI/LLM principles.
+2.  **Core Technical Guide:** Leveraging Sebastian Raschka's "Build an LLM (From Scratch)" as the primary resource for hands-on LLM component implementation.
+3.  **Comprehensive Textbook:** Utilizing "Generative AI with Python and PyTorch, Second Edition" (GenAI PDF) as a detailed theoretical and practical companion, covering foundational concepts (like text representation via its Ch 3) and advanced topics (Prompt Engineering, LLM Tooling, Optimization via its Ch 7-11).
+4.  **Inspirational Reference:** Using the "AI Engineering Master Curriculum" (from `This comprehensive lesson plan takes a l.md`) as a broad map for deeper exploration and contextual understanding.
+5.  **Foundational Projects:** Engaging with initial practical exercises like the `text_analyzer` project to build core skills.
+6.  **Progress Tracking:** Employing Cline's Memory Bank for session-to-session context and the MCP Knowledge Graph Memory Server for structured, persistent logging of conceptual understanding.
+
+### User Experience Goals (Self-Directed Learning)
+*   **Clarity of Path:** Maintain a clear understanding of how different learning resources (Raschka, GenAI PDF, Master Curriculum, `text_analyzer`) connect and contribute to the overall goal of LLM mastery.
+*   **Actionable Learning:** Translate theoretical knowledge into practical understanding, framed by the conceptual construction of SAI.
+*   **Organized Knowledge:** Systematically capture and relate learned concepts using the MCP Knowledge Graph.
+*   **Contextual Continuity:** Ensure that learning sessions build upon each other effectively, with Cline's Memory Bank providing necessary context for our interactions.
+*   **Motivation & Engagement:** Use the "SAI" concept and tangible progress through resources like Raschka's book to maintain motivation.
 
 ## Git Branch Visualizer Project
 

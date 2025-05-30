@@ -56,6 +56,37 @@ The lesson plan is divided into the following modules:
 * **Module 5: Connecting to the Bigger World of LLMs** (`.clinerules/module5-llm-connections.md`)
   * Explores how the project's text processing skills relate to LLMs, `llms-from-scratch` concepts (advanced tokenization like BPE, data loading, embeddings), modern applications (chatbots, search, sentiment analysis), and further learning paths (NLTK, spaCy, advanced ML/NLP).
 
+## Overarching Project: Self-Directed AI Engineering Education
+
+### Core Goal
+To achieve a deep understanding of AI engineering principles, with a focus on Large Language Models (LLMs), through a self-directed learning process. This involves hands-on implementation, conceptual understanding, and exploration of the current AI landscape.
+
+### Guiding Conceptual Framework: "SAI"
+The learning process is framed by the conceptual development of "SAI" (Self-directed AI learning interface/assistant/construct). The act of understanding how to build, or actually building components related to, SAI serves as the primary mechanism for mastering the subject matter.
+
+### Key Learning Resources & Their Roles
+
+1.  **Primary Technical Guide for LLM Implementation:**
+    *   **Resource:** "Build a Large Language Model (From Scratch)" by Sebastian Raschka (book and GitHub repository `LLMs-from-scratch-main/`).
+    *   **Role:** Provides the core, step-by-step practical guidance for building LLM components from the ground up. Progress through this resource is a primary measure of learning.
+
+2.  **Comprehensive Theoretical & Practical Textbook:**
+    *   **Resource:** "Generative AI with Python and PyTorch, Second Edition" (referred to as "GenAI PDF").
+    *   **Role:** Serves as a detailed textbook complementing Raschka's work. It offers deeper theoretical explanations, covers foundational concepts (e.g., Deep Learning building blocks, early NLP/text representation via its Chapter 3), and explores advanced topics such as Prompt Engineering (Ch 7), LLM Tooling like LangChain (Ch 8), LLM Optimization (Ch 9), Emerging Applications (Ch 10), and other generative models like VAEs (Ch 11).
+    *   **Current Focus:** Chapter 3 of this PDF ("The Rise of Methods for Text Generation") is particularly relevant for the current learning phase on "Text representation/early NLP."
+
+3.  **Inspirational & Reference Curriculum:**
+    *   **Resource:** "AI Engineering Master Curriculum" (from the file `This comprehensive lesson plan takes a l.md`, located in `c:/root/MAP/`).
+    *   **Role:** Acts as a broad, inspirational map of the AI engineering field. It's a comprehensive reference for deeper dives into specific topics as they arise or for exploring related areas, rather than a strict syllabus to be completed in its entirety.
+
+4.  **Foundational Practical Exercise:**
+    *   **Resource:** The `text_analyzer` project.
+    *   **Role:** An initial, hands-on project to build fundamental Python programming and basic text processing skills, serving as a stepping stone to more complex topics in Raschka's book and the GenAI PDF.
+
+### Learning & Progress Tracking
+*   **Cline's Memory Bank:** Used for session-to-session operational context, tracking immediate learning focus, and high-level progress.
+*   **MCP Knowledge Graph Memory Server:** Employed for creating a structured, persistent, and platform-agnostic log of conceptual understanding, relationships between concepts, and learning milestones.
+
 ## Project: Git Branch Visualizer
 
 ### Core Requirements (Git Branch Visualizer)

@@ -107,3 +107,38 @@ This document covers the technologies used in the project, the development setup
       1. Using `cmd` as the command executor
       2. Simplifying command args to `["/c", "npx", "-y", "@modelcontextprotocol/server-memory"]`
       3. Increasing the timeout value in MCP settings
+
+## Self-Directed AI Engineering Education
+
+### Key Learning Resources
+The primary learning resources, including Sebastian Raschka's "Build a Large Language Model (From Scratch)," the "Generative AI with Python and PyTorch, Second Edition" PDF, and the "AI Engineering Master Curriculum," are detailed in `memory-bank/projectbrief.md`. This section focuses on the technologies associated with these resources and the overall learning process.
+
+*   **Technologies associated with Primary Technical Guide (Raschka):** Python, PyTorch, Jupyter Notebooks. Focuses on building Transformer components, attention mechanisms, GPT-like models, pretraining, and finetuning.
+*   **Technologies associated with Comprehensive Textbook (GenAI PDF):** Python, PyTorch. Covers a wide range of topics from deep learning fundamentals to advanced LLM applications and optimization.
+*   **Technologies associated with Inspirational Curriculum (AI Engineering Master Curriculum):** Broad overview, implies various technologies depending on the specific area of AI engineering.
+*   **Foundational Practical Exercise:**
+    *   The `text_analyzer` project (details above).
+
+### Development Setup (Self-Directed Learning)
+*   **Primary Language:** Python.
+*   **Core Libraries:** PyTorch, Hugging Face Transformers, NLTK, spaCy, Pandas, NumPy.
+*   **LLM Tooling:** LangChain, LangSmith.
+*   **Version Control:** Git, with `LLMs-from-scratch-main/` as a Git submodule.
+*   **Environment:** VS Code, with access to relevant files and ability to run Python scripts and Jupyter Notebooks.
+*   **MCP Servers:** Git MCP Server and Memory MCP Server for enhanced workflow and knowledge persistence.
+
+### Technical Constraints (Self-Directed Learning)
+*   Learning is self-paced and iterative.
+*   Computational resources for training very large models from scratch may be a constraint, leading to focus on understanding concepts, implementing smaller-scale versions, or leveraging pre-trained models for certain aspects.
+
+### Dependencies (Self-Directed Learning)
+*   Python 3.7+
+*   Specific Python packages as listed in `requirements.txt` for the `text_analyzer` and `LLMs-from-scratch-main/` projects.
+*   Additional packages as introduced by the "GenAI PDF" examples (e.g., `transformers`, `datasets`, `trl`, `langchain`).
+
+### Tool Usage Patterns (Self-Directed Learning)
+*   Reading and working through code examples from Raschka's book and the "GenAI PDF."
+*   Modifying and extending the `text_analyzer` project.
+*   Conceptually designing and planning components of "SAI."
+*   Using Cline (this AI assistant) for discussion, clarification, code assistance, and updating memory systems.
+*   Utilizing the MCP Knowledge Graph to structure and persist learned concepts.
