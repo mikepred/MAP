@@ -31,6 +31,7 @@ This document covers the technologies used in the project, the development setup
 * Primarily relies on Python's standard library for core Module 1-3 functionalities.
 * **NLTK**: External dependency, installed and explored as part of Module 5C. Requires data packages like `punkt`, `stopwords`, `punkt_tab`.
 * **spaCy**: External dependency, installed and explored as part of Module 5C. Requires language models like `en_core_web_sm`.
+* **NumPy**: Pinned to `<2.0` in `requirements.txt` to avoid binary incompatibility issues with `thinc` (a spaCy dependency) during deployment on platforms like Render.
 
 ### Tool Usage Patterns (Text Analyzer)
 

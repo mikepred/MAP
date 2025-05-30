@@ -65,7 +65,8 @@ This document outlines what currently works, what is left to build, the current 
 * **Text Analyzer**: Fully functional as per Modules 1-4, with initial Module 5C exploration completed, all on the `main` branch.
 * **Git Branch Visualizer**: Functional on the `main` branch.
 * **Text Analyzer File Handling**: `text_analyzer/file_io.py` updated to use `iso-8859-1` encoding, resolving previous `UnicodeDecodeError` issues with certain files.
-* **Memory Bank**: Update nearly complete, reflecting recent `UnicodeDecodeError` fix and overall project status.
+* **Deployment**: Resolved `numpy.dtype size changed` error on Render by pinning NumPy to `<2.0` in `requirements.txt`.
+* **Memory Bank**: Update nearly complete, reflecting recent `UnicodeDecodeError` fix, deployment fix, and overall project status.
 * **Git Branches**:
   * `main`: Up-to-date locally and on `origin/main`. Contains all merged features.
   * `develop`: Up-to-date locally and on `origin/develop`, synchronized with `main`.
@@ -74,6 +75,8 @@ This document outlines what currently works, what is left to build, the current 
 
 * **Text Analyzer**:
   * The `run_comprehensive_test()` function in `analyzer.py` could be expanded for more rigorous automated testing.
+* **Deployment**:
+  * While the NumPy incompatibility is resolved, future dependency updates for `spaCy` or `thinc` might require re-evaluation of NumPy version constraints.
 * **Git Branch Visualizer**:
   * Limitations regarding complex Git histories, performance on very large repos, and main line detection persist as areas for potential improvement.
 
@@ -97,3 +100,4 @@ This document outlines what currently works, what is left to build, the current 
   * **Resolved markdownlint errors across the project.**
   * **Refactored `analyzer.py` for Pythonic best practices (Current Session)**: This involved updates to type hinting, constants, path handling, cleaning function consolidation, centralization of analysis logic in `analyze_text_complete()`, `main()` menu refactoring (including adding a custom file analysis option), removal of redundant functions, and pre-compilation of regular expressions.
   * **Addressed `UnicodeDecodeError` in Text Analyzer**: Investigated and resolved an encoding issue when reading `dict-sample.txt` by modifying `text_analyzer/file_io.py` to use `iso-8859-1` encoding.
+  * **Fixed Deployment Error**: Resolved `numpy.dtype size changed` error by pinning NumPy to `<2.0` in `requirements.txt`.

@@ -8,6 +8,12 @@ The primary focus is **completing the update of the Cline Memory Bank** after re
 
 ## Recent Changes
 
+*   **Deployment Fix: Resolved NumPy Binary Incompatibility**:
+    *   Encountered `ValueError: numpy.dtype size changed, may indicate binary incompatibility` during deployment on Render.
+    *   This was caused by a mismatch between the NumPy version `thinc` (a `spaCy` dependency) was compiled against and the newer NumPy 2.x installed by default.
+    *   Pinned NumPy to `<2.0` in `requirements.txt` to resolve the issue.
+    *   Updated `memory-bank/techContext.md` to reflect this dependency constraint.
+
 *   **Text Analyzer: Resolved `UnicodeDecodeError` for `dict-sample.txt`**:
     *   Encountered `UnicodeDecodeError` when `text_analyzer` attempted to read `dict-sample.txt`.
     *   Initial investigation showed `text_analyzer/file_io.py` was already using `utf-8` encoding.
