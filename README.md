@@ -4,6 +4,7 @@
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Difficulty](https://img.shields.io/badge/difficulty-intermediate-yellowgreen.svg)
 ![Learning](https://img.shields.io/badge/learning-Applied%20NLP-orange.svg)
+![Deployment](https://img.shields.io/badge/deployment-render-blueviolet.svg)
 
 > **"Unlock the stories hidden in your text."**  
 > *Gain comprehensive insights from text data using a modular Python toolkit.*
