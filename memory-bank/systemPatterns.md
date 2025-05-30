@@ -84,3 +84,23 @@ My core operational directives, which define my behavior and collaboration, are 
 ### Git MCP Server (`github.com/modelcontextprotocol/servers/tree/main/src/git`)
 
 *   **Pathing for `repo_path`**: To ensure reliable operation, all tools from this server that accept a `repo_path` parameter (e.g., `git_status`, `git_add`, `git_commit`) should be provided with an **absolute path** to the target repository. Using relative paths (like ".") can lead to errors if the server's internal working directory context differs from the user's current working directory. This was confirmed by testing `git_status` with an absolute path after a relative path failed for `git_add`.
+
+### Memory MCP Server (`github.com/modelcontextprotocol/servers/tree/main/src/memory`)
+
+*   **Self-Learning Process**: The memory server updates its knowledge through:
+    - Monitoring stdio communication for new information
+    - Analyzing patterns in user-agent interactions
+    - Processing command results and outcomes
+    - Learning from error cases and their resolutions
+
+*   **Knowledge Integration**:
+    - Automatically captures successful command patterns
+    - Records error scenarios and their solutions
+    - Updates its understanding based on user feedback
+    - Integrates new knowledge with existing patterns
+
+*   **Knowledge Application**:
+    - Uses learned patterns to improve future interactions
+    - Applies past solutions to similar problems
+    - Adapts behavior based on accumulated experience
+    - Provides context-aware suggestions

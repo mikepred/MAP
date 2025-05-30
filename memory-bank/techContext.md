@@ -93,3 +93,17 @@ This document covers the technologies used in the project, the development setup
 
 *   **Tool Usage Pattern**: When using tools from this server (e.g., `git_status`, `git_add`, `git_commit`), the `repo_path` parameter **must be an absolute path** to the target repository. Relative paths may lead to errors due to the server's execution context.
 *   **Dependencies**: This server relies on the system's `git` command-line installation.
+
+### Memory MCP Server (`github.com/modelcontextprotocol/servers/tree/main/src/memory`)
+
+*   **Tool Usage Pattern**: This server provides knowledge graph functionality over stdio transport.
+*   **Dependencies**: Requires Node.js and NPM for package installation and execution.
+*   **Configuration Notes**: 
+    - Use `cmd` instead of `powershell` for more reliable execution
+    - Direct `npx` command is preferred over PowerShell script execution
+    - Recommended timeout of 120 seconds or higher to ensure stable connection
+*   **Troubleshooting**:
+    - If encountering "MCP error -1: Connection closed", try:
+      1. Using `cmd` as the command executor
+      2. Simplifying command args to `["/c", "npx", "-y", "@modelcontextprotocol/server-memory"]`
+      3. Increasing the timeout value in MCP settings
