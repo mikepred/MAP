@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify # Added jsonify
+import json 
+import re # Import re module
 from text_analyzer import analysis
 from text_analyzer import config as ta_config
 from collections import Counter
@@ -111,6 +113,39 @@ def _format_web_results(results: dict, top_n: int, removed_stopwords_flag: bool,
         output.append(f"Long Words (sample, >=7 chars): {', '.join(ip.get('long_words', []))}")
     if ip.get('short_words'):
         output.append(f"Short Words (sample, <=2 chars): {', '.join(ip.get('short_words', []))}")
+
+    # Displaying built-in common patterns
+    common_pattern_matches = ip.get('common_patterns', {})
+    if common_pattern_matches:
+        output.append("\n--- Common Pattern Matches ---")
+        for pattern_name, matches_or_error in common_pattern_matches.items():
+            output.append(f"\n  Matches for '{pattern_name}':")
+            if isinstance(matches_or_error, dict) and 'error' in matches_or_error:
+                output.append(f"    Error: {matches_or_error['error']}")
+            elif matches_or_error: # Check if list is not empty
+                for match in matches_or_error:
+                    output.append(f"    - {match}")
+            else:
+                output.append("    No matches found.")
+    
+    # Displaying user-defined pattern results
+    user_results = ip.get('user_defined_pattern_results', {})
+    if user_results:
+        output.append("\n--- User-Defined Pattern Matches ---")
+        for pattern_name, matches_or_error_info in user_results.items():
+            output.append(f"\n  Matches for '{pattern_name}':")
+            # The structure from analysis.py for errors is {'error': 'message'}
+            if isinstance(matches_or_error_info, dict) and 'error' in matches_or_error_info:
+                output.append(f"    Error processing this pattern: {matches_or_error_info['error']}")
+            elif isinstance(matches_or_error_info, list):
+                if matches_or_error_info:
+                    for match in matches_or_error_info:
+                        output.append(f"    - {match}")
+                else:
+                    output.append("    No matches found.")
+            else: # Should not happen based on current implementation in analysis.py
+                output.append(f"    Unexpected data type for pattern results: {matches_or_error_info}")
+
 
     # N-gram Frequencies (Module 4C)
     output.append("\n--- N-gram Frequencies ---")
@@ -236,10 +271,37 @@ def analyze_route(): # Renamed from 'analyze' to avoid conflict with the module
 
     remove_stopwords_flag = request.form.get('remove_stopwords') == 'true'
 
+    # Process user-defined patterns
+    user_defined_patterns = []
+    custom_pattern_name_1 = request.form.get('custom_pattern_name_1', '').strip()
+    custom_pattern_regex_1 = request.form.get('custom_pattern_regex_1', '').strip()
+
+    if custom_pattern_regex_1:
+        pattern_name = custom_pattern_name_1 if custom_pattern_name_1 else "Custom Pattern 1"
+        try:
+            re.compile(custom_pattern_regex_1)
+            user_defined_patterns.append({'name': pattern_name, 'regex': custom_pattern_regex_1})
+        except re.error as e:
+            error_message_str = f"Invalid Custom Regex 1: {e}. Please correct it and try again."
+            # Ensure all necessary variables for template rendering are available
+            return render_template(
+                'index.html',
+                results=None,
+                error_message=error_message_str,
+                original_text_content=text_content, # text_content from earlier in the route
+                word_freq_labels=json.dumps([]),    # Default empty data for charts
+                word_freq_data=json.dumps([]),
+                sentiment_chart_labels=json.dumps([]),
+                sentiment_chart_data=json.dumps([]),
+                word_len_labels=json.dumps([]),
+                word_len_data=json.dumps([])
+            )
+
     analysis_results_dict = analysis.analyze_text_complete(
         text=text_content,
         use_stop_words=remove_stopwords_flag,
-        num_common_words_to_display=top_n
+        num_common_words_to_display=top_n,
+        user_patterns=user_defined_patterns
     )
 
     if analysis_results_dict.get('error'):
@@ -258,8 +320,53 @@ def analyze_route(): # Renamed from 'analyze' to avoid conflict with the module
         remove_stopwords_flag, 
         removed_stopwords_count_actual
     )
+
+    # Extract data for chart
+    labels = list(analysis_results_dict.get('word_analysis', {}).get('word_frequencies', {}).keys())
+    data = list(analysis_results_dict.get('word_analysis', {}).get('word_frequencies', {}).values())
+
+    # Extract sentiment data for pie chart
+    sentiment_scores = analysis_results_dict.get('sentiment_analysis', {})
+    sentiment_labels = ['Positive', 'Neutral', 'Negative']
+    sentiment_data = [sentiment_scores.get('pos', 0.0), sentiment_scores.get('neu', 0.0), sentiment_scores.get('neg', 0.0)]
+
+    # Extract word length distribution for bar chart
+    word_length_counts = analysis_results_dict.get('word_length_counts_obj', Counter())
+    if word_length_counts:
+        sorted_lengths = sorted(word_length_counts.items())
+        word_length_labels = [str(item[0]) for item in sorted_lengths]
+        word_length_data = [item[1] for item in sorted_lengths]
+    else:
+        word_length_labels = []
+        word_length_data = []
     
-    return render_template('index.html', results=formatted_results_str, error_message=error_message_str) # error_message_str would be None or an input warning
+    return render_template(
+        'index.html', 
+        results=formatted_results_str, 
+        error_message=error_message_str, # error_message_str would be None or an input warning
+        word_freq_labels=json.dumps(labels),
+        word_freq_data=json.dumps(data),
+        sentiment_chart_labels=json.dumps(sentiment_labels),
+        sentiment_chart_data=json.dumps(sentiment_data),
+        word_len_labels=json.dumps(word_length_labels),
+        word_len_data=json.dumps(word_length_data),
+        original_text_content=text_content # Pass original text
+    )
+
+@app.route('/get_sentences', methods=['POST'])
+def get_sentences_route():
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'Invalid JSON payload'}), 400
+
+    text_content = data.get('text_content')
+    word = data.get('word')
+
+    if not text_content or not word:
+        return jsonify({'error': 'Missing text_content or word'}), 400
+
+    found_sentences = analysis.get_sentences_for_word(text_content, word)
+    return jsonify({'sentences': found_sentences})
 
 if __name__ == '__main__':
     app.run(debug=True)

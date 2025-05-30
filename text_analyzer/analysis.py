@@ -216,7 +216,8 @@ def analyze_sentences(text: Optional[str]) -> Dict[str, Any]:
 def analyze_text_complete(
     text: Optional[str], 
     use_stop_words: bool = False, 
-    num_common_words_to_display: int = cfg.DEFAULT_TOP_WORDS_DISPLAY
+    num_common_words_to_display: int = cfg.DEFAULT_TOP_WORDS_DISPLAY,
+    user_patterns: Optional[List[Dict[str, str]]] = None 
 ) -> Dict[str, Any]:
     """
     Complete text analysis pipeline.
@@ -355,7 +356,7 @@ def analyze_text_complete(
                  final_word_counts, 
                  sentence_stats
              )
-             interesting_patterns_result = find_interesting_patterns(final_word_counts, text)
+             interesting_patterns_result = find_interesting_patterns(final_word_counts, text, user_patterns=user_patterns)
         elif text_for_sentence_structure: # Still attempt textstat if text_for_sentence_structure is available
             readability_stats_result = calculate_readability_stats(
                  text_for_sentence_structure, # Use lightly processed text for textstat
@@ -678,27 +679,107 @@ def calculate_readability_stats(text_for_textstat: str, word_counts: Counter[str
                 
     return stats
 
-def find_interesting_patterns(word_counts: Counter[str], text: str) -> Dict[str, Any]:
-    """Find interesting patterns in the text. 'text' param kept for potential future use."""
+def find_interesting_patterns(
+    word_counts: Counter[str], 
+    text: str, 
+    user_patterns: Optional[List[Dict[str, str]]] = None
+) -> Dict[str, Any]:
+    """Find interesting patterns in the text, including built-in and user-defined regex patterns."""
     patterns: Dict[str, Any] = {
-        'repeated_words': [], 'long_words': [], 'short_words': [], 'word_variety': 0.0
+        'repeated_words': [], 
+        'long_words': [], 
+        'short_words': [], 
+        'word_variety': 0.0,
+        'common_patterns': {}, # For cfg.COMMON_PATTERNS
+        'user_defined_pattern_results': {} # For user_patterns
     }
-    if not word_counts: return patterns
+
+    # Handle word-based patterns (existing logic)
+    if word_counts:
+        patterns['repeated_words'] = [(word, count) for word, count in word_counts.most_common(cfg.DEFAULT_PATTERNS_REPEATED_WORDS_COUNT) if count > 1]
+        patterns['long_words'] = [word for word in word_counts.keys() if len(word) >= 7][:cfg.DEFAULT_PATTERNS_LONG_WORDS_SAMPLE_SIZE]
+        patterns['short_words'] = [word for word in word_counts.keys() if len(word) <= 2][:cfg.DEFAULT_PATTERNS_SHORT_WORDS_SAMPLE_SIZE]
+        
+        total_words: int = sum(word_counts.values())
+        unique_words_count: int = len(word_counts)
+        patterns['word_variety'] = round(unique_words_count / total_words * 100, 1) if total_words else 0.0
     
-    patterns['repeated_words'] = [(word, count) for word, count in word_counts.most_common(cfg.DEFAULT_PATTERNS_REPEATED_WORDS_COUNT) if count > 1]
-    patterns['long_words'] = [word for word in word_counts.keys() if len(word) >= 7][:cfg.DEFAULT_PATTERNS_LONG_WORDS_SAMPLE_SIZE]
-    patterns['short_words'] = [word for word in word_counts.keys() if len(word) <= 2][:cfg.DEFAULT_PATTERNS_SHORT_WORDS_SAMPLE_SIZE]
-    
-    total_words: int = sum(word_counts.values())
-    unique_words_count: int = len(word_counts)
-    patterns['word_variety'] = round(unique_words_count / total_words * 100, 1) if total_words else 0.0 # Simplified
-    
+    # Handle built-in regex patterns from config
+    if text: # Ensure text is available for regex matching
+        for pattern_name, regex_str in cfg.COMMON_PATTERNS.items():
+            try:
+                compiled_regex = re.compile(regex_str)
+                matches = compiled_regex.findall(text)
+                patterns['common_patterns'][pattern_name] = matches[:cfg.DEFAULT_PATTERN_MATCH_LIMIT]
+            except re.error as e:
+                patterns['common_patterns'][pattern_name] = {'error': f"Invalid regex: {str(e)}"}
+
+    # Handle user-defined regex patterns
+    if text and user_patterns: # Ensure text and user_patterns are available
+        for user_pattern_dict in user_patterns:
+            pattern_name = user_pattern_dict.get('name')
+            regex_str = user_pattern_dict.get('regex')
+
+            if not pattern_name or not regex_str:
+                # Skip if name or regex is missing in the user pattern dict
+                # Or, store an error message for this unnamed/incomplete pattern
+                unnamed_pattern_key = f"UnnamedPattern_{len(patterns['user_defined_pattern_results'])}"
+                patterns['user_defined_pattern_results'][unnamed_pattern_key] = {'error': 'Pattern name or regex string missing.'}
+                continue
+
+            try:
+                compiled_regex = re.compile(regex_str)
+                matches = compiled_regex.findall(text)
+                patterns['user_defined_pattern_results'][pattern_name] = matches[:cfg.DEFAULT_PATTERN_MATCH_LIMIT]
+            except re.error as e:
+                patterns['user_defined_pattern_results'][pattern_name] = {'error': f"Invalid regex: {str(e)}"}
+            except Exception as e: # Catch any other unexpected errors during user pattern processing
+                 patterns['user_defined_pattern_results'][pattern_name] = {'error': f"Unexpected error processing pattern: {str(e)}"}
+
+
     return patterns
 
 # time_function is a utility, might fit better in a utils.py or remain in main if only used there.
 # For now, let's assume it's more of a general utility or debugging tool.
 # If it's primarily for debugging/dev, it might not need its own module.
 # Let's keep it in analyzer.py for now, or move to a new utils.py later.
+
+def get_sentences_for_word(text_content: str, word: str) -> List[str]:
+    """
+    Finds all sentences in text_content that contain the specified word.
+
+    Args:
+        text_content (str): The text to search within.
+        word (str): The word to search for (case-insensitive, whole word).
+
+    Returns:
+        List[str]: A list of sentences containing the word. Empty if none found.
+    """
+    if not text_content or not word:
+        return []
+
+    # Sentences are split by '.', '!', '?'
+    # Using re.split to handle multiple delimiters and keep them if needed (though here we discard them)
+    # Stripping whitespace from each sentence after splitting.
+    sentences: List[str] = [s.strip() for s in re.split(r'[.!?]+', text_content) if s.strip()]
+
+    found_sentences: List[str] = []
+    # Compile regex for whole word, case-insensitive search
+    # \b ensures that we match whole words only (e.g., "cat" not "caterpillar")
+    try:
+        # Attempt to compile the regex to catch potential errors with re.escape(word) if word is unusual
+        word_regex = re.compile(r'\b' + re.escape(word) + r'\b', re.IGNORECASE)
+    except re.error:
+        # Handle cases where the word might form an invalid regex even after escaping
+        # This is unlikely with re.escape but good for robustness
+        return [] 
+
+    for sentence in sentences:
+        if word_regex.search(sentence):
+            found_sentences.append(sentence + '.') # Append period for completeness, as split removes it.
+                                                 # Consider if original punctuation is preferred.
+                                                 # For this example, adding '.' is a simplification.
+    return found_sentences
 
 # =============================================================================
 # N-GRAM ANALYSIS FUNCTIONS (New for Module 4C)
