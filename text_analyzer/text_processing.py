@@ -139,3 +139,60 @@ def generate_ngrams(tokens: List[str], n_values: List[int]) -> dict[int, List[Tu
             output_ngrams[n] = list(nltk_ngrams(tokens, n))
             
     return output_ngrams
+
+# =============================================================================
+# TYPO CORRECTION FUNCTIONS (New for Module 4D - or whichever module it is)
+# =============================================================================
+
+from spellchecker import SpellChecker
+
+def correct_text_typos(text: Optional[str]) -> str:
+    """
+    Corrects typographical errors in a given text using the `spellchecker` library.
+
+    The function splits the input text into words and attempts to find a correction
+    for each word. If a word is misspelled and a correction is found, the
+    corrected word is used. If the word is correctly spelled, or if no correction
+    can be determined (e.g., it's a very unusual word or not in the dictionary),
+    the original word is retained. This ensures that the function does not erroneously
+    change correctly spelled unique words or proper nouns not in its dictionary.
+
+    Punctuation attached to words (e.g., "word," or "sentence!") is generally
+    handled correctly by the spellchecker, meaning the punctuation will be preserved
+    with the corrected word.
+
+    Args:
+        text (Optional[str]): The input text to correct.
+                              Returns an empty string if text is None or empty.
+
+    Returns:
+        str: The text with identified typos corrected. If no typos are found or
+             no corrections can be made, the original text (or its equivalent
+             after splitting and joining) is returned.
+    """
+    if not text: # Handles None or empty string input
+        return ""
+
+    spell = SpellChecker()
+    words = text.split()  # Simple whitespace split; preserves punctuation attached to words
+
+    corrected_word_list = []
+    for word in words:
+        if not word:  # Handles empty strings that can result from multiple spaces, e.g., "hello   world"
+            corrected_word_list.append("")
+            continue
+
+        # Attempt to get a correction for the word.
+        # spell.correction() returns the most likely correction or None if not found/needed.
+        potential_correction = spell.correction(word)
+
+        # If spell.correction() returns None (no correction found or word is correct),
+        # or if the "corrected" word is somehow None (shouldn't happen with current library version for non-None input words),
+        # use the original word. Otherwise, use the suggestion.
+        # Note: spell.correction(word) usually returns the original word if it's already correct.
+        if potential_correction is None:
+            corrected_word_list.append(word)
+        else:
+            corrected_word_list.append(potential_correction)
+
+    return " ".join(corrected_word_list)

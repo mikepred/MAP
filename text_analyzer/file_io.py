@@ -8,6 +8,7 @@ from typing import Union, Tuple, List, Any # Added List, Any for save_results_to
 from collections import Counter # For type hinting save_results_to_file
 
 from . import config as cfg
+from .text_processing import correct_text_typos
 
 # =============================================================================
 # FILE I/O FUNCTIONS (Originally from Module 3B)
@@ -39,6 +40,8 @@ def read_file(filename: Union[str, Path]) -> str:
         file_to_read: Path = Path(filename)
         with open(file_to_read, 'r', encoding='iso-8859-1') as file:
             content: str = file.read()
+            # Correct typographical errors in the raw content immediately after reading.
+            content = correct_text_typos(content)
             # Ensured f-strings are used, which they already were.
             print(f"✅ Successfully read file: {file_to_read}")
             print(f"📄 File size: {len(content)} characters")
