@@ -4,7 +4,7 @@ Configuration constants for the Text Analyzer application.
 
 import re
 from pathlib import Path
-from typing import Set
+from typing import Set, Dict
 
 # =============================================================================
 # MODULE-LEVEL CONSTANTS
@@ -65,3 +65,12 @@ DEFAULT_NGRAM_DISPLAY_COUNT: int = 10      # Number of most common N-grams to di
 CONTENT_POS_TAGS: Set[str] = {'NOUN', 'VERB', 'ADJ', 'ADV'} # POS tags considered as content words for lexical density
 DEFAULT_POS_DISPLAY_COUNT: int = 10        # Number of most common POS tags to display
 DEFAULT_NER_DISPLAY_COUNT: int = 5         # Number of most common NER entity types to display with examples
+
+# Built-in common regex patterns (New for Module 4I - although used earlier)
+COMMON_PATTERNS: Dict[str, str] = {
+    # Example: Find URLs
+    "URLs": r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
+    # Add other common patterns here as needed
+}
+
+DEFAULT_PATTERN_MATCH_LIMIT: int = 10 # Limit the number of matches displayed for patterns

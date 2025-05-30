@@ -26,4 +26,4 @@ COPY . .
 EXPOSE 10000
 
 # Command to run the application
-CMD ["gunicorn", "--worker-tmp-dir", "/dev/shm", "--bind", "0.0.0.0:10000", "webapp:app"]
+CMD exec gunicorn --worker-tmp-dir /dev/shm --bind "0.0.0.0:${PORT}" webapp:app
