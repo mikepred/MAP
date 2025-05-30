@@ -3,10 +3,10 @@ services:
     name: text-analyzer
     runtime: python
     buildCommand: |
-      /opt/render/project/src/.venv/bin/python -m pip install --upgrade pip
-      /opt/render/project/src/.venv/bin/pip install -r requirements.txt
-      /opt/render/project/src/.venv/bin/python -m spacy download en_core_web_sm
-      /opt/render/project/src/.venv/bin/python -m nltk.downloader punkt stopwords
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+      python -m spacy download en_core_web_sm
+      python -m nltk.downloader punkt stopwords
     startCommand: gunicorn --worker-tmp-dir /dev/shm --bind :$PORT webapp:app
     envVars:
       - key: PYTHON_VERSION
