@@ -14,15 +14,11 @@
 *   See how these individual processing steps are combined in the `count_words` function.
 *   Appreciate why text preprocessing is a critical step in any text analysis pipeline.
 
----
-
 ## 1. The Importance of Text Preprocessing
 
 Raw text data is often "messy." It can contain inconsistencies in capitalization, punctuation, special characters, URLs, and common words (like "the", "is", "a") that might not be relevant for all types of analysis. Text preprocessing aims to clean and standardize the text, making it suitable for effective analysis.
 
 The `text_processing.py` module is dedicated to these tasks. Open `text_analyzer/text_processing.py` in your editor.
-
----
 
 ## 2. Cleaning Functions
 
@@ -51,8 +47,6 @@ You'll notice there are a couple of distinct cleaning functions. This is because
 *   "Explain the line `translator = str.maketrans('', '', string.punctuation)` in `clean_text_for_word_tokenization`."
 *   "How does the `advanced` parameter change the behavior of `clean_text_for_word_tokenization`?"
 
----
-
 ## 3. Tokenization: `tokenize_text(text: Optional[str]) -> List[str]`
 
 Tokenization is the process of breaking down a string of text into individual units, usually words.
@@ -65,8 +59,6 @@ Tokenization is the process of breaking down a string of text into individual un
     ```
 *   **`text.split()`:** Python's built-in `split()` method (with no arguments) splits the string by any whitespace and handles multiple spaces gracefully. It also discards empty strings that might result from splitting.
 *   **Output:** Returns a list of word tokens. For example, "Hello world" becomes `['hello', 'world']`.
-
----
 
 ## 4. Stop Word Removal: `remove_stop_words(tokens: List[str]) -> Tuple[List[str], int]`
 
@@ -87,8 +79,6 @@ Stop words are common words (e.g., "the", "is", "in", "a", "an") that often add 
 *   "In `remove_stop_words` from `text_processing.py`, why is `cfg.STOP_WORDS` a `set` and not a `list`? How does this affect performance?"
 *   "Modify the `remove_stop_words` function to also remove any tokens that are less than 3 characters long, in addition to the stop words." (This is a good way to experiment with copilot assistance for modification).
 
----
-
 ## 5. Bringing it Together: `count_words(text: Optional[str], use_stop_words: bool = False) -> Counter[str]`
 
 This function demonstrates a common pattern: orchestrating several preprocessing steps to achieve a specific outcome. Its goal is to count word frequencies.
@@ -106,10 +96,8 @@ This function demonstrates a common pattern: orchestrating several preprocessing
 *   "Trace the flow of data if I call `count_words` with `use_stop_words=True`. Which other functions in `text_processing.py` are called in sequence?"
 *   "What is a `collections.Counter` object in Python and why is it useful here?"
 
----
-
 ## Next Steps
 
 Understanding how text is cleaned and prepared is crucial. Now that we've seen the preprocessing steps, we're ready to explore how the `text_analyzer` actually performs different types of analyses on this processed data.
 
-➡️ **Continue to [Module D: Core Analysis Engine (`analysis.py`)](comprehending-D-analysis-engine.md)**
+**Continue to [Module D: Core Analysis Engine (`analysis.py`)](comprehending-D-analysis-engine.md)**

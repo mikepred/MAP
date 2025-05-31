@@ -13,8 +13,6 @@
 *   Become familiar with the main menu options of the application.
 *   Get a high-level overview of the different Python files that make up the project and their roles.
 
----
-
 ## 1. What is the Text Analyzer?
 
 The `text_analyzer` is a Python application designed to perform various analyses on text data. As highlighted in the project's `README.md` and `memory-bank` documentation (e.g., `productContext.md`), its primary goal is to serve as an educational tool. It demonstrates a practical, modular approach to text processing, similar to the initial stages of data handling in Natural Language Processing (NLP) and for Large Language Models (LLMs).
@@ -35,8 +33,6 @@ The tool is intentionally built with clear, separated modules for different task
 For more details on the project's features, refer to the main project documentation:
 *   **Main Lesson Plan:** [`comprehending-text-analyzer.md`](comprehending-text-analyzer.md)
 *   **Project README:** [`../text_analyzer/README.md`](../text_analyzer/README.md)
-
----
 
 ## 2. Running the Text Analyzer
 
@@ -62,23 +58,21 @@ The `text_analyzer` application is run from its main script, `analyzer.py`.
 Upon running the script, you should see a welcome message and the main menu:
 
 ```text
-🚀 TEXT ANALYZER - COMPLETE VERSION 🚀
+TEXT ANALYZER - COMPLETE VERSION
 Welcome to the comprehensive text analysis tool!
 Built through Modules 3A-3E. Now enhancing with Module 4B features.
 
 ==================================================
-📋 Main Menu
+Main Menu
 ==================================================
-1. 📊 Analyze Fixed Text File (s.txt)
-2. 📂 Analyze Custom Text File
-3. 🧪 Run System Tests
-4. ❓ Help & Information
-5. 🚪 Exit
+1. Analyze Fixed Text File (s.txt)
+2. Analyze Custom Text File
+3. Run System Tests
+4. Help & Information
+5. Exit
 ==================================================
 Enter your choice (1-5):
 ```
-
----
 
 ## 3. Navigating the Main Menu
 
@@ -104,8 +98,6 @@ The application is interactive. You'll be prompted to enter a choice:
 *   Observe the prompts for configuration (number of top words, stop words) and display choices.
 *   Explore option 4 for help.
 *   Use option 5 to exit.
-
----
 
 ## 4. Codebase Overview: The Python Files
 
@@ -141,10 +133,8 @@ Here's a brief overview (we'll dive deeper into each in subsequent modules):
 *   "What does it mean for `__init__.py` to make a directory a 'Python package'?"
 *   "Show me where `config.py` is imported and used in one of the other files."
 
----
-
 ## Next Steps
 
 You've now had a first look at the `text_analyzer` tool, how to run it, and the layout of its code. In the next module, we'll explore how the application is configured and how it handles file operations.
 
-➡️ **Continue to [Module B: Configuration and File Handling (`config.py`, `file_io.py`)](comprehending-B-config-fileio.md)**
+**Continue to [Module B: Configuration and File Handling (`config.py`, `file_io.py`)](comprehending-B-config-fileio.md)**

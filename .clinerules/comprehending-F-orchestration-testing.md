@@ -14,8 +14,6 @@
 *   Learn how user-defined configurations (like top words count, stop word usage) are obtained and passed through the system.
 *   Understand the functionality of the built-in `run_comprehensive_test` feature.
 
----
-
 ## 1. The Conductor: `analyzer.py`
 
 Think of `analyzer.py` as the conductor of an orchestra. The other modules (`file_io.py`, `text_processing.py`, `analysis.py`, `display.py`, `config.py`) are like different sections of the orchestra, each proficient with their instruments (functions). `analyzer.py` tells them when and what to play.
@@ -33,8 +31,6 @@ from . import display
 ```
 The `.` indicates a relative import from the current package (`text_analyzer`).
 
----
-
 ## 2. The Main Menu: `main()` Function
 
 The `main()` function is the heart of the user interaction.
@@ -49,8 +45,6 @@ The `main()` function is the heart of the user interaction.
     *   Prints help directly or exits.
 *   **Error Handling:** Includes a `try-except KeyboardInterrupt` to gracefully exit on Ctrl+C and a generic `except Exception` to catch other unexpected errors in the menu logic.
 
----
-
 ## 3. Core Workflow: `_handle_analyze_file_option()` and `_handle_custom_file_option()`
 
 These are internal helper functions called by `main()`.
@@ -63,8 +57,6 @@ These are internal helper functions called by `main()`.
 *   **`_handle_custom_file_option()`**:
     1.  Calls `file_io.load_text_file()` which handles prompting the user for a filename and reading it.
     2.  If content is loaded, calls `_perform_analysis_and_display`.
-
----
 
 ## 4. Central Analysis & Display Logic: `_perform_analysis_and_display(...)`
 
@@ -80,8 +72,6 @@ This internal helper function is crucial as it centralizes the sequence of opera
     4.  **Word Length Analysis Display:** Calls `analysis.analyze_word_lengths` (to get the Counter) and then `display.display_word_length_analysis`.
     5.  **Save Results (Optional):** Asks the user if they want to save the results and, if yes, calls `file_io.save_results_to_file()`.
 
----
-
 ## 5. User Configuration: `get_user_input_config() -> Tuple[int, bool]`
 
 This function is responsible for interactively asking the user for analysis parameters:
@@ -90,8 +80,6 @@ This function is responsible for interactively asking the user for analysis para
 *   Whether to remove stop words (defaults to `True`).
 *   Includes input validation and retry logic for these questions.
 *   Returns the chosen number of words and a boolean for stop word usage.
-
----
 
 ## 6. System Testing: `run_comprehensive_test() -> bool`
 
@@ -103,8 +91,6 @@ This function provides a way to perform a basic sanity check on the various comp
     *   `assert num_sentences == 2`
 *   **Limitations:** While useful, these tests are not exhaustive and are part of the script itself. For more rigorous testing, dedicated frameworks like `pytest` are typically used in larger projects.
 *   **Output:** Prints whether each component test passed or failed and an overall summary.
-
----
 
 ## 7. Utility: `time_function(func: callable, *args: Any, **kwargs: Any) -> Tuple[Any, float]`
 
@@ -121,10 +107,8 @@ A simple utility function that takes another function (`func`) and its arguments
 *   "If I wanted to add a new main menu option to `analyzer.py`, what parts of the `main()` function would I need to modify?"
 *   "Where in `_perform_analysis_and_display` is the decision made whether to remove stop words or not, and how is that decision passed to the analysis functions?"
 
----
-
 ## Next Steps
 
 We've now seen how all the modules are orchestrated by `analyzer.py`. The final module will focus on how you can use this understanding to extend the `text_analyzer`, and how an AI copilot can assist in that process.
 
-➡️ **Continue to [Module G: Extending the Analyzer and AI Copilot Usage (Conceptual)](comprehending-G-extending.md)**
+**Continue to [Module G: Extending the Analyzer and AI Copilot Usage (Conceptual)](comprehending-G-extending.md)**

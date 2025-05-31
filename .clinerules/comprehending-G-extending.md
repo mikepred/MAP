@@ -12,8 +12,6 @@
 *   Learn effective strategies for using an AI copilot to assist in code extension, debugging, and testing.
 *   Foster a mindset of viewing the existing project as a starting point for further development.
 
----
-
 ## 1. Why Extend the Analyzer?
 
 The `text_analyzer` provides a solid set of basic text analysis features. However, the field of text analysis is vast! You might want to:
@@ -25,8 +23,6 @@ The `text_analyzer` provides a solid set of basic text analysis features. Howeve
 *   **Tailor to Specific Needs:** Adapt the tool for a particular domain or type of text.
 
 The existing modular structure of `text_analyzer` (separating concerns into `file_io.py`, `text_processing.py`, `analysis.py`, `display.py`) makes it easier to extend than a monolithic script.
-
----
 
 ## 2. Potential Extension Ideas
 
@@ -50,8 +46,6 @@ Here are a few ideas, ranging from simple to more complex:
 *   **Enhanced Stop Word Management:**
     *   **Concept:** Allow users to provide their own custom stop word lists or choose from different language stop word sets.
     *   **Impact:** Changes in `config.py` and `file_io.py` (to load custom lists), and `text_processing.py`.
-
----
 
 ## 3. Using Your AI Copilot for Extensions
 
@@ -92,8 +86,6 @@ An AI copilot can be incredibly helpful when extending an existing codebase. Her
 
 *   **Prompt:** "I want to use `matplotlib` to plot word frequencies. What's the basic way to generate a bar chart from a `collections.Counter` object and save it to a file? Where should I add the import statement?"
 
----
-
 ## 4. General Approach to Extending
 
 1.  **Understand the Goal:** Clearly define what the new feature should do.
@@ -102,8 +94,6 @@ An AI copilot can be incredibly helpful when extending an existing codebase. Her
 4.  **Test Incrementally:** Test the new code frequently. Use the existing `run_comprehensive_test` in `analyzer.py` as inspiration, or add temporary print statements.
 5.  **Integrate:** Connect the new feature into the existing workflow (e.g., add a menu option in `analyzer.py`, call the new analysis function from `analyze_text_complete`, add a display section in `display.py`).
 6.  **Refactor if Needed:** Keep the code clean and maintainable.
-
----
 
 ## Conclusion of the Guided Tour
 

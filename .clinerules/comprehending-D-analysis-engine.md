@@ -13,15 +13,11 @@
 *   See how various text patterns (like repeated words or word lengths) are identified.
 *   Understand the role of `analyze_text_complete` as the central function that orchestrates all analysis tasks.
 
----
-
 ## 1. The Analysis Hub: `analysis.py`
 
 The `analysis.py` file contains functions that take the preprocessed text (or tokens) and perform various calculations and data extractions to provide meaningful insights.
 
 Open `text_analyzer/analysis.py` in your editor.
-
----
 
 ## 2. Word-Level Statistics: `get_word_count_stats(word_counts: Counter[str]) -> Dict[str, Any]`
 
@@ -34,8 +30,6 @@ This function takes a `Counter` object (like the one produced by `tp.count_words
     *   `most_common`: Uses `word_counts.most_common(cfg.DEFAULT_SUMMARY_MOST_COMMON_WORDS_COUNT)` to get a list of the most frequent words (the number is configurable via `config.py`).
     *   `average_frequency`: Calculated as `total_words / unique_words`.
 *   **Output:** Returns a dictionary containing these statistics.
-
----
 
 ## 3. Sentence Analysis
 
@@ -57,8 +51,6 @@ Analyzing sentence structure can provide insights into text complexity and style
 
 **Note on Text Used for Sentence Analysis:** The `analyze_text_complete` function (discussed later) uses `tp.preprocess_text_for_sentence_analysis` to prepare the text before calling these sentence analysis functions. This ensures that sentence structures are reasonably preserved.
 
----
-
 ## 4. Word Length Analysis: `analyze_word_lengths(tokens: List[str]) -> Counter[int]`
 
 This function analyzes the distribution of word lengths from a list of tokens.
@@ -66,8 +58,6 @@ This function analyzes the distribution of word lengths from a list of tokens.
 *   **Input:** A list of word tokens (e.g., after cleaning and stop word removal).
 *   **Process:** Uses a `Counter` to count the occurrences of each word length: `Counter(len(word) for word in tokens)`.
 *   **Output:** A `Counter` object where keys are word lengths (integers) and values are the number of words having that length.
-
----
 
 ## 5. Readability and Complexity: `calculate_readability_stats(...) -> Dict[str, Any]`
 
@@ -81,8 +71,6 @@ This function attempts to quantify how easy or difficult a text is to read.
     *   `readability_level`: A qualitative assessment ('Easy', 'Moderate', 'Difficult', 'Very Difficult') based on the `complexity_score`.
 *   **Output:** A dictionary containing these readability metrics.
 
----
-
 ## 6. Finding Patterns: `find_interesting_patterns(...) -> Dict[str, Any]`
 
 This function looks for specific patterns in the text based on word counts.
@@ -94,8 +82,6 @@ This function looks for specific patterns in the text based on word counts.
     *   `short_words`: A sample of words with 2 or fewer characters (configurable limit).
     *   `word_variety`: A percentage representing `unique_words / total_words`, indicating lexical diversity.
 *   **Output:** A dictionary containing these identified patterns.
-
----
 
 ## 7. The Orchestrator: `analyze_text_complete(...) -> Dict[str, Any]`
 
@@ -123,10 +109,8 @@ This is the main analysis pipeline function in `analysis.py`. It calls many of t
 *   "If I wanted to add a new analysis, for example, counting the frequency of specific punctuation marks, which functions in `analysis.py` and `text_processing.py` might I need to modify or add to?"
 *   "What is the role of `cfg.DEFAULT_SUMMARY_MOST_COMMON_WORDS_COUNT` in `get_word_count_stats` and where is this constant defined?"
 
----
-
 ## Next Steps
 
 We've now covered how the `text_analyzer` processes text and performs its core analyses. The next step is to see how these rich analytical results are presented to the user.
 
-➡️ **Continue to [Module E: Displaying Results (`display.py`)](comprehending-E-display.md)**
+**Continue to [Module E: Displaying Results (`display.py`)](comprehending-E-display.md)**

@@ -13,15 +13,11 @@
 *   See how configuration constants influence the displayed output.
 *   Differentiate between the complete report and the summary display.
 
----
-
 ## 1. The Presentation Layer: `display.py`
 
 Effective presentation of data is just as important as the analysis itself. If users can't understand the output, the analysis loses its value. The `display.py` module handles this "presentation layer" for the `text_analyzer`.
 
 Open `text_analyzer/display.py` in your editor.
-
----
 
 ## 2. Styling Helpers
 
@@ -29,12 +25,10 @@ Consistent formatting makes the output look professional and easier to read.
 
 *   **`print_header(title: str, width: int = 60) -> None`**:
     *   Prints a prominent header with a title, typically used for the main report title.
-    *   Example: `📊 TEXT ANALYSIS REPORT 📊`
+    *   Example: `TEXT ANALYSIS REPORT`
 *   **`print_section(title: str, width: int = 60) -> None`**:
     *   Prints a section header, used to demarcate different parts of the analysis report.
-    *   Example: `🔤 Word Frequency Analysis`
-
----
+    *   Example: `Word Frequency Analysis`
 
 ## 3. Displaying Specific Analysis Components
 
@@ -60,8 +54,6 @@ Most functions in `display.py` are designed to format and print a specific slice
 
 **Data Flow:** Each of these functions expects a dictionary (or a `Counter` and an `int` for `display_word_length_analysis`) containing the specific data it needs to display. This data is typically a sub-dictionary from the main results object created by `analysis.analyze_text_complete`.
 
----
-
 ## 4. Main Display Orchestrators
 
 Two functions orchestrate the calling of the more specific display functions:
@@ -85,10 +77,8 @@ Two functions orchestrate the calling of the more specific display functions:
 *   "Explain the f-string formatting used in `display_word_analysis` to show the word, count, and percentage."
 *   "If I wanted to add a new section to the `display_complete_analysis` report, what steps would I need to take in `display.py`?"
 
----
-
 ## Next Steps
 
 We've now seen how data is ingested, configured, processed, analyzed, and finally displayed. The next module ties everything together by looking at `analyzer.py`, the main script that orchestrates all these operations and handles user interaction.
 
-➡️ **Continue to [Module F: Main Orchestration and Testing (`analyzer.py`)](comprehending-F-orchestration-testing.md)**
+**Continue to [Module F: Main Orchestration and Testing (`analyzer.py`)](comprehending-F-orchestration-testing.md)**

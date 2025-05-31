@@ -13,8 +13,6 @@
 *   Understand the process of getting user input for filenames.
 *   Learn how analysis results are saved to a file.
 
----
-
 ## 1. Centralized Configuration: `config.py`
 
 Good software design often involves separating configuration from the application logic. This makes the application easier to maintain and modify. In `text_analyzer`, `config.py` serves this purpose.
@@ -57,8 +55,6 @@ from . import config as cfg
 *   "Why is using a `set` for `STOP_WORDS` more efficient than a `list` in `config.py`?"
 *   "Show me an example of a pre-compiled regular expression from `config.py` being used in `text_processing.py`."
 *   "If I wanted to change the default number of top words displayed, which constant in `config.py` should I modify?"
-
----
 
 ## 2. Managing Files: `file_io.py`
 
@@ -108,10 +104,8 @@ This behavior makes the tool more flexible for the user.
 *   "How does `save_results_to_file` format the output before writing to the file?"
 *   "What would happen if `validate_file_path` was not used before trying to read a file in `file_io.py`?"
 
----
-
 ## Next Steps
 
 With an understanding of configuration and file I/O, we're ready to look at how the text data itself is processed. The next module focuses on `text_processing.py`.
 
-➡️ **Continue to [Module C: Text Processing Logic (`text_processing.py`)](comprehending-C-text-processing.md)**
+**Continue to [Module C: Text Processing Logic (`text_processing.py`)](comprehending-C-text-processing.md)**
