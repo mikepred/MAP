@@ -40,7 +40,7 @@ def time_function(func: callable, *args: Any, **kwargs: Any) -> Tuple[Any, float
 # INTERNAL HELPER FOR ANALYSIS AND DISPLAY
 # =============================================================================
 def _perform_analysis_and_display(file_content: str, source_filename_hint: str) -> None:
-    num_common_words_cfg, stop_word_config = get_user_input_config()
+    num_common_words_cfg, stop_word_config, user_defined_patterns = get_user_input_config()
 
     active_stop_words_set: Optional[Set[str]] = set() # Default to empty set (no removal)
     stop_word_message: str = "ℹ️ Stop word removal is OFF (no option selected or error)."
@@ -85,7 +85,7 @@ def _perform_analysis_and_display(file_content: str, source_filename_hint: str) 
         file_content,
         active_stop_words=active_stop_words_set, 
         num_common_words_to_display=num_common_words_cfg,
-        user_patterns=None # user_patterns not yet taken from user input
+        user_patterns=user_defined_patterns
     )
     
     print(stop_word_message) 
@@ -114,17 +114,42 @@ def _perform_analysis_and_display(file_content: str, source_filename_hint: str) 
     if custom_word_length_counts:
         display.display_word_length_analysis(custom_word_length_counts, len(processed_tokens_len_analysis))
 
-    if results.get('word_analysis', {}).get('full_word_counts_obj'):
+    if results.get('word_analysis', {}).get('full_word_counts_obj'): # Check if there are results to save
         while True:
             save_choice = input("\n💾 Save analysis results to file? (yes/no, default: no): ").strip().lower()
-            if not save_choice or save_choice == 'no': break
-            elif save_choice == 'yes':
-                default_out_fn = f"{source_filename_hint.replace('.txt', '').replace('.csv','').replace('.json','')}_{cfg.DEFAULT_RESULTS_FILENAME}"
-                out_fn_input = input(f"Enter output filename (default: {default_out_fn}): ").strip() or default_out_fn
-                file_io.save_results_to_file(results['word_analysis']['full_word_counts_obj'], num_common_words_cfg, len(results['word_analysis']['full_word_counts_obj']), out_fn_input)
+            if not save_choice or save_choice == 'no':
                 break
-            else: print("⚠️ Invalid choice. Please enter 'yes' or 'no'.")
+            elif save_choice == 'yes':
+                format_choice_input = input("Choose format: 1. Text, 2. JSON, 3. CSV (default: 1. Text): ").strip()
+                format_map = {'1': 'txt', '2': 'json', '3': 'csv'}
+                chosen_format = format_map.get(format_choice_input, 'txt') # Default to 'txt'
 
+                # Construct default filename with correct extension
+                source_stem = Path(source_filename_hint).stem # Get filename without original extension
+                default_out_fn = f"{source_stem}_analysis_results.{chosen_format}"
+
+                out_fn_input = input(f"Enter output filename (default: {default_out_fn}): ").strip()
+                if not out_fn_input:
+                    out_fn_input = default_out_fn
+
+                # Ensure the filename has the chosen extension if user provides a name without one
+                # or if they provide one with a different extension.
+                output_path_obj = Path(out_fn_input)
+                if output_path_obj.suffix.lower() != f".{chosen_format.lower()}":
+                    out_fn_input = str(output_path_obj.with_suffix(f".{chosen_format}"))
+                    print(f"ℹ️ Output filename adjusted to: {out_fn_input}")
+
+                # Call the new save function with the full results dictionary
+                file_io.save_analysis_results(
+                    analysis_results=results,
+                    output_filename_str=out_fn_input,
+                    format_choice=chosen_format
+                )
+                break # Exit save loop
+            else:
+                print("⚠️ Invalid choice. Please enter 'yes' or 'no'.")
+
+    # Plot generation logic (remains unchanged, but consider if word_counts check is still needed or use 'results')
     if results.get('word_analysis', {}).get('full_word_counts_obj'):
         while True:
             plot_choice = input("\n📊 Generate graphical plots for analysis? (yes/no, default: no): ").strip().lower()
@@ -161,13 +186,33 @@ def _perform_analysis_and_display(file_content: str, source_filename_hint: str) 
                 if results.get('word_length_counts_obj'):
                     saved_plot_path = display.plot_word_length_distribution(results['word_length_counts_obj'], output_dir=plot_output_dir, filename_prefix=f"{plot_filename_prefix}_word_len_dist")
                     open_plot(saved_plot_path)
-                break
+
+                # Word Cloud Generation Prompt
+                if display.WORDCLOUD_AVAILABLE and results.get('word_analysis', {}).get('full_word_counts_obj'):
+                    wc_choice = input("\n☁️ Generate word cloud image? (yes/no, default: no): ").strip().lower()
+                    if wc_choice == 'yes':
+                        print("☁️ Generating word cloud...")
+                        wc_path = display.generate_word_cloud(
+                            word_frequencies=results['word_analysis']['full_word_counts_obj'],
+                            output_dir=plot_output_dir, # Reuse same plot directory
+                            filename_prefix=f"{plot_filename_prefix}_word_cloud"
+                        )
+                        if wc_path:
+                            print(f"☁️ Word cloud generated: {wc_path}")
+                            open_plot(wc_path)
+                        else:
+                            print("⚠️ Word cloud generation failed or was skipped by the display module.")
+                elif not display.WORDCLOUD_AVAILABLE:
+                    input("\n☁️ Word cloud generation is unavailable (WordCloud library not installed). Press Enter to continue.")
+
+
+                break # Exit plot generation loop
             else: print("⚠️ Invalid choice. Please enter 'yes' or 'no'.")
 
 # =============================================================================
 # USER INPUT CONFIGURATION
 # =============================================================================
-def get_user_input_config() -> Tuple[int, Dict[str, Any]]:
+def get_user_input_config() -> Tuple[int, Dict[str, Any], List[Dict[str, str]]]: # Updated return type
     print("\n--- ⚙️ Text Analysis Configuration ---")
     num_words: int = cfg.DEFAULT_TOP_WORDS_DISPLAY
     while True:
@@ -225,8 +270,37 @@ def get_user_input_config() -> Tuple[int, Dict[str, Any]]:
             break
         else:
             print("⚠️ Invalid choice. Please enter 1-4.")
+
+    user_patterns: List[Dict[str, str]] = []
+    print("\n--- Custom Regex Patterns (Optional) ---")
+    if input("Do you want to add custom regex patterns for analysis? (yes/no, default: no): ").strip().lower() == 'yes':
+        max_patterns = 5 # Limit number of custom patterns to avoid excessive input
+        while len(user_patterns) < max_patterns:
+            pattern_name = input(f"Enter a name for your custom pattern (e.g., 'Phone Numbers') (pattern {len(user_patterns) + 1}/{max_patterns}, or leave blank to finish): ").strip()
+            if not pattern_name:
+                break
             
-    return num_words, stop_word_config
+            regex_string = input(f"Enter the regex string for '{pattern_name}': ").strip()
+            if not regex_string:
+                print("⚠️ Regex string cannot be empty. Please try again or leave pattern name blank to finish.")
+                continue
+
+            try:
+                re.compile(regex_string) # Validate regex
+                user_patterns.append({'name': pattern_name, 'regex': regex_string})
+                print(f"✅ Pattern '{pattern_name}' added.")
+            except re.error as e:
+                print(f"❌ Invalid regex string: {e}. Please try again.")
+
+            if len(user_patterns) >= max_patterns:
+                print(f"ℹ️ Maximum number of {max_patterns} custom patterns reached.")
+                break
+            if input("Add another custom pattern? (yes/no, default: no): ").strip().lower() != 'yes':
+                break
+        if user_patterns:
+             print(f"ℹ️ Added {len(user_patterns)} custom pattern(s).")
+
+    return num_words, stop_word_config, user_patterns
 
 # =============================================================================
 # MAIN SCRIPT LOGIC
