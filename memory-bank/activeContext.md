@@ -22,6 +22,7 @@ The primary focus is **understanding and integrating new learning resources** in
     *   Affirmed the `text_analyzer` project's role as a foundational practical exercise.
     *   Solidified "SAI" as the conceptual learning framework.
     *   Updated `memory-bank/projectbrief.md` and `memory-bank/productContext.md` to reflect this integrated learning strategy.
+    *   Completed updates to `memory-bank/activeContext.md` (this file), `memory-bank/progress.md`, and `memory-bank/techContext.md` to reflect the refined learning strategy and ensure consistency.
 
 *   **Previous Work (Still Relevant Context):**
     *   **Text Analyzer Project - Module 5C Initial Steps Completed**.
@@ -31,22 +32,16 @@ The primary focus is **understanding and integrating new learning resources** in
 
 ## Pending Tasks & Next Steps
 
-1.  **Finalize Memory Bank Update (Current Task)**:
-    *   Update `memory-bank/activeContext.md` (this file) - *This update is in progress.*
-    *   Update `memory-bank/progress.md` to reflect the refined learning strategy and current focus.
-    *   Update `memory-bank/techContext.md` to list the new PDF resource.
-    *   Confirm `memory-bank/systemPatterns.md` is consistent.
+1.  **Commit Memory Bank Updates**:
+    *   Commit all changes made to the memory bank files (`projectbrief.md`, `productContext.md`, `activeContext.md`, `progress.md`).
 
-2.  **Commit Memory Bank Updates**:
-    *   Commit all changes made to the memory bank files.
-
-3.  **Continue Learning (Self-Directed AI Engineering Education)**:
+2.  **Continue Learning (Self-Directed AI Engineering Education)**:
     *   **Current Focus:** "Text representation/early NLP."
         *   Study Chapter 3 of the "GenAI PDF."
         *   Relate concepts to the `text_analyzer` project.
         *   Prepare for/begin Chapter 2 of Raschka's "Build an LLM (From Scratch)."
     *   **Ongoing:** Populate MCP Knowledge Graph with learned concepts.
 
-4.  **Review `text_analyzer` Project Status (Lower Priority for now)**:
+3.  **Review `text_analyzer` Project Status (Lower Priority for now)**:
     *   Assess if further work on Module 5C for `text_analyzer` is desired before deeper engagement with Raschka's book, or if it should be paused.
     *   Address pending refactorings/improvements for `text_analyzer.py` as time permits or if they become relevant to current learning.

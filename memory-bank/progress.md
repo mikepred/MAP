@@ -60,7 +60,7 @@ This document outlines what currently works, what is left to build, the current 
     *   `develop` branch is synchronized with `main`.
     *   `LLMs-from-scratch` Git submodule is integrated.
 *   **Deployment**: NumPy incompatibility on Render resolved (`numpy<2.0`).
-*   **Memory Bank**: Currently being updated to reflect the refined learning strategy and incorporation of new resources.
+*   **Memory Bank**: Updated to reflect the refined learning strategy and incorporation of new learning resources (Raschka's "Build an LLM From Scratch", "Generative AI with Python and PyTorch" PDF).
 
 ## Known Issues
 
@@ -85,4 +85,4 @@ This document outlines what currently works, what is left to build, the current 
   * Reviewed Module 5 documentation and initiated Module 5C Step 1 (NLTK/spaCy exploration).
 * **Current session (continued)**:
     *   **Learning Strategy Refinement**: Key learning resources (Raschka, GenAI PDF, Master Curriculum) and their roles have been clarified. "SAI" confirmed as the conceptual framework. This is reflected in updated `projectbrief.md` and `productContext.md`.
-    *   **Memory Bank Update**: Ongoing for `activeContext.md`, `progress.md`, and `techContext.md`.
+    *   **Memory Bank Update**: Completed for `activeContext.md`, `progress.md`, and `techContext.md` to reflect the refined learning strategy.
