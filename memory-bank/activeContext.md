@@ -29,21 +29,26 @@ The primary focus has been on **enhancing the `text_analyzer` project** with sev
     *   Clarified roles of key learning resources (Raschka's book, GenAI PDF, AI Engineering Master Curriculum).
     *   Affirmed "SAI" as the conceptual learning framework.
     *   Updated core memory bank files (`projectbrief.md`, `productContext.md`, etc.) to reflect this strategy.
+    *   **New Global Rules & Workflows Created**:
+        *   Added global rules for proactive feature development, defaulting to `pytest`, and prioritizing modularity/extensibility.
+        *   Created global workflows for envisioning NLP features, refactoring for plugin architectures, and adding `matplotlib` visualizations.
 
 ## Pending Tasks & Next Steps
+
+*This Memory Bank update (reflecting new global rules/workflows and `.clinerules` changes) is now complete. The next steps are:*
 
 1.  **Finalize Current `text_analyzer` Enhancements**:
     *   Ensure all tests for the new features are robust (e.g., testing NLTK language stop word selection).
     *   Consider if `FIXED_TARGET_FILENAME` in `config.py` should be reverted from `test_plot_sample.txt` to `../dict-sample.txt` or another default.
-    *   Commit all recent changes to the `text_analyzer` project and the memory bank.
+    *   Commit all recent changes to the `text_analyzer` project.
 
-2.  **Continue Learning (Self-Directed AI Engineering Education)**:
+3.  **Continue Learning (Self-Directed AI Engineering Education)**:
     *   **Immediate Focus:** "Text representation/early NLP."
         *   Deep dive into Chapter 3 of the "GenAI PDF."
         *   Begin Chapter 2 of Raschka's "Build an LLM (From Scratch)" (Data Processing and Tokenization).
         *   Relate concepts from these resources to the functionalities now present in the enhanced `text_analyzer`.
     *   **Ongoing:** Populate MCP Knowledge Graph with learned concepts.
 
-3.  **Future `text_analyzer` Considerations (Lower Priority for now)**:
+4.  **Future `text_analyzer` Considerations (Lower Priority for now)**:
     *   Address any remaining items from Module G's extension ideas if desired (e.g., full TF-IDF, more advanced GUI).
     *   Expand automated tests in `run_comprehensive_test()` to cover new features more thoroughly.

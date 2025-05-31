@@ -26,7 +26,9 @@ This document outlines what currently works, what is left to build, the current 
 
 * **Documentation & Setup**:
   * `text_analyzer/README.md` is comprehensive.
-  * The `.clinerules` lesson plan provides a full guide for `text_analyzer.py`.
+  * The `.clinerules` for `text_analyzer` have been updated to an "Envisioning Advancements" roadmap.
+  * New global rules for proactive development, `pytest` defaulting, and modularity have been created.
+  * New global workflows for envisioning NLP features, refactoring for plugins, and adding `matplotlib` visualizations have been created.
   * Core Memory Bank files are established and being updated.
   * Module 4 and 5 documentation (`.clinerules/module*-*.md`) restructured.
 
@@ -67,7 +69,7 @@ This document outlines what currently works, what is left to build, the current 
     *   `develop` branch is synchronized with `main`.
     *   `LLMs-from-scratch` Git submodule is integrated.
 *   **Deployment**: NumPy incompatibility on Render resolved (`numpy<2.0`).
-*   **Memory Bank**: Being updated to reflect recent `text_analyzer` enhancements.
+*   **Memory Bank**: Update cycle completed (as of 2025-05-31), reflecting the creation of new global rules, workflows, and the updated `.clinerules` for `text_analyzer`.
 
 ## Known Issues
 
@@ -98,4 +100,9 @@ This document outlines what currently works, what is left to build, the current 
         *   Added graphical plotting for word frequencies, sentiment, and word lengths.
         *   Added RAKE keyword extraction.
         *   Added dynamic stop word management.
-    *   **Memory Bank Update**: Currently in progress to reflect all the above `text_analyzer` enhancements.
+    *   **Workspace Rules Update**:
+        *   Replaced "Comprehending the Text Analyzer" rules with "Envisioning Text Analyzer Advancements" roadmap in `.clinerules/`.
+    *   **Global Rules & Workflows Creation**:
+        *   Created new global rules (proactive dev, pytest, modularity).
+        *   Created new global workflows (envision NLP feature, refactor for plugins, add matplotlib viz).
+    *   **Memory Bank Update**: Currently in progress to reflect all the above changes.
