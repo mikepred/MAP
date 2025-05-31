@@ -6,7 +6,7 @@ This document outlines the "why" behind the project. It details the problems the
 
 ### Problem Statement
 
-Many learners find it challenging to grasp the foundational concepts of Natural Language Processing (NLP) and Large Language Models (LLMs) without a practical, hands-on project. They need a simple, accessible entry point to understand how text data is processed and analyzed before being used in more complex AI systems.
+Many learners find it challenging to grasp the foundational concepts of Natural Language Processing (NLP) and Large Language Models (LLMs) without a practical, hands-on project. Initially conceived as a simple entry point, the `text_analyzer` now also addresses the need for an evolving, intermediate-level educational tool. This tool not only demonstrates increasingly complex text processing and analysis techniques but also serves as a tangible record of the learner's journey and applied skills development. It helps bridge the gap between basic understanding and the more advanced concepts encountered in self-directed AI engineering education.
 
 ### Proposed Solution
 
@@ -31,10 +31,11 @@ By using and extending this script, learners gain practical experience with thes
 ### User Experience Goals (Text Analyzer)
 
 * **Accessibility**: The project should be relatively easy to run, with clear prompts for configuration.
-* **Educational Value**: The project should clearly illustrate a broad range of text processing and analysis techniques and their relevance to NLP and LLMs.
+* **Educational Value**: The project clearly illustrates a broad range of text processing and analysis techniques, evolving from foundational to intermediate levels, and demonstrates their relevance to NLP and LLMs. It serves as a practical application ground for concepts learned.
 * **Engagement**: The project should be engaging, allowing users to analyze various text sources with multiple configuration options and see diverse outputs, including visualizations.
 * **Clarity**: The project's output should be comprehensive, well-structured, and easy to interpret, including both textual reports and graphical plots.
 * **Foundation & Beyond**: The project provides a solid foundation and extends into intermediate NLP tasks, bridging the gap to more advanced topics in resources like Raschka's "Build an LLM (From Scratch)" and the "GenAI PDF."
+* **Learning Journey Tracker**: The progressive enhancement of the `text_analyzer` itself acts as a practical portfolio, showcasing the learner's growing skills and understanding in applied NLP and software development.
 * **Flexibility**: Users should have control over aspects like stop word lists, input file types, and output display.
 
 ## Overarching Project: Self-Directed AI Engineering Education
