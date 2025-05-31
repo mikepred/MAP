@@ -18,14 +18,26 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 # =============================================================================
 # GLOBAL MODEL INITIALIZATIONS
 # =============================================================================
-NLP_SPACY = None
+_nlp_model = None
 SPACY_MODEL_NAME = 'en_core_web_sm'
-try:
-    NLP_SPACY = spacy.load(SPACY_MODEL_NAME)
-except OSError:
-    print(f"spaCy '{SPACY_MODEL_NAME}' model not found. Please download it by running:")
-    print(f"    python -m spacy download {SPACY_MODEL_NAME}")
-    print("Part-of-Speech (POS) tagging and Named Entity Recognition (NER) will be unavailable.")
+
+def _get_nlp_model():
+    """Loads and caches the spaCy model."""
+    global _nlp_model
+    if _nlp_model is None:
+        try:
+            _nlp_model = spacy.load(SPACY_MODEL_NAME)
+        except OSError:
+            print(f"spaCy '{SPACY_MODEL_NAME}' model not found. Please download it by running:")
+            print(f"    python -m spacy download {SPACY_MODEL_NAME}")
+            print("Part-of-Speech (POS) tagging and Named Entity Recognition (NER) will be unavailable.")
+            # Return None to indicate failure, error handled in analysis functions
+            return None
+        except Exception as e:
+            print(f"An unexpected error occurred while loading the spaCy model: {e}")
+            # Return None to indicate failure, error handled in analysis functions
+            return None
+    return _nlp_model
 
 try:
     _vader_analyzer = SentimentIntensityAnalyzer()
@@ -36,6 +48,64 @@ except LookupError:
 # =============================================================================
 # ANALYSIS FUNCTIONS
 # =============================================================================
+
+# Illustrative example for processing text chunks for word counts
+def _process_chunks_for_word_counts_example(text_chunk_iterator: Iterable[str],
+                                            active_stop_words: Optional[Set[str]] = None) -> Counter[str]:
+    """
+    Example function to demonstrate processing an iterator of text chunks
+    to incrementally build a word count.
+
+    Args:
+        text_chunk_iterator: An iterator yielding strings (text chunks).
+        active_stop_words: An optional set of stop words to remove.
+
+    Returns:
+        A Counter object with word frequencies.
+    """
+    final_word_counts = Counter()
+
+    for i, chunk in enumerate(text_chunk_iterator):
+        print(f"Processing chunk {i+1} for word counts...")
+
+        # 1. Clean the chunk for word tokenization
+        # (Mimicking part of analyze_text_complete's preprocessing)
+        text_for_tokenization_chunk = tp.clean_text_for_word_tokenization(chunk, advanced=True)
+
+        # 2. Tokenize the cleaned chunk
+        tokens_in_chunk = tp.tokenize_text(text_for_tokenization_chunk)
+
+        # 3. Remove stop words from chunk tokens (if applicable)
+        processed_tokens_chunk: List[str]
+        if active_stop_words:
+            processed_tokens_chunk, _ = tp.remove_stop_words(tokens_in_chunk, active_stop_words)
+        else:
+            processed_tokens_chunk = tokens_in_chunk
+
+        # 4. Update the main counter
+        final_word_counts.update(processed_tokens_chunk)
+
+    print(f"Finished processing all chunks. Total unique words: {len(final_word_counts)}")
+    return final_word_counts
+
+# Example usage (conceptual):
+#
+# from .file_io import read_file_in_chunks # Assuming this import
+#
+# filepath_to_process = "path/to/large_file.txt"
+# try:
+#   chunk_iterator = read_file_in_chunks(filepath_to_process)
+#   # Assuming `current_stop_words` is defined elsewhere (e.g., from config or user input)
+#   word_counts_from_chunks = _process_chunks_for_word_counts_example(chunk_iterator, active_stop_words=current_stop_words)
+#   # Now `word_counts_from_chunks` can be used, e.g., passed to get_word_count_stats
+#   stats = get_word_count_stats(word_counts_from_chunks)
+#   print(stats)
+# except FileNotFoundError:
+#   print(f"Example error: File {filepath_to_process} not found.")
+# except Exception as e:
+#   print(f"Example error: {e}")
+
+
 def get_word_count_stats(word_counts: Counter[str]) -> Dict[str, Any]:
     if not word_counts:
         return {'total_words': 0, 'unique_words': 0, 'most_common': [], 'average_frequency': 0.0}
@@ -83,9 +153,9 @@ def extract_keywords_rake(text: str, num_keywords: int = cfg.DEFAULT_NUM_KEYWORD
 
 def analyze_text_complete(
     text: Optional[str], 
-    active_stop_words: Optional[Set[str]] = None, # MODIFIED: Replaced use_stop_words
+    active_stop_words: Optional[Set[str]] = None,
     num_common_words_to_display: int = cfg.DEFAULT_TOP_WORDS_DISPLAY,
-    user_patterns: Optional[List[Dict[str, str]]] = None 
+    user_patterns: Optional[List[Dict[str, str]]] = None # Added user_patterns parameter
 ) -> Dict[str, Any]:
     """
     Complete text analysis pipeline.
@@ -196,10 +266,13 @@ def analyze_text_complete(
 
 def analyze_ner_spacy(text: str, top_n_entity_types: int = 5) -> Dict[str, Any]:
     default_return = {'entity_counts_by_type': Counter(), 'entities_by_type': defaultdict(list), 'total_entities': 0, 'most_common_entity_types': [], 'error': None}
-    if NLP_SPACY is None: default_return['error'] = "spaCy model not loaded. NER unavailable."; return default_return
+    nlp = _get_nlp_model()
+    if nlp is None:
+        default_return['error'] = f"spaCy model '{SPACY_MODEL_NAME}' not available. NER unavailable."
+        return default_return
     if not text or not text.strip(): default_return['error'] = "Input text is empty. NER cannot be performed."; return default_return
     try:
-        doc = NLP_SPACY(text)
+        doc = nlp(text)
         if not doc.ents: return default_return 
         entities_by_type_dd = defaultdict(list)
         for ent in doc.ents: entities_by_type_dd[ent.label_].append(ent.text)
@@ -215,10 +288,13 @@ def calculate_lexical_density(pos_counts: Counter[str], total_pos_tags: int) -> 
 
 def analyze_pos_tags_spacy(text: str, top_n_tags: int = 10) -> Dict[str, Any]:
     default_return = {'pos_counts': Counter(), 'most_common_pos': [], 'total_pos_tags': 0, 'lexical_density': 0.0, 'error': None}
-    if NLP_SPACY is None: default_return['error'] = "spaCy model not loaded. POS tagging unavailable."; return default_return
+    nlp = _get_nlp_model()
+    if nlp is None:
+        default_return['error'] = f"spaCy model '{SPACY_MODEL_NAME}' not available. POS tagging unavailable."
+        return default_return
     if not text or not text.strip(): default_return['error'] = "Input text is empty. POS tagging cannot be performed."; return default_return
     try:
-        doc = NLP_SPACY(text)
+        doc = nlp(text)
         pos_tags: List[str] = [token.pos_ for token in doc if not token.is_punct and not token.is_space]
         if not pos_tags: default_return['error'] = "No valid tokens for POS tagging after filtering punctuation/spaces."; return default_return
         pos_counts: Counter[str] = Counter(pos_tags)
@@ -257,13 +333,54 @@ def calculate_readability_stats(text_for_textstat: str, word_counts: Counter[str
     return stats
 
 def find_interesting_patterns(word_counts: Counter[str], text: str, user_patterns: Optional[List[Dict[str, str]]] = None) -> Dict[str, Any]:
-    patterns: Dict[str, Any] = {'repeated_words': [], 'long_words': [], 'short_words': [], 'word_variety': 0.0, 'common_patterns': {}, 'user_defined_pattern_results': {}}
+    patterns: Dict[str, Any] = {
+        'repeated_words': [],
+        'long_words': [],
+        'short_words': [],
+        'word_variety': 0.0,
+        'common_patterns': {},
+        'user_defined_pattern_results': {}
+    }
+
     if word_counts:
-        patterns['repeated_words'] = [(word, count) for word, count in word_counts.most_common(cfg.DEFAULT_PATTERNS_REPEATED_WORDS_COUNT) if count > 1]
-        patterns['long_words'] = [word for word in word_counts.keys() if len(word) >= 7][:cfg.DEFAULT_PATTERNS_LONG_WORDS_SAMPLE_SIZE]
-        patterns['short_words'] = [word for word in word_counts.keys() if len(word) <= 2][:cfg.DEFAULT_PATTERNS_SHORT_WORDS_SAMPLE_SIZE]
-        total_words: int = sum(word_counts.values()); unique_words_count: int = len(word_counts)
+        # Repeated words: .most_common() is efficient. Filter for count > 1.
+        patterns['repeated_words'] = [
+            (word, count) for word, count in word_counts.most_common(cfg.DEFAULT_PATTERNS_REPEATED_WORDS_COUNT) if count > 1
+        ]
+
+        # Long and short words: Iterate unique words from word_counts.keys() once.
+        # cfg.MIN_LONG_WORD_LENGTH and cfg.MAX_SHORT_WORD_LENGTH should ideally be used if defined in config.
+        # Using hardcoded values 7 and 2 as per original visible logic.
+        min_long_len = 7  # Placeholder for cfg.MIN_LONG_WORD_LENGTH
+        max_short_len = 2 # Placeholder for cfg.MAX_SHORT_WORD_LENGTH
+
+        long_word_candidates = []
+        short_word_candidates = []
+
+        for word in word_counts.keys():
+            word_len = len(word)
+            if word_len >= min_long_len:
+                long_word_candidates.append(word)
+            if word_len <= max_short_len:
+                short_word_candidates.append(word)
+
+        # Sort candidates alphabetically, then take the sample slice.
+        # This matches the "seems to sort [...] alphabetically" part of the subtask's observation,
+        # assuming the length criteria are primary filters.
+        # If sort by length then alphabetically is desired for the sample:
+        # sorted_long_words = sorted(long_word_candidates, key=lambda w: (-len(w), w))
+        # sorted_short_words = sorted(short_word_candidates, key=lambda w: (len(w), w))
+        # For now, simple alphabetical sort of the candidates before slicing:
+
+        patterns['long_words'] = sorted(long_word_candidates)[:cfg.DEFAULT_PATTERNS_LONG_WORDS_SAMPLE_SIZE]
+        patterns['short_words'] = sorted(short_word_candidates)[:cfg.DEFAULT_PATTERNS_SHORT_WORDS_SAMPLE_SIZE]
+
+        # Word Variety: calculation is efficient.
+        total_words: int = sum(word_counts.values())
+        unique_words_count: int = len(word_counts) # Number of unique words
         patterns['word_variety'] = round(unique_words_count / total_words * 100, 1) if total_words else 0.0
+
+    # Regex pattern matching (remains unchanged as it operates on 'text', not 'word_counts')
     if text:
         for pattern_name, regex_str in cfg.COMMON_PATTERNS.items():
             try: patterns['common_patterns'][pattern_name] = re.compile(regex_str).findall(text)[:cfg.DEFAULT_PATTERN_MATCH_LIMIT]

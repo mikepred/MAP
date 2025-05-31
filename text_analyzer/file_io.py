@@ -10,11 +10,399 @@ from typing import Union, Tuple, List, Any, Set, Optional # Added Optional
 from collections import Counter
 
 from . import config as cfg
-from .text_processing import correct_text_typos
+from .text_processing import correct_text_typos # Keep this if used by read_file or other functions
+from typing import Dict, Generator # Ensure Dict and Generator are imported if not already
+
+# Added json and csv if they are not already present from previous steps
+# import json # Already present
+# import csv # Already present
 
 # =============================================================================
 # FILE I/O FUNCTIONS (Originally from Module 3B)
 # =============================================================================
+
+# Placeholder for the new save functions that will be defined below
+def _save_results_to_txt(analysis_results: Dict[str, Any], filepath: Path) -> None:
+    """Saves comprehensive analysis results to a text file."""
+    try:
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write("===== TEXT ANALYSIS REPORT =====\n")
+
+            # General Statistics
+            gs = analysis_results.get('general_stats', {})
+            f.write("\n--- General Statistics ---\n")
+            f.write(f"Raw Character Count: {gs.get('character_count', 'N/A')}\n")
+            f.write(f"Character Count (no spaces): {gs.get('character_count_no_spaces', 'N/A')}\n")
+            f.write(f"Word Count (analyzed): {gs.get('word_count', 'N/A')}\n")
+            f.write(f"Sentence Count: {gs.get('sentence_count', 'N/A')}\n")
+            f.write(f"Paragraph Count: {gs.get('paragraph_count', 'N/A')}\n")
+
+            wa = analysis_results.get('word_analysis', {})
+            removed_sw_count = wa.get('removed_stop_words_count', 0)
+            if removed_sw_count > 0 : # Only show if stop words were actually removed
+                f.write(f"Stop Words Removed: {removed_sw_count}\n")
+
+            # Word Frequencies & Statistics
+            wf_dict = wa.get('word_frequencies', {}) # This is already a dict of top N
+            ws = wa.get('statistics', {})
+            f.write("\n--- Word Frequencies & Statistics ---\n")
+            f.write(f"Unique Words (after processing): {ws.get('unique_words', 'N/A')}\n")
+            f.write(f"Total Words (after processing): {ws.get('total_words', 'N/A')}\n")
+            f.write(f"Average Word Frequency: {ws.get('average_frequency', 'N/A')}\n")
+            if wf_dict and ws.get('total_words', 0) > 0:
+                f.write(f"\nTop {len(wf_dict)} Most Common Words:\n")
+                for word, count in wf_dict.items(): # Assumes wf_dict is already top N
+                    percentage = (count / ws['total_words']) * 100
+                    f.write(f"  '{word}': {count} times ({percentage:.1f}%)\n")
+            else:
+                f.write("No word frequencies to display.\n")
+
+            # Sentence Analysis
+            sa = analysis_results.get('sentence_analysis', {})
+            f.write("\n--- Sentence Analysis ---\n")
+            f.write(f"Average Words per Sentence: {sa.get('average_words_per_sentence', 'N/A')}\n")
+            f.write(f"Longest Sentence: \"{sa.get('longest_sentence', 'N/A')}\"\n")
+            f.write(f"Shortest Sentence: \"{sa.get('shortest_sentence', 'N/A')}\"\n")
+
+            # Readability
+            rs = analysis_results.get('readability_stats', {})
+            f.write("\n--- Readability ---\n")
+            f.write(f"Average Word Length: {rs.get('avg_word_length', 'N/A')} characters\n")
+            f.write(f"Complexity Score: {rs.get('complexity_score', 'N/A')}\n")
+            f.write(f"Readability Level: {rs.get('readability_level', 'N/A')}\n")
+            standard_indices = {
+                "flesch_reading_ease": "Flesch Reading Ease", "flesch_kincaid_grade": "Flesch-Kincaid Grade Level",
+                "gunning_fog": "Gunning Fog Index", "smog_index": "SMOG Index",
+                "coleman_liau_index": "Coleman-Liau Index", "dale_chall_readability_score": "Dale-Chall Readability Score",
+                "automated_readability_index": "Automated Readability Index (ARI)"}
+            f.write("  Standardized Readability Indices:\n")
+            for key, name in standard_indices.items():
+                f.write(f"    - {name}: {rs.get(key, 'N/A')}\n")
+            if rs.get('error'): f.write(f"    Note on Standardized Indices: {rs['error']}\n")
+
+
+            # Word Length Distribution
+            wlc = analysis_results.get('word_length_counts_obj', Counter())
+            f.write("\n--- Word Length Distribution ---\n")
+            if wlc:
+                total_words_for_lengths = sum(wlc.values())
+                for length, count in sorted(wlc.items()):
+                    percentage = (count / total_words_for_lengths * 100) if total_words_for_lengths > 0 else 0
+                    f.write(f"Length {length}: {count} words ({percentage:.2f}%)\n")
+            else:
+                f.write("No word length data to display.\n")
+
+            # Interesting Patterns
+            ip = analysis_results.get('interesting_patterns', {})
+            f.write("\n--- Pattern Analysis ---\n")
+            f.write(f"Word Variety: {ip.get('word_variety', 'N/A')}%\n")
+            f.write(f"Most Repeated Words (sample): {ip.get('repeated_words', [])}\n")
+            f.write(f"Long Words (sample, >=7 chars): {ip.get('long_words', [])}\n")
+            f.write(f"Short Words (sample, <=2 chars): {ip.get('short_words', [])}\n")
+
+            user_patterns = ip.get('user_defined_pattern_results', {})
+            if user_patterns:
+                f.write("\n  User-Defined Patterns:\n")
+                for name, matches_or_err in user_patterns.items():
+                    if isinstance(matches_or_err, dict) and 'error' in matches_or_err:
+                        f.write(f"    Pattern '{name}': Error - {matches_or_err['error']}\n")
+                    else:
+                        f.write(f"    Pattern '{name}': Found {len(matches_or_err)} - {matches_or_err}\n")
+
+            common_patterns = ip.get('common_patterns', {})
+            if common_patterns:
+                f.write("\n  Common Regex Pattern Matches:\n")
+                for name, matches_or_err in common_patterns.items():
+                    if isinstance(matches_or_err, dict) and 'error' in matches_or_err:
+                        f.write(f"    Pattern '{name}': Error - {matches_or_err['error']}\n")
+                    else:
+                        f.write(f"    Pattern '{name}': Found {len(matches_or_err)} - {matches_or_err}\n")
+
+
+            # N-gram Frequencies
+            ngram_data = analysis_results.get('ngram_frequencies', {})
+            f.write("\n--- N-gram Frequencies ---\n")
+            if not ngram_data:
+                f.write("N-gram data not available.\n")
+            else:
+                for ngram_type, ngrams_list in ngram_data.items():
+                    f.write(f"  {ngram_type.capitalize()}:\n")
+                    if ngrams_list:
+                        for ngram, count in ngrams_list:
+                            f.write(f"    - \"{ngram}\": {count}\n")
+                    else:
+                        f.write(f"    No {ngram_type.lower()} found.\n")
+
+            # Sentiment Analysis
+            sentiment_data = analysis_results.get('sentiment_analysis', {})
+            f.write("\n--- Sentiment Analysis (VADER) ---\n")
+            if sentiment_data.get('error'):
+                f.write(f"Error in sentiment analysis: {sentiment_data['error']}\n")
+            elif not sentiment_data or 'compound' not in sentiment_data:
+                f.write("Sentiment data not available or incomplete.\n")
+            else:
+                f.write(f"  Positive Score: {sentiment_data.get('pos', 0.0):.3f}\n")
+                f.write(f"  Neutral Score: {sentiment_data.get('neu', 0.0):.3f}\n")
+                f.write(f"  Negative Score: {sentiment_data.get('neg', 0.0):.3f}\n")
+                f.write(f"  Compound Score: {sentiment_data.get('compound', 0.0):.3f}\n")
+                compound_score = sentiment_data.get('compound', 0.0)
+                overall_sentiment = "Neutral"
+                if compound_score >= 0.05: overall_sentiment = "Positive"
+                elif compound_score <= -0.05: overall_sentiment = "Negative"
+                f.write(f"  Overall Sentiment: {overall_sentiment}\n")
+
+            # Part-of-Speech (POS) Tagging
+            pos_data = analysis_results.get('pos_analysis', {})
+            f.write("\n--- Part-of-Speech (POS) Tagging (spaCy) ---\n")
+            if pos_data.get('error'):
+                f.write(f"Error in POS analysis: {pos_data['error']}\n")
+            elif not pos_data or pos_data.get('total_pos_tags', 0) == 0:
+                f.write("POS data not available or no tags found.\n")
+            else:
+                f.write(f"  Total POS Tags (excluding punctuation/spaces): {pos_data.get('total_pos_tags', 0):,}\n")
+                if pos_data.get('most_common_pos'):
+                    f.write("  Most Common POS Tags:\n")
+                    for tag, count in pos_data['most_common_pos']:
+                        percentage = (count / pos_data['total_pos_tags'] * 100) if pos_data['total_pos_tags'] > 0 else 0
+                        f.write(f"    - {tag}: {count} ({percentage:.1f}%)\n")
+                lex_density = pos_data.get('lexical_density')
+                if lex_density is not None: f.write(f"  Lexical Density: {lex_density:.2f}%\n")
+
+            # Named Entity Recognition (NER)
+            ner_data = analysis_results.get('ner_analysis', {})
+            f.write("\n--- Named Entity Recognition (NER) (spaCy) ---\n")
+            if ner_data.get('error'):
+                f.write(f"Error in NER analysis: {ner_data['error']}\n")
+            elif not ner_data or ner_data.get('total_entities', 0) == 0:
+                f.write("NER data not available or no entities found.\n")
+            else:
+                f.write(f"  Total Named Entity Mentions: {ner_data.get('total_entities', 0):,}\n")
+                if ner_data.get('most_common_entity_types'):
+                    f.write("  Most Common Entity Types:\n")
+                    entities_by_type = ner_data.get('entities_by_type', {})
+                    for entity_type, count in ner_data['most_common_entity_types']:
+                        examples = entities_by_type.get(entity_type, [])
+                        example_str = ""
+                        if examples:
+                            display_examples = [ex[:30] + '...' if len(ex) > 30 else ex for ex in examples[:3]]
+                            example_str = f" (e.g., {', '.join(display_examples)})"
+                        f.write(f"    - {entity_type}: {count} mentions{example_str}\n")
+
+            # Keyword Analysis
+            keyword_data = analysis_results.get('keyword_analysis', [])
+            f.write("\n--- Keyword Extraction (RAKE) ---\n")
+            if not keyword_data:
+                f.write("No keywords extracted.\n")
+            else:
+                f.write("Top Extracted Keywords/Keyphrases (Score):\n")
+                for i, (phrase, score) in enumerate(keyword_data, 1):
+                    f.write(f"  {i:2d}. \"{phrase}\" (Score: {score:.2f})\n")
+
+            f.write("\n\n--- Analysis Complete ---\n")
+    except Exception as e: # Catch any error during file writing or data access
+        # This top-level try-except in the function is good, error will be caught by the dispatcher's try-except
+        raise IOError(f"Failed to write TXT report: {e}")
+
+
+def _save_results_to_json(analysis_results: Dict[str, Any], filepath: Path) -> None:
+    """Saves comprehensive analysis results to a JSON file."""
+
+    # Custom serializer for objects that are not directly JSON serializable (like Counter)
+    def custom_serializer(obj):
+        if isinstance(obj, Counter):
+            return dict(obj)
+        # Add other type checks if needed, e.g., for Path objects if they creep in
+        if isinstance(obj, Path):
+            return str(obj)
+        raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
+
+    try:
+        # Create a deep copy to modify for serialization without altering original
+        results_to_serialize = json.loads(json.dumps(analysis_results, default=custom_serializer))
+
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(results_to_serialize, f, indent=4)
+
+    except TypeError as te: # Should be caught by custom_serializer mostly
+        raise IOError(f"TypeError during JSON serialization: {te}. Check for non-standard data types.")
+    except Exception as e:
+        raise IOError(f"Failed to write JSON report: {e}")
+
+
+def _save_results_to_csv(analysis_results: Dict[str, Any], filepath: Path) -> None:
+    """Saves selected analysis results to a CSV file."""
+    try:
+        with open(filepath, 'w', encoding='utf-8', newline='') as f:
+            writer = csv.writer(f)
+
+            # Section 1: General Statistics
+            writer.writerow(["Section", "Metric", "Value"])
+            gs = analysis_results.get('general_stats', {})
+            for key, value in gs.items():
+                writer.writerow(["General Statistics", key, value])
+            wa_stats = analysis_results.get('word_analysis', {}).get('statistics', {})
+            writer.writerow(["General Statistics", "Unique Words (processed)", wa_stats.get('unique_words', 'N/A')])
+            writer.writerow(["General Statistics", "Total Words (processed)", wa_stats.get('total_words', 'N/A')])
+            writer.writerow(["General Statistics", "Average Word Frequency", wa_stats.get('average_frequency', 'N/A')])
+            removed_sw = analysis_results.get('word_analysis', {}).get('removed_stop_words_count', 0)
+            if removed_sw > 0:
+                 writer.writerow(["General Statistics", "Stop Words Removed", removed_sw])
+            writer.writerow([]) # Blank row as separator
+
+            # Section 2: Word Frequencies (Top N, as provided in 'word_frequencies')
+            writer.writerow(["Section", "Word", "Count", "Percentage"])
+            wf_dict = analysis_results.get('word_analysis', {}).get('word_frequencies', {}) # This is dict of top N
+            total_words_for_perc = analysis_results.get('word_analysis', {}).get('statistics', {}).get('total_words', 0)
+            if wf_dict and total_words_for_perc > 0:
+                for word, count in wf_dict.items():
+                    percentage = (count / total_words_for_perc) * 100
+                    writer.writerow(["Word Frequencies", word, count, f"{percentage:.2f}%"])
+            else:
+                writer.writerow(["Word Frequencies", "N/A", "N/A", "N/A"])
+            writer.writerow([]) # Blank row
+
+            # Section 3: Sentiment Scores
+            writer.writerow(["Section", "Sentiment Metric", "Score"])
+            sentiment_data = analysis_results.get('sentiment_analysis', {})
+            if sentiment_data.get('error'):
+                writer.writerow(["Sentiment Analysis", "Error", sentiment_data['error']])
+            elif 'compound' in sentiment_data : # Check if scores are available
+                writer.writerow(["Sentiment Analysis", "Positive Score", sentiment_data.get('pos', 0.0)])
+                writer.writerow(["Sentiment Analysis", "Neutral Score", sentiment_data.get('neu', 0.0)])
+                writer.writerow(["Sentiment Analysis", "Negative Score", sentiment_data.get('neg', 0.0)])
+                writer.writerow(["Sentiment Analysis", "Compound Score", sentiment_data.get('compound', 0.0)])
+                compound_score = sentiment_data.get('compound', 0.0)
+                overall_sentiment = "Neutral"
+                if compound_score >= 0.05: overall_sentiment = "Positive"
+                elif compound_score <= -0.05: overall_sentiment = "Negative"
+                writer.writerow(["Sentiment Analysis", "Overall Sentiment", overall_sentiment])
+            else:
+                writer.writerow(["Sentiment Analysis", "N/A", "Data not available or incomplete"])
+            writer.writerow([]) # Blank row
+
+            # Section 4: Top N-grams (e.g., top 10 of each type, as provided)
+            writer.writerow(["Section", "N-gram Type", "N-gram", "Count"])
+            ngram_data = analysis_results.get('ngram_frequencies', {}) # This contains lists of top N ngrams
+            if ngram_data:
+                for ngram_type, ngrams_list in ngram_data.items():
+                    if ngrams_list:
+                        for ngram, count in ngrams_list: # Assumes ngrams_list is already top N
+                            writer.writerow(["N-gram Frequencies", ngram_type.capitalize(), ngram, count])
+                    else:
+                        writer.writerow(["N-gram Frequencies", ngram_type.capitalize(), f"No {ngram_type.lower()} found", "N/A"])
+            else:
+                 writer.writerow(["N-gram Frequencies", "N/A", "No N-gram data available", "N/A"])
+            writer.writerow([])
+
+            # Add more sections as desired, e.g., Keywords, POS, NER
+            # For Keywords (RAKE)
+            writer.writerow(["Section", "Keyword/Keyphrase", "Score"])
+            keyword_data = analysis_results.get('keyword_analysis', [])
+            if keyword_data:
+                for phrase, score in keyword_data: # Assumes keyword_data is already top N
+                    writer.writerow(["Keyword Extraction (RAKE)", phrase, f"{score:.2f}"])
+            else:
+                writer.writerow(["Keyword Extraction (RAKE)", "No keywords extracted", "N/A"])
+            writer.writerow([])
+
+    except Exception as e:
+        raise IOError(f"Failed to write CSV report: {e}")
+
+# The old save_results_to_file function is now obsolete and will be removed.
+# Its logic was moved into _save_results_to_txt and is handled by save_analysis_results.
+
+# The old function definition that is now empty and slated for removal started here.
+# Removing it entirely.
+
+def save_analysis_results(analysis_results: Dict[str, Any], output_filename_str: str, format_choice: str = 'txt') -> None:
+    """
+    Saves the complete analysis results to a file in the specified format.
+
+    Args:
+        analysis_results (Dict[str, Any]): The comprehensive dictionary from analysis.analyze_text_complete.
+        output_filename_str (str): The full path for the output file.
+        format_choice (str): The desired output format ('txt', 'json', or 'csv').
+    """
+    output_path = Path(output_filename_str)
+    try:
+        if format_choice == 'txt':
+            _save_results_to_txt(analysis_results, output_path)
+        elif format_choice == 'json':
+            _save_results_to_json(analysis_results, output_path)
+        elif format_choice == 'csv':
+            _save_results_to_csv(analysis_results, output_path)
+        else:
+            print(f"❌ Error: Unsupported save format '{format_choice}'. Defaulting to .txt")
+            # Ensure the filename has .txt extension if we default
+            if output_path.suffix.lower() not in ['.txt', '.json', '.csv']:
+                 output_path = output_path.with_suffix('.txt') # Default to .txt if suffix is weird
+            _save_results_to_txt(analysis_results, output_path) # Fallback to TXT
+
+        print(f"✅ Analysis results successfully saved to: {output_path.resolve()}")
+
+    except NotImplementedError: # If a save function isn't ready
+        print(f"❌ Error: Saving to '{format_choice.upper()}' is not yet implemented.")
+    except IOError as e:
+        print(f"❌ IOError: Could not write results to '{output_path}': {e}")
+    except Exception as e:
+        print(f"❌ An unexpected error occurred while saving results to '{output_path}': {type(e).__name__} - {e}")
+
+
+def read_file_in_chunks(filepath: Union[str, Path], chunk_size_bytes: int = 1024 * 1024) -> Generator[str, None, None]:
+    """
+    Reads a file in chunks (binary mode) and yields decoded string chunks.
+    Default chunk size is 1MB.
+
+    Args:
+        filepath (Union[str, Path]): The path to the file.
+        chunk_size_bytes (int): The size of each chunk in bytes.
+
+    Yields:
+        str: A chunk of the file content, decoded to a string.
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
+        PermissionError: If there's no permission to read the file.
+        Exception: For other potential I/O errors.
+    """
+    try:
+        file_to_read: Path = Path(filepath)
+        if not file_to_read.exists():
+            raise FileNotFoundError(f"File '{filepath}' not found.")
+        if not file_to_read.is_file():
+            raise IsADirectoryError(f"Path '{filepath}' is a directory, not a file.")
+
+        with open(file_to_read, 'rb') as file: # Read in binary mode
+            while True:
+                chunk_bytes = file.read(chunk_size_bytes)
+                if not chunk_bytes:
+                    break
+                try:
+                    # Attempt to decode using UTF-8 first, then fallback to ISO-8859-1
+                    yield chunk_bytes.decode('utf-8')
+                except UnicodeDecodeError:
+                    try:
+                        yield chunk_bytes.decode('iso-8859-1')
+                    except UnicodeDecodeError as ude:
+                        # Log or handle chunks that cannot be decoded by either
+                        print(f"⚠️ Warning: Chunk from '{filepath}' could not be decoded using UTF-8 or ISO-8859-1: {ude}")
+                        # Optionally, yield a placeholder or skip the chunk
+                        # yield "[undecodable chunk]"
+                        continue
+            print(f"✅ Successfully finished reading file in chunks: {file_to_read}")
+
+    except FileNotFoundError:
+        print(f"❌ Error: File '{filepath}' not found.")
+        raise # Re-raise to allow calling function to handle
+    except PermissionError:
+        print(f"❌ Error: No permission to read file '{filepath}'.")
+        raise
+    except IsADirectoryError:
+        print(f"❌ Error: Path '{filepath}' is a directory, not a file.")
+        raise
+    except Exception as e:
+        print(f"❌ Unexpected error reading file '{filepath}' in chunks: {type(e).__name__} - {e}")
+        raise
 
 def validate_file_path(filename: Union[str, Path]) -> Tuple[bool, str]:
     """Validate that a file path is safe and accessible."""
@@ -46,11 +434,59 @@ def validate_file_path(filename: Union[str, Path]) -> Tuple[bool, str]:
         return False, f"Error validating file '{filename}': {type(e).__name__} - {e}"
 
 def read_file(filename: Union[str, Path]) -> str:
-    """Read text from a file with comprehensive error handling."""
+    """
+    Read text from a file with comprehensive error handling.
+    Currently reads the entire file content at once.
+    Typo correction is applied to the full content.
+    """
+    # Example of how one might use the chunking generator if downstream processing supported it:
+    #
+    # from . import text_processing as tp # Assuming text_processing module is available
+    # from collections import Counter
+    #
+    # def process_file_in_chunks_example(filepath: Union[str, Path]):
+    #     all_content_parts = []
+    #     word_counts_chunked = Counter()
+    #     try:
+    #         for chunk_num, text_chunk in enumerate(read_file_in_chunks(filepath)):
+    #             print(f"Processing chunk {chunk_num + 1}...")
+    #             # Apply typo correction per chunk if desired (might be complex for context-sensitive typos)
+    #             # corrected_chunk = correct_text_typos(text_chunk)
+    #             all_content_parts.append(text_chunk) # Or corrected_chunk
+    #
+    #             # Example: Basic tokenization and counting for each chunk
+    #             # cleaned_chunk = tp.clean_text_for_word_tokenization(text_chunk, advanced=True)
+    #             # tokens_in_chunk = tp.tokenize_text(cleaned_chunk)
+    #             # word_counts_chunked.update(tokens_in_chunk)
+    #
+    #         full_content_from_chunks = "".join(all_content_parts)
+    #         # Apply typo correction on the full reassembled content if not done per chunk
+    #         full_content_from_chunks = correct_text_typos(full_content_from_chunks)
+    #         print(f"Total words from chunked processing: {sum(word_counts_chunked.values())}")
+    #         return full_content_from_chunks
+    #     except Exception as e:
+    #         print(f"Error during chunked processing example: {e}")
+    #         return ""
+    #
+    # # To use it (hypothetically):
+    # # content = process_file_in_chunks_example(filename)
+    # # if content:
+    # #     # ... proceed with analysis of 'content'
+    # # else:
+    # #     # ... handle error
+
+    # Current implementation (reads full file):
     try:
         file_to_read: Path = Path(filename)
-        with open(file_to_read, 'r', encoding='iso-8859-1') as file: # Consider utf-8 as primary, iso as fallback
+        # Note: Consider 'utf-8' as primary encoding, 'iso-8859-1' as fallback
+        # The chunk reader tries utf-8 then iso-8859-1. For consistency, this could be aligned.
+        with open(file_to_read, 'r', encoding='iso-8859-1') as file:
             content: str = file.read()
+            # Typo correction is applied to the full content here.
+            # If chunking were fully active for this function's main return,
+            # this would need to be chunk-aware or applied per chunk,
+            # which can be complex for typos that might span chunk boundaries
+            # or require broader context.
             content = correct_text_typos(content)
             print(f"✅ Successfully read file: {file_to_read}")
             print(f"📄 File size: {len(content)} characters")
@@ -367,24 +803,4 @@ def read_json_file(filepath: Path, key_name: str) -> Tuple[str, str]:
     except json.JSONDecodeError as e: error_message = f"❌ Error parsing JSON file '{filepath}': {e.msg} (line {e.lineno} col {e.colno})"; return "", error_message
     except Exception as e: error_message = f"❌ Unexpected error reading JSON file '{filepath}': {type(e).__name__} - {e}"; return "", error_message
 
-def save_results_to_file(
-    frequencies_counter: Counter[str], 
-    num_top_words: int, 
-    unique_word_count: int, 
-    output_filename: str = cfg.DEFAULT_RESULTS_FILENAME
-) -> None:
-    try:
-        output_path: Path = Path(output_filename)
-        with open(output_path, 'w', encoding='utf-8') as f:
-            f.write("Text Analysis Results\n"); f.write("=" * 30 + "\n\n")
-            actual_top_n: int = min(num_top_words, unique_word_count)
-            most_common: List[Tuple[str, int]] = frequencies_counter.most_common(actual_top_n)
-            f.write(f"Top {actual_top_n} most common words:\n"); f.write("-" * 30 + "\n")
-            for word, count_value in most_common:
-                f.write(f"{word:15} : {count_value:3d}\n")
-            f.write("-" * 30 + "\n"); f.write(f"Total unique words: {unique_word_count}\n")
-            total_words_val: int = sum(frequencies_counter.values())
-            f.write(f"Total words (in analysis): {total_words_val}\n\n"); f.write("Analysis complete.\n")
-        print(f"\n✅ Results successfully saved to {output_path.resolve()}")
-    except IOError as e: print(f"\n❌ IOError: Could not write results to {output_filename}. {e}")
-    except Exception as e: print(f"\n❌ An unexpected error occurred while saving results: {type(e).__name__} - {e}")
+# Old save_results_to_file function removed.

@@ -120,6 +120,45 @@ def display_interesting_patterns(patterns_data: Dict[str, Any]) -> None:
         print(f"\n🔤 Short Words (1-2 characters, among analyzed):")
         print(f"   {', '.join(short_w[:cfg.DEFAULT_DISPLAY_SHORT_WORDS_LIMIT])}")
 
+    # Display User-Defined Patterns
+    user_defined_results = patterns_data.get('user_defined_pattern_results', {})
+    if user_defined_results:
+        print_section("🎨 User-Defined Patterns", width=len("🎨 User-Defined Patterns")) # Adjusted width for shorter title
+        for pattern_name, matches_or_error in user_defined_results.items():
+            print(f"\n  🔹 Pattern: '{pattern_name}'")
+            if isinstance(matches_or_error, dict) and 'error' in matches_or_error:
+                print(f"     Error: {matches_or_error['error']}")
+            elif isinstance(matches_or_error, list):
+                if matches_or_error:
+                    print(f"     Found {len(matches_or_error)} match(es) (up to {cfg.DEFAULT_PATTERN_MATCH_LIMIT} displayed):")
+                    for match_item in matches_or_error:
+                        print(f"       - \"{match_item}\"")
+                else:
+                    print("     No matches found.")
+            else: # Should not happen if analysis.py formats correctly
+                print(f"     Unexpected result format for this pattern: {matches_or_error}")
+
+    # Display Common (Built-in) Regex Patterns
+    common_pattern_results = patterns_data.get('common_patterns', {})
+    if common_pattern_results:
+        print_section("🔗 Common Regex Pattern Matches", width=len("🔗 Common Regex Pattern Matches"))
+        has_common_matches = False
+        for pattern_name, matches_or_error in common_pattern_results.items():
+            print(f"\n  🔸 Pattern: '{pattern_name}'")
+            if isinstance(matches_or_error, dict) and 'error' in matches_or_error:
+                 print(f"     Error: {matches_or_error['error']}")
+                 has_common_matches = True # Count error message as something displayed
+            elif isinstance(matches_or_error, list) and matches_or_error:
+                has_common_matches = True
+                print(f"     Found {len(matches_or_error)} match(es) (up to {cfg.DEFAULT_PATTERN_MATCH_LIMIT} displayed):")
+                for match_item in matches_or_error:
+                    print(f"       - \"{match_item}\"")
+            elif not matches_or_error: # Empty list
+                pass # Optionally print "No matches found." or just skip for cleaner output if many are empty
+        if not has_common_matches:
+            print("    No matches found for any common patterns or patterns had errors.")
+
+
 def display_word_length_analysis(length_counts: Counter[int], total_tokens: int) -> None:
     if not length_counts or total_tokens == 0:
         print("\nℹ️ No word length data to display.")
@@ -367,3 +406,66 @@ def plot_word_length_distribution(
         print(f"🏆 Most Common Word: '{top_word}' ({count} times)")
     
     print("="*40)
+
+# =============================================================================
+# WORD CLOUD GENERATION (New for Word Cloud Feature)
+# =============================================================================
+try:
+    from wordcloud import WordCloud
+    WORDCLOUD_AVAILABLE = True
+except ImportError:
+    WORDCLOUD_AVAILABLE = False
+    # print("⚠️ WordCloud library not found. Word cloud generation will be unavailable.")
+    # print("   To install: pip install wordcloud")
+
+def generate_word_cloud(
+    word_frequencies: Counter,
+    output_dir: Path,
+    filename_prefix: str = "word_cloud"
+) -> Optional[str]:
+    """
+    Generates a word cloud image from word frequencies and saves it.
+
+    Args:
+        word_frequencies (Counter): A Counter object with word frequencies.
+        output_dir (Path): The directory to save the generated image.
+        filename_prefix (str): The prefix for the output image filename.
+
+    Returns:
+        Optional[str]: The path to the saved image file if successful, else None.
+    """
+    if not WORDCLOUD_AVAILABLE:
+        print("❌ WordCloud library is not installed. Cannot generate word cloud.")
+        return None
+
+    if not word_frequencies:
+        print("ℹ️ Word frequencies are empty. Cannot generate word cloud.")
+        return None
+
+    try:
+        wc = WordCloud(width=800, height=400, background_color='white', max_words=100) # Added max_words
+        wc.generate_from_frequencies(dict(word_frequencies)) # WordCloud expects a dict
+
+        if not output_dir.exists():
+            output_dir.mkdir(parents=True, exist_ok=True)
+
+        image_filename = f"{filename_prefix}.png"
+        save_path = output_dir / image_filename
+
+        wc.to_file(str(save_path)) # Use WordCloud's to_file method
+
+        # plt.figure(figsize=(10, 5)) # Not needed if using wc.to_file() directly
+        # plt.imshow(wc, interpolation='bilinear')
+        # plt.axis("off")
+        # plt.tight_layout(pad=0)
+        # plt.savefig(save_path)
+        plt.close('all') # Close any figures plt might have opened or WordCloud might have used.
+                        # Using 'all' ensures all figures are closed.
+
+        print(f"☁️ Word cloud image saved to: {save_path}")
+        return str(save_path)
+
+    except Exception as e:
+        print(f"❌ Error generating word cloud: {type(e).__name__} - {e}")
+        plt.close('all') # Ensure cleanup even on error
+        return None

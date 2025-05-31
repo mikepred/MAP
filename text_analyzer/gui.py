@@ -6,7 +6,11 @@ from collections import Counter # For type hinting and potentially direct use
 # Import from the text_analyzer package
 from . import text_processing as tp
 from . import analysis
+from . import display # Added for word cloud
 from . import config as cfg # To access STOP_WORDS, default values etc.
+from pathlib import Path # For Path objects
+import subprocess # For opening files
+import sys # For platform check
 
 
 class TextAnalyzerGUI:
@@ -14,6 +18,7 @@ class TextAnalyzerGUI:
         self.master = master
         master.title("Text Analyzer GUI")
         self.file_content = None # To store the content of the selected file
+        self.analysis_results_store = None # To store the latest analysis results
 
         # File selection section
         self.file_frame = ttk.LabelFrame(master, text="File Selection")
@@ -74,10 +79,15 @@ class TextAnalyzerGUI:
 
         # Save Results button
         self.save_button = ttk.Button(master, text="Save Results", command=self.save_results)
-        self.save_button.grid(row=5, column=0, padx=10, pady=10, sticky="ew")
+        self.save_button.grid(row=5, column=0, padx=10, pady=5, sticky="ew") # Reduced pady for closer packing
+
+        # Word Cloud Button
+        self.word_cloud_button = ttk.Button(master, text="Generate Word Cloud", command=self._generate_word_cloud_gui)
+        self.word_cloud_button.grid(row=6, column=0, padx=10, pady=5, sticky="ew")
+
 
         master.columnconfigure(0, weight=1)
-        master.rowconfigure(4, weight=1) # Results frame (now row 4)
+        master.rowconfigure(4, weight=1) # Results frame
         master.rowconfigure(1, weight=1) # Text input frame
 
     def clear_paste_box(self):
@@ -170,23 +180,115 @@ class TextAnalyzerGUI:
             
             # Call the main analysis function from analysis.py
             # This function bundles many individual analysis steps.
-            analysis_results = analysis.analyze_text_complete(
+            # Determine the actual set of stop words to use
+            active_stop_words_set = cfg.STOP_WORDS if remove_stopwords_flag else set()
+
+            self.analysis_results_store = analysis.analyze_text_complete( # Store results
                 text=current_text_to_analyze,
-                use_stop_words=remove_stopwords_flag,
-                num_common_words_to_display=top_n
+                active_stop_words=active_stop_words_set, # Pass actual stop words
+                num_common_words_to_display=top_n,
+                user_patterns=None # Or implement UI for this
             )
 
-            if analysis_results.get('error'):
-                self.results_text.insert(tk.END, f"Analysis Error: {analysis_results['error']}\n")
+            if self.analysis_results_store.get('error'):
+                self.results_text.insert(tk.END, f"Analysis Error: {self.analysis_results_store['error']}\n")
+                self.analysis_results_store = None # Clear results on error
                 return
 
             # Format and display results
-            formatted_output = self._format_results(analysis_results, top_n, remove_stopwords_flag, removed_stopwords_count)
+            # The removed_stopwords_count is now part of analysis_results_store
+            actual_removed_count = self.analysis_results_store.get('word_analysis', {}).get('removed_stop_words_count', 0)
+            formatted_output = self._format_results(self.analysis_results_store, top_n, remove_stopwords_flag, actual_removed_count)
             self.results_text.delete('1.0', tk.END) # Clear "Starting analysis..."
             self.results_text.insert(tk.END, formatted_output)
 
         except Exception as e:
             self.results_text.insert(tk.END, f"An unexpected error occurred during analysis: {e}\n")
+            self.analysis_results_store = None # Clear results on error
+
+    def _generate_word_cloud_gui(self):
+        self.results_text.insert(tk.END, "\n\nAttempting to generate word cloud...\n")
+        if not display.WORDCLOUD_AVAILABLE:
+            self.results_text.insert(tk.END, "Error: WordCloud library not installed. Please install it (e.g., 'pip install wordcloud') to use this feature.\n")
+            tk.messagebox.showerror("Word Cloud Error", "WordCloud library not installed. This feature is unavailable.")
+            return
+
+        if not self.analysis_results_store:
+            self.results_text.insert(tk.END, "Error: No analysis results available. Please analyze some text first.\n")
+            tk.messagebox.showinfo("Word Cloud Info", "No analysis results available. Please analyze some text first.")
+            return
+
+        word_frequencies = self.analysis_results_store.get('word_analysis', {}).get('full_word_counts_obj')
+        if not word_frequencies: # Check if it's empty Counter or None
+            self.results_text.insert(tk.END, "Error: No word frequencies found in the analysis results (perhaps all words were stop words or text was empty).\n")
+            tk.messagebox.showinfo("Word Cloud Info", "No word frequencies found in the analysis results. Cannot generate word cloud.")
+            return
+
+        # Suggest a filename based on the source of the text
+        source_desc = self.filepath_label.cget("text")
+        base_filename = "word_cloud_output" # Default
+        if source_desc and "Using pasted text" not in source_desc and "No file selected" not in source_desc and "Error reading file" not in source_desc:
+            try:
+                # Attempt to get a stem from the filepath_label if it's a valid path
+                path_obj = Path(source_desc)
+                if path_obj.is_file(): # Check if it's an actual file path
+                    base_filename = path_obj.stem + "_word_cloud"
+            except Exception:
+                # If Path operations fail (e.g. source_desc is not a valid path string),
+                # or if it's not a file, keep the default base_filename.
+                pass
+
+
+        save_path_str = filedialog.asksaveasfilename(
+            defaultextension=".png",
+            filetypes=[("PNG files", "*.png"), ("All files", "*.*")],
+            title="Save Word Cloud As",
+            initialfile=f"{base_filename}.png" # Use the potentially updated base_filename
+        )
+
+        if not save_path_str:
+            self.results_text.insert(tk.END, "Word cloud generation cancelled by user.\n")
+            return
+
+        save_path = Path(save_path_str)
+        output_dir = save_path.parent
+        filename_prefix = save_path.stem
+
+        try:
+            generated_image_path = display.generate_word_cloud(
+                word_frequencies=word_frequencies,
+                output_dir=output_dir,
+                filename_prefix=filename_prefix
+            )
+
+            if generated_image_path:
+                self.results_text.insert(tk.END, f"Word cloud saved to: {generated_image_path}\n")
+                tk.messagebox.showinfo("Word Cloud Success", f"Word cloud saved to:\n{generated_image_path}")
+                # Try to open the file
+                try:
+                    if sys.platform == "win32":
+                        os.startfile(generated_image_path) # os.startfile is Windows specific
+                    elif sys.platform == "darwin": # macOS
+                        subprocess.run(["open", generated_image_path], check=True)
+                    else: # Linux and other POSIX
+                        subprocess.run(["xdg-open", generated_image_path], check=True)
+                except FileNotFoundError as e_fnf: # Specific error for open/xdg-open not found
+                    self.results_text.insert(tk.END, f"Could not automatically open image: Command not found ({e_fnf.filename}). Please open it manually.\n")
+                    tk.messagebox.showwarning("Open Image", f"Could not automatically open the image: '{e_fnf.filename}' not found. Please open it manually from:\n{generated_image_path}")
+                except subprocess.CalledProcessError as e_cpe: # Error from open/xdg-open
+                    self.results_text.insert(tk.END, f"Error opening image with external program: {e_cpe}.\n")
+                    tk.messagebox.showwarning("Open Image", f"Error opening image with external program: {e_cpe}.\nPlease open it manually from:\n{generated_image_path}")
+                except Exception as e_open: # Other errors
+                    self.results_text.insert(tk.END, f"Could not automatically open image: {e_open}\n")
+                    tk.messagebox.showwarning("Open Image", f"Could not automatically open the image:\n{e_open}.\nPlease open it manually from:\n{generated_image_path}")
+            else:
+                # The display.generate_word_cloud function already prints to console.
+                # This message is for the GUI text area.
+                self.results_text.insert(tk.END, "Word cloud generation failed. Check console for details (WordCloud library might print errors there).\n")
+                tk.messagebox.showerror("Word Cloud Error", "Word cloud generation failed. See console/terminal for specific errors from the WordCloud library.")
+        except Exception as e: # Catch any other unexpected errors during the process
+            self.results_text.insert(tk.END, f"Error during word cloud GUI operation: {e}\n")
+            tk.messagebox.showerror("Word Cloud Error", f"An unexpected error occurred: {e}")
 
     def _format_results(self, results: dict, top_n: int, removed_stopwords_flag: bool, removed_stopwords_count: int) -> str:
         """Formats the analysis results for display in the GUI."""
