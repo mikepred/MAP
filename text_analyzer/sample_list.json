@@ -1,0 +1,10 @@
+{
+  "record_id": "list001",
+  "description": "A list of comments",
+  "comments": [
+    "This is the first comment.",
+    "Here is another comment, adding more text.",
+    "And a third one for good measure."
+  ],
+  "status": "active"
+}

@@ -10,17 +10,32 @@ Many learners find it challenging to grasp the foundational concepts of Natural 
 
 ### Proposed Solution
 
-The `text_analyzer` project provides a Python script (`analyzer.py`) that implements a basic text analysis pipeline. This pipeline demonstrates the core steps involved in preparing text data for NLP tasks: reading text from a file, cleaning and normalizing the text, tokenizing it into individual words, counting word frequencies, and displaying the most common words.
+The `text_analyzer` project provides a Python script (`analyzer.py`) that implements a comprehensive text analysis pipeline. This pipeline demonstrates a wide range of steps involved in preparing and analyzing text data for NLP tasks:
+*   Reading text from various file formats (plain text, CSV, JSON).
+*   Cleaning and normalizing the text.
+*   Tokenizing text into individual words.
+*   Dynamic stop word management (default, NLTK languages, custom lists, or none).
+*   Counting word frequencies.
+*   N-gram analysis (bigrams, trigrams).
+*   Sentence structure analysis.
+*   Readability assessment using multiple standard indices.
+*   Sentiment analysis using VADER.
+*   Part-of-Speech (POS) tagging and lexical density calculation using spaCy.
+*   Named Entity Recognition (NER) using spaCy.
+*   Keyword extraction using RAKE.
+*   Pattern detection (including user-defined regex).
+*   Displaying results in a user-friendly console format, including optional graphical plots for key metrics (word frequencies, sentiment, word lengths).
 
-By building and running this script, learners gain practical experience with these fundamental concepts.
+By using and extending this script, learners gain practical experience with these fundamental and more advanced NLP concepts.
 
 ### User Experience Goals (Text Analyzer)
 
-* **Accessibility**: The project should be easy to understand and run, even for beginners with limited Python experience.
-* **Educational Value**: The project should clearly illustrate the core concepts of text processing and their relevance to NLP and LLMs.
-* **Engagement**: The project should be engaging and encourage learners to experiment with different text sources and enhancements.
-* **Clarity**: The project's output (the list of most common words) should be clear, informative, and easy to interpret.
-* **Foundation**: The project should provide a solid foundation for further exploration of NLP and LLM topics, aligning with the initial stages of learning resources like Raschka's "Build an LLM (From Scratch)" and the "GenAI PDF."
+* **Accessibility**: The project should be relatively easy to run, with clear prompts for configuration.
+* **Educational Value**: The project should clearly illustrate a broad range of text processing and analysis techniques and their relevance to NLP and LLMs.
+* **Engagement**: The project should be engaging, allowing users to analyze various text sources with multiple configuration options and see diverse outputs, including visualizations.
+* **Clarity**: The project's output should be comprehensive, well-structured, and easy to interpret, including both textual reports and graphical plots.
+* **Foundation & Beyond**: The project provides a solid foundation and extends into intermediate NLP tasks, bridging the gap to more advanced topics in resources like Raschka's "Build an LLM (From Scratch)" and the "GenAI PDF."
+* **Flexibility**: Users should have control over aspects like stop word lists, input file types, and output display.
 
 ## Overarching Project: Self-Directed AI Engineering Education
 

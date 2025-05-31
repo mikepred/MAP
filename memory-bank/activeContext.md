@@ -4,44 +4,46 @@ This document outlines the current work focus, recent changes, and next steps fo
 
 ## Current Work Focus
 
-The primary focus is **understanding and integrating new learning resources** into the self-directed AI engineering education plan. This involves:
-*   Reviewing Sebastian Raschka's "Build an LLM (From Scratch)" book/repository.
-*   Reviewing the "Generative AI with Python and PyTorch, Second Edition" PDF (referred to as "GenAI PDF"), particularly its chapters on Deep Learning fundamentals, Text Representation/Early NLP (Ch 3), Transformers (Ch 4), LLM Foundations (Ch 5), Open-Source LLMs (Ch 6), Prompt Engineering (Ch 7), LLM Tooling (Ch 8), Optimization (Ch 9), and Emerging Applications (Ch 10).
-*   Synthesizing these resources with the existing "AI Engineering Master Curriculum" (from `This comprehensive lesson plan takes a l.md`) which serves as an inspirational reference.
-*   Clarifying how these resources support the conceptual learning framework of "SAI".
-*   Updating the Cline Memory Bank to reflect this expanded learning strategy.
+The primary focus has been on **enhancing the `text_analyzer` project** with several new features, moving beyond its initial scope as a basic educational tool. This also serves as practical application while progressing with the broader self-directed AI engineering education plan.
 
-**Current Learning Phase:** Text representation/early NLP, with a focus on Chapter 3 of the "GenAI PDF" as it relates to foundational concepts for Raschka's book.
+**Current Learning Phase:** Practical application of NLP concepts through `text_analyzer` enhancements, while preparing to dive deeper into "Text representation/early NLP" (Chapter 3 of "GenAI PDF") and Raschka's "Build an LLM (From Scratch)" (Chapter 2).
 
 ## Recent Changes
 
-*   **Learning Strategy Refinement (Current Session):**
-    *   Reviewed and discussed the "AI Engineering Master Curriculum" (from `This comprehensive lesson plan takes a l.md`), clarifying its role as an inspirational reference.
-    *   Reviewed Sebastian Raschka's "Build an LLM (From Scratch)" (book/repo), establishing it as the primary technical guide for LLM implementation.
-    *   Reviewed "Generative AI with Python and PyTorch, Second Edition" PDF (GenAI PDF), establishing it as a comprehensive theoretical and practical textbook. Chapter 3 (Text Representation/Early NLP) identified as immediately relevant. Chapters 7-11 (Prompt Engineering, LLM Tooling, Optimization, etc.) identified as important for later learning stages.
-    *   Affirmed the `text_analyzer` project's role as a foundational practical exercise.
-    *   Solidified "SAI" as the conceptual learning framework.
-    *   Updated `memory-bank/projectbrief.md` and `memory-bank/productContext.md` to reflect this integrated learning strategy.
-    *   Completed updates to `memory-bank/activeContext.md` (this file), `memory-bank/progress.md`, and `memory-bank/techContext.md` to reflect the refined learning strategy and ensure consistency.
+*   **`text_analyzer` Enhancements (Current Session):**
+    *   **CSV and JSON Input Support**: Implemented functionality to read and extract text from specified columns in CSV files and specified keys in JSON files. This involved updates to `file_io.py` and `analyzer.py`.
+    *   **Graphical Output/Visualization**: Added support for generating `matplotlib` plots for:
+        *   Top N Word Frequencies.
+        *   Sentiment Score Distribution (VADER).
+        *   Word Length Distribution.
+        This involved updates to `display.py`, `config.py` (for plot settings), `analyzer.py` (for user prompts and plot generation calls), and `text_analyzer/requirements.txt` (adding `matplotlib`).
+    *   **Full Keyword Extraction (RAKE)**: Implemented keyword extraction using the RAKE algorithm via `rake-nltk`. This involved updates to `analysis.py`, `display.py`, `config.py`, `analyzer.py`, and `text_analyzer/requirements.txt`. NLTK `stopwords` resource dependency was addressed.
+    *   **Dynamic Stop Word Management**: Enhanced stop word handling to allow users to:
+        *   Use the default English list.
+        *   Select NLTK stop words for other supported languages.
+        *   Provide a path to a custom stop word file.
+        *   Opt out of stop word removal.
+        This involved updates to `text_processing.py`, `file_io.py`, `analysis.py`, `analyzer.py`, and `config.py`.
 
-*   **Previous Work (Still Relevant Context):**
-    *   **Text Analyzer Project - Module 5C Initial Steps Completed**.
-    *   **Text Analyzer Project - Module 4 Development Completed**.
-    *   **Refactoring of `analyzer.py` for Pythonic best practices**.
-    *   **Git Branch Visualizer created and functional**.
+*   **Previous Learning Strategy Refinement:**
+    *   Clarified roles of key learning resources (Raschka's book, GenAI PDF, AI Engineering Master Curriculum).
+    *   Affirmed "SAI" as the conceptual learning framework.
+    *   Updated core memory bank files (`projectbrief.md`, `productContext.md`, etc.) to reflect this strategy.
 
 ## Pending Tasks & Next Steps
 
-1.  **Commit Memory Bank Updates**:
-    *   Commit all changes made to the memory bank files (`projectbrief.md`, `productContext.md`, `activeContext.md`, `progress.md`).
+1.  **Finalize Current `text_analyzer` Enhancements**:
+    *   Ensure all tests for the new features are robust (e.g., testing NLTK language stop word selection).
+    *   Consider if `FIXED_TARGET_FILENAME` in `config.py` should be reverted from `test_plot_sample.txt` to `../dict-sample.txt` or another default.
+    *   Commit all recent changes to the `text_analyzer` project and the memory bank.
 
 2.  **Continue Learning (Self-Directed AI Engineering Education)**:
-    *   **Current Focus:** "Text representation/early NLP."
-        *   Study Chapter 3 of the "GenAI PDF."
-        *   Relate concepts to the `text_analyzer` project.
-        *   Prepare for/begin Chapter 2 of Raschka's "Build an LLM (From Scratch)."
+    *   **Immediate Focus:** "Text representation/early NLP."
+        *   Deep dive into Chapter 3 of the "GenAI PDF."
+        *   Begin Chapter 2 of Raschka's "Build an LLM (From Scratch)" (Data Processing and Tokenization).
+        *   Relate concepts from these resources to the functionalities now present in the enhanced `text_analyzer`.
     *   **Ongoing:** Populate MCP Knowledge Graph with learned concepts.
 
-3.  **Review `text_analyzer` Project Status (Lower Priority for now)**:
-    *   Assess if further work on Module 5C for `text_analyzer` is desired before deeper engagement with Raschka's book, or if it should be paused.
-    *   Address pending refactorings/improvements for `text_analyzer.py` as time permits or if they become relevant to current learning.
+3.  **Future `text_analyzer` Considerations (Lower Priority for now)**:
+    *   Address any remaining items from Module G's extension ideas if desired (e.g., full TF-IDF, more advanced GUI).
+    *   Expand automated tests in `run_comprehensive_test()` to cover new features more thoroughly.

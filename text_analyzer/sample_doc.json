@@ -1,0 +1,10 @@
+{
+  "id": "doc123",
+  "title": "Sample Document",
+  "author": "AI Assistant",
+  "text_content": "This is the main text of the sample JSON document. It's a single string.",
+  "metadata": {
+    "source": "generated",
+    "length_chars": 78
+  }
+}

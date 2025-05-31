@@ -8,12 +8,21 @@ This document covers the technologies used in the project, the development setup
 
 * **Python**: Version 3.7 or higher is required.
 * **Standard Library**:
-  * `os`, `pathlib`: For file system interactions (Module 3B onwards). File reading (`file_io.py`) uses `iso-8859-1` encoding by default to improve compatibility with various text file encodings.
-  * `collections`: The `Counter` class for efficient word frequency counting (Module 3C onwards).
-  * `string`: The `string.punctuation` constant and `str.maketrans()` method for text cleaning (Module 3C onwards).
-  * `re`: The regular expression module for advanced text cleaning and sentence splitting (Module 3C onwards).
-* **NLTK (Natural Language Toolkit)**: Used for advanced tokenization, stop word removal, and other NLP tasks (Module 5C exploration).
-* **spaCy**: Used for advanced tokenization, stop word removal, part-of-speech tagging, named entity recognition, and other NLP tasks (Module 5C exploration).
+  * `os`, `pathlib`: For file system interactions.
+  * `collections`: `Counter` for frequency counting, `defaultdict` for NER results.
+  * `string`: For punctuation constants.
+  * `re`: For regex-based cleaning and splitting.
+  * `csv`: For reading CSV files.
+  * `json`: For reading JSON files.
+* **NLTK (Natural Language Toolkit)**:
+    * VADER for sentiment analysis.
+    * `rake-nltk` for RAKE keyword extraction.
+    * `stopwords` corpus for various languages.
+    * `punkt` for tokenization (used by some NLTK components).
+* **spaCy**: For Part-of-Speech (POS) tagging and Named Entity Recognition (NER), using the `en_core_web_sm` model.
+* **matplotlib**: For generating plots (word frequencies, sentiment distribution, word length distribution).
+* **textstat**: For calculating various standard readability indices.
+* **pyspellchecker**: For typo correction.
 
 ### Development Setup (Text Analyzer)
 
@@ -29,15 +38,21 @@ This document covers the technologies used in the project, the development setup
 ### Dependencies (Text Analyzer)
 
 * Primarily relies on Python's standard library for core Module 1-3 functionalities.
-* **NLTK**: External dependency, installed and explored as part of Module 5C. Requires data packages like `punkt`, `stopwords`, `punkt_tab`.
-* **spaCy**: External dependency, installed and explored as part of Module 5C. Requires language models like `en_core_web_sm`.
-* **NumPy**: Pinned to `<2.0` in `requirements.txt` to avoid binary incompatibility issues with `thinc` (a spaCy dependency) during deployment on platforms like Render.
+* **NLTK**: External dependency. Requires data packages like `punkt`, `stopwords`, `vader_lexicon`.
+* **spaCy**: External dependency. Requires language models like `en_core_web_sm`.
+* **matplotlib**: External dependency for plotting.
+* **textstat**: External dependency for readability scores.
+* **pyspellchecker**: External dependency for typo correction.
+* **rake-nltk**: External dependency for keyword extraction.
+* **NumPy**: Pinned to `<2.0` in `requirements.txt` to avoid binary incompatibility issues with `thinc` (a spaCy dependency) during deployment on platforms like Render. (Note: Check if this is still the case or if newer spaCy/thinc versions have resolved this).
 
 ### Tool Usage Patterns (Text Analyzer)
 
-* Executed via `python analyzer.py`.
-* Reads from a specified input text file (default: `sample.txt`).
-* Outputs analysis results to the console.
+* Executed via `python -m text_analyzer.analyzer` (as a module to handle relative imports).
+* Reads from user-specified input files (.txt, .csv, .json) or a fixed default file.
+* Prompts for configurations (top words, stop word strategy, plot generation).
+* Outputs analysis results to the console, including textual reports and optionally saves graphical plots to an `analysis_plots` directory.
+* Can save textual analysis summary to a user-specified file.
 
 ## Git Branch Visualizer (`branch_visualizer.py`)
 

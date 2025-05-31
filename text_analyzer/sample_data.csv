@@ -1,0 +1,6 @@
+ID,ReviewText,Sentiment,Author
+1,"This is a fantastic product, I love it!",positive,UserA
+2,"A bit disappointing, expected more for the price.",negative,UserB
+3,"Average quality, works as described. Nothing special.",neutral,UserC
+4,"Excellent customer service and fast shipping!",positive,UserD
+5,"The item broke after just one week. Very unhappy.",negative,UserE

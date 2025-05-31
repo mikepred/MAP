@@ -6,7 +6,7 @@ Includes cleaning, tokenization, stop word removal, and word counting.
 import re
 import string
 from collections import Counter
-from typing import Optional, List, Tuple
+from typing import Optional, List, Tuple, Set # MODIFIED: Added Set
 
 from . import config as cfg
 
@@ -50,9 +50,6 @@ def clean_text_for_word_tokenization(text: Optional[str], advanced: bool = False
     if advanced:
         processed_text = cfg.URL_REGEX.sub('', processed_text)
         processed_text = cfg.EMAIL_REGEX.sub('', processed_text)
-        # Example for optional number removal based on a hypothetical config flag
-        # if cfg.REMOVE_NUMBERS_DURING_ADVANCED_CLEANING: # Assuming such a flag exists in config
-        #     processed_text = cfg.NUMBERS_REGEX.sub('', processed_text)
         processed_text = cfg.EXTRA_WHITESPACE_REGEX.sub(' ', processed_text).strip()
     
     translator = str.maketrans('', '', string.punctuation)
@@ -68,39 +65,49 @@ def tokenize_text(text: Optional[str]) -> List[str]:
         return []
     return text.split()
 
-def remove_stop_words(tokens: List[str]) -> Tuple[List[str], int]:
+def remove_stop_words(tokens: List[str], active_stop_words: Set[str]) -> Tuple[List[str], int]:
     """
-    Removes common stop words from a list of tokens.
-    Returns the filtered list of tokens and the count of removed stop words.
+    Removes stop words from a list of tokens using the provided set of active stop words.
+    If active_stop_words is empty, no words are removed.
+
+    Args:
+        tokens (List[str]): The list of tokens to filter.
+        active_stop_words (Set[str]): The set of stop words to remove. 
+                                     An empty set means no stop words will be removed.
+
+    Returns:
+        Tuple[List[str], int]: A tuple containing the filtered list of tokens
+                               and the count of removed stop words.
     """
     original_token_count: int = len(tokens)
-    filtered_tokens: List[str] = [token for token in tokens if token not in cfg.STOP_WORDS]
+    if not active_stop_words: # Handles empty set; None should be handled by caller if that's a state.
+        return tokens, 0
+    
+    filtered_tokens: List[str] = [token for token in tokens if token not in active_stop_words]
     removed_count: int = original_token_count - len(filtered_tokens)
-    # The print statement is removed as per requirements.
     return filtered_tokens, removed_count
 
-def count_words(text: Optional[str], use_stop_words: bool = False) -> Counter[str]:
+def count_words(text: Optional[str], active_stop_words: Optional[Set[str]] = None) -> Counter[str]:
     """
     Count word frequencies in text.
     Uses clean_text_for_word_tokenization for cleaning.
+    Stop words are removed if an active_stop_words set is provided and is not empty.
+
+    Args:
+        text (Optional[str]): Input text.
+        active_stop_words (Optional[Set[str]]): A set of stop words to remove.
+                                                 If None or empty, no stop words are removed.
+    Returns:
+        Counter[str]: A Counter object with word frequencies.
     """
     if not text:
         return Counter()
     
-    # Use clean_text_for_word_tokenization (advanced=False for basic punctuation removal)
-    # The 'advanced' flag in clean_text_for_word_tokenization handles URL/email removal.
-    # For simple word counting, we usually want basic cleaning (lowercase, punctuation).
-    # If advanced cleaning (URL/email removal) is desired before counting, 
-    # it should be applied to 'text' before passing to this function, or this function
-    # needs to be aware of that option.
-    # For now, assuming 'clean_text_for_word_tokenization' with advanced=False is suitable for word counting.
     cleaned_text: str = clean_text_for_word_tokenization(text, advanced=False) 
-    
-    words: List[str] = tokenize_text(cleaned_text) # tokenize_text handles empty strings from split
-    # words = [word for word in words if len(word) > 0] # tokenize_text should already handle this by text.split() behavior
+    words: List[str] = tokenize_text(cleaned_text)
 
-    if use_stop_words:
-        words, _ = remove_stop_words(words) # Unpack tuple, ignore count here as it's not used by count_words
+    if active_stop_words: # If the set is provided and not empty
+        words, _ = remove_stop_words(words, active_stop_words)
         
     word_counts: Counter[str] = Counter(words)
     return word_counts
@@ -129,13 +136,12 @@ def generate_ngrams(tokens: List[str], n_values: List[int]) -> dict[int, List[Tu
 
     output_ngrams: dict[int, List[Tuple[str, ...]]] = {}
     for n in n_values:
-        if n <= 0:  # N-gram size must be positive
+        if n <= 0:
             output_ngrams[n] = []
             continue
         if len(tokens) < n:
-            output_ngrams[n] = []  # Not enough tokens to form n-grams of this size
+            output_ngrams[n] = []
         else:
-            # nltk_ngrams returns a generator, convert it to a list of tuples
             output_ngrams[n] = list(nltk_ngrams(tokens, n))
             
     return output_ngrams
@@ -170,26 +176,20 @@ def correct_text_typos(text: Optional[str]) -> str:
              no corrections can be made, the original text (or its equivalent
              after splitting and joining) is returned.
     """
-    if not text: # Handles None or empty string input
+    if not text:
         return ""
 
     spell = SpellChecker()
-    words = text.split()  # Simple whitespace split; preserves punctuation attached to words
+    words = text.split()
 
     corrected_word_list = []
     for word in words:
-        if not word:  # Handles empty strings that can result from multiple spaces, e.g., "hello   world"
+        if not word:
             corrected_word_list.append("")
             continue
-
-        # Attempt to get a correction for the word.
-        # spell.correction() returns the most likely correction or None if not found/needed.
+        
         potential_correction = spell.correction(word)
 
-        # If spell.correction() returns None (no correction found or word is correct),
-        # or if the "corrected" word is somehow None (shouldn't happen with current library version for non-None input words),
-        # use the original word. Otherwise, use the suggestion.
-        # Note: spell.correction(word) usually returns the original word if it's already correct.
         if potential_correction is None:
             corrected_word_list.append(word)
         else:

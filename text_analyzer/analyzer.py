@@ -10,8 +10,8 @@ import re
 import string
 from pathlib import Path
 from collections import Counter
-import time # Added for Module 4C
-from typing import Optional, List, Dict, Tuple, Set, Any, Union # For type hints
+import time 
+from typing import Optional, List, Dict, Tuple, Set, Any, Union
 
 # Import configuration
 from . import config as cfg
@@ -23,393 +23,334 @@ from . import text_processing as tp
 from . import analysis
 # Import display functions
 from . import display
+from nltk.corpus import stopwords # For NLTK language stop words
 
 # =============================================================================
 # UTILITY AND MAIN SCRIPT LOGIC
 # =============================================================================
 
-def time_function(func: callable, *args: Any, **kwargs: Any) -> Tuple[Any, float]: # Stays in analyzer.py
-    """Times the execution of a function and returns the result and duration."""
+def time_function(func: callable, *args: Any, **kwargs: Any) -> Tuple[Any, float]:
     start_time: float = time.time()
     result: Any = func(*args, **kwargs)
     end_time: float = time.time()
     duration: float = end_time - start_time
-    # The caller will decide whether to print the duration.
     return result, duration
 
-def analyze_word_lengths(tokens: List[str]) -> Counter[int]: # New from Module 4C
-    """
-    Analyzes the distribution of word lengths and prints the analysis.
-    
-    Args:
-        tokens (List[str]): List of word tokens
-        
-    Returns:
-        Counter[int]: Counter object with word lengths as keys and counts as values
-    """
-    # analyze_word_lengths is in analysis.py and returns Counter.
-    # Display logic for word lengths will be in display.py.
-    # This function definition in analyzer.py is now removed.
-
-
 # =============================================================================
-# INTERNAL HELPER FOR ANALYSIS AND DISPLAY (Refactored Function)
+# INTERNAL HELPER FOR ANALYSIS AND DISPLAY
 # =============================================================================
 def _perform_analysis_and_display(file_content: str, source_filename_hint: str) -> None:
-    """
-    Performs text analysis, displays results, and handles saving.
-    This function consolidates common logic from file handling options.
-    """
-    num_common_words_cfg, use_stop_words_cfg = get_user_input_config()
+    num_common_words_cfg, stop_word_config = get_user_input_config()
+
+    active_stop_words_set: Optional[Set[str]] = set() # Default to empty set (no removal)
+    stop_word_message: str = "ℹ️ Stop word removal is OFF (no option selected or error)."
+
+
+    if stop_word_config["type"] == "default":
+        active_stop_words_set = cfg.STOP_WORDS
+        stop_word_message = f"ℹ️ Using default English stop words ({len(active_stop_words_set or [])} words)."
+    elif stop_word_config["type"] == "nltk_lang":
+        lang = stop_word_config["language"]
+        try:
+            active_stop_words_set = set(stopwords.words(lang))
+            stop_word_message = f"ℹ️ Using NLTK '{lang}' stop words ({len(active_stop_words_set or [])} words)."
+        except OSError: 
+            print(f"❌ Error: NLTK stopwords for '{lang}' not found. Ensure it's downloaded (e.g., via download_nltk_data.py) and supported.")
+            print("Proceeding without stop word removal for this analysis.")
+            active_stop_words_set = set() 
+            stop_word_message = "ℹ️ Stop word removal is OFF (selected language's stopwords not found)."
+        except Exception as e_nltk: # Catch other potential NLTK errors
+            print(f"❌ Error loading NLTK stopwords for '{lang}': {e_nltk}")
+            active_stop_words_set = set()
+            stop_word_message = "ℹ️ Stop word removal is OFF (error loading NLTK language)."
+    elif stop_word_config["type"] == "custom":
+        custom_path = stop_word_config["path"]
+        loaded_set, err_msg = file_io.load_custom_stop_words(custom_path)
+        if loaded_set:
+            active_stop_words_set = loaded_set
+            stop_word_message = f"ℹ️ Using custom stop words from '{Path(custom_path).name}' ({len(active_stop_words_set or [])} words)."
+        else:
+            print(f"❌ Error loading custom stop words: {err_msg}")
+            print("Proceeding without stop word removal for this analysis.")
+            active_stop_words_set = set()
+            stop_word_message = "ℹ️ Stop word removal is OFF (custom list failed to load)."
+    elif stop_word_config["type"] == "none":
+        active_stop_words_set = set() 
+        stop_word_message = "ℹ️ Stop word removal is OFF (user selected 'none')."
 
     display.print_section("🔄 Running complete analysis...")
     
     results, analysis_duration = time_function(
         analysis.analyze_text_complete,
         file_content,
-        use_stop_words=use_stop_words_cfg,
-        num_common_words_to_display=num_common_words_cfg
+        active_stop_words=active_stop_words_set, 
+        num_common_words_to_display=num_common_words_cfg,
+        user_patterns=None # user_patterns not yet taken from user input
     )
-
-    # Print stop word status AFTER analysis, using the count from results
-    if use_stop_words_cfg:
-        removed_count = results.get('word_analysis', {}).get('removed_stop_words_count', 0)
-        if removed_count > 0:
-            print(f"ℹ️ Removed {removed_count} stop words.")
-        else: 
-            print("ℹ️ Stop word removal is ON (no stop words found or removed).")
-    else:
-        print("ℹ️ Stop word removal is OFF.")
     
+    print(stop_word_message) 
+    removed_count = results.get('word_analysis', {}).get('removed_stop_words_count', 0)
+    if active_stop_words_set and removed_count > 0 : 
+        print(f"ℹ️ Removed {removed_count} stop words.")
+    elif active_stop_words_set and removed_count == 0 and stop_word_config["type"] != "none" and len(active_stop_words_set) > 0:
+        print("ℹ️ No stop words (from the active list) were found in the text.")
+
     print(f"\n⏱️ Text analysis pipeline took: {analysis_duration:.4f} seconds")
 
-    if results.get('error'): # Simplified: Use dict.get() to check for 'error'
+    if results.get('error'):
         print(f"❌ Analysis error: {results['error']}")
-        return # Exit if analysis failed
+        return
 
-    # Display options
     print("\n📊 Analysis complete! Choose display format:")
-    print("1. Complete Report")
-    print("2. Quick Summary")
-    print("3. Both")
+    print("1. Complete Report"); print("2. Quick Summary"); print("3. Both")
     display_choice = input("Enter choice (1-3): ").strip()
-    if display_choice == "1":
-        display.display_complete_analysis(results)
-    elif display_choice == "2":
-        display.display_summary(results)
-    elif display_choice == "3":
-        display.display_summary(results)
-        display.display_complete_analysis(results)
-    else:
-        print("⚠️ Invalid display choice, showing summary:")
-        display.display_summary(results)
+    if display_choice == "1": display.display_complete_analysis(results)
+    elif display_choice == "2": display.display_summary(results)
+    elif display_choice == "3": display.display_summary(results); display.display_complete_analysis(results)
+    else: print("⚠️ Invalid display choice, showing summary:"); display.display_summary(results)
 
     processed_tokens_len_analysis = results.get('processed_tokens', [])
-    # Call analysis.analyze_word_lengths to get the Counter object
     custom_word_length_counts = analysis.analyze_word_lengths(processed_tokens_len_analysis)
-    if custom_word_length_counts: # Check if Counter is not empty
+    if custom_word_length_counts:
         display.display_word_length_analysis(custom_word_length_counts, len(processed_tokens_len_analysis))
 
-    # Ask to save results
-    # Simplified: Use nested dict.get() for safer access
     if results.get('word_analysis', {}).get('full_word_counts_obj'):
         while True:
             save_choice = input("\n💾 Save analysis results to file? (yes/no, default: no): ").strip().lower()
-            if not save_choice or save_choice == 'no':
-                break
+            if not save_choice or save_choice == 'no': break
             elif save_choice == 'yes':
-                # Use source_filename_hint to create a meaningful default
-                # e.g. "s_txt_results.txt" or "custom_analysis_results.txt"
-                default_out_fn = f"{source_filename_hint.replace('.txt', '')}_{cfg.DEFAULT_RESULTS_FILENAME}"
-                out_fn_input = input(f"Enter output filename (default: {default_out_fn}): ").strip()
-                if not out_fn_input:
-                    out_fn_input = default_out_fn
-                
-                freq_ctr = results['word_analysis']['full_word_counts_obj']
-                n_save = num_common_words_cfg 
-                unique_save = len(freq_ctr)
-                file_io.save_results_to_file(freq_ctr, n_save, unique_save, out_fn_input)
+                default_out_fn = f"{source_filename_hint.replace('.txt', '').replace('.csv','').replace('.json','')}_{cfg.DEFAULT_RESULTS_FILENAME}"
+                out_fn_input = input(f"Enter output filename (default: {default_out_fn}): ").strip() or default_out_fn
+                file_io.save_results_to_file(results['word_analysis']['full_word_counts_obj'], num_common_words_cfg, len(results['word_analysis']['full_word_counts_obj']), out_fn_input)
                 break
-            else:
-                print("⚠️ Invalid choice. Please enter 'yes' or 'no'.")
+            else: print("⚠️ Invalid choice. Please enter 'yes' or 'no'.")
+
+    if results.get('word_analysis', {}).get('full_word_counts_obj'):
+        while True:
+            plot_choice = input("\n📊 Generate graphical plots for analysis? (yes/no, default: no): ").strip().lower()
+            if not plot_choice or plot_choice == 'no': break
+            elif plot_choice == 'yes':
+                print("Generating plots...")
+                plot_output_dir = cfg.SCRIPT_DIRECTORY / cfg.DEFAULT_PLOTS_DIR
+                plot_filename_prefix = source_filename_hint.replace('.txt', '').replace('.csv', '').replace('.json', '')
+                
+                def open_plot(plot_path: Optional[str]):
+                    if not plot_path: return
+                    try:
+                        if os.name == 'nt': # Windows
+                            os.startfile(plot_path)
+                        elif os.name == 'posix': # macOS, Linux
+                            if 'DISPLAY' in os.environ:
+                                opener = 'xdg-open' if Path('/usr/bin/xdg-open').exists() else 'open'
+                                os.system(f"{opener} \"{plot_path}\"")
+                            else:
+                                print(f"ℹ️ Plot saved at {plot_path}. No display environment detected to open it automatically.")
+                        else:
+                            print(f"ℹ️ Plot saved at {plot_path}. Auto-open not supported on this OS.")
+                    except Exception as e_open:
+                        print(f"⚠️ Could not automatically open plot '{plot_path}': {e_open}")
+
+                if results.get('word_analysis', {}).get('full_word_counts_obj'):
+                    saved_plot_path = display.plot_word_frequencies(results['word_analysis']['full_word_counts_obj'], top_n=num_common_words_cfg, output_dir=plot_output_dir, filename_prefix=f"{plot_filename_prefix}_word_freq")
+                    open_plot(saved_plot_path)
+                
+                if results.get('sentiment_analysis'):
+                    saved_plot_path = display.plot_sentiment_distribution(results['sentiment_analysis'], output_dir=plot_output_dir, filename_prefix=f"{plot_filename_prefix}_sentiment_dist")
+                    open_plot(saved_plot_path)
+
+                if results.get('word_length_counts_obj'):
+                    saved_plot_path = display.plot_word_length_distribution(results['word_length_counts_obj'], output_dir=plot_output_dir, filename_prefix=f"{plot_filename_prefix}_word_len_dist")
+                    open_plot(saved_plot_path)
+                break
+            else: print("⚠️ Invalid choice. Please enter 'yes' or 'no'.")
 
 # =============================================================================
-# USER INPUT CONFIGURATION (Remains in analyzer.py as it's UI related for main script)
+# USER INPUT CONFIGURATION
 # =============================================================================
-def get_user_input_config() -> Tuple[int, bool]:
-    """
-    Gets configuration from user input for number of top words and stop word removal.
-    (Enhancement 2 from Module 4B)
-    Filepath is NOT asked here as it's handled differently by the caller.
-    
-    Returns:
-        Tuple[int, bool]: (num_words_to_display, enable_stop_word_removal)
-    """
+def get_user_input_config() -> Tuple[int, Dict[str, Any]]:
     print("\n--- ⚙️ Text Analysis Configuration ---")
-    
     num_words: int = cfg.DEFAULT_TOP_WORDS_DISPLAY
     while True:
         try:
             num_words_str_input: str = input(f"Number of top words to display (default: {num_words}): ").strip()
-            if not num_words_str_input:
+            if not num_words_str_input: break
+            num_words_val: int = int(num_words_str_input)
+            if num_words_val <= 0: print("⚠️ Please enter a positive number."); continue
+            num_words = num_words_val; break
+        except ValueError: print("⚠️ Invalid input. Please enter a number.")
+            
+    stop_word_config: Dict[str, Any] = {"type": "default"} 
+    
+    print("\n--- Stopwords Configuration ---")
+    print("1. Use default English stop words")
+    print("2. Use NLTK stop words for another language")
+    print("3. Use custom stop words from a file")
+    print("4. Do not remove stop words")
+    
+    while True:
+        sw_choice = input("Choose stop word option (1-4, default 1): ").strip()
+        if not sw_choice: sw_choice = "1"
+
+        if sw_choice == "1":
+            stop_word_config = {"type": "default"}
+            break
+        elif sw_choice == "2":
+            lang_prompt = f"Enter NLTK language for stopwords (e.g., {', '.join(cfg.SUPPORTED_NLTK_STOPWORD_LANGUAGES[:3])}, or 'list' to see all): "
+            lang_input = input(lang_prompt).strip().lower()
+            if lang_input == 'list':
+                try:
+                    print("Available NLTK stopwords languages:", ", ".join(stopwords.fileids()))
+                except Exception as e_nltk_list:
+                    print(f"Could not list NLTK languages: {e_nltk_list}. Ensure NLTK data is downloaded.")
+                continue # Re-prompt for choice
+            
+            # Check against a predefined list in config OR all available NLTK languages
+            # For simplicity, let's assume cfg.SUPPORTED_NLTK_STOPWORD_LANGUAGES exists and is used for validation.
+            # If not, we might need to check `lang_input in stopwords.fileids()` but that requires NLTK data to be present.
+            if lang_input in cfg.SUPPORTED_NLTK_STOPWORD_LANGUAGES:
+                stop_word_config = {"type": "nltk_lang", "language": lang_input}
                 break
             else:
-                num_words_val: int = int(num_words_str_input)
-                if num_words_val <= 0:
-                    print("⚠️ Please enter a positive number for top words.")
-                    continue
-                num_words = num_words_val
-            break
-        except ValueError:
-            print("⚠️ Invalid input. Please enter a number.")
-            
-    enable_stop_words: bool = True # Default
-    while True:
-        default_sw_choice_str: str = 'yes' if enable_stop_words else 'no'
-        stop_words_prompt: str = f"Remove stop words? (yes/no, default: {default_sw_choice_str}): "
-        stop_words_choice: str = input(stop_words_prompt).strip().lower()
-        if not stop_words_choice:
-            break
-        elif stop_words_choice == 'yes':
-            enable_stop_words = True
-            break
-        elif stop_words_choice == 'no':
-            enable_stop_words = False
+                print(f"⚠️ Language '{lang_input}' not in configured supported list: {', '.join(cfg.SUPPORTED_NLTK_STOPWORD_LANGUAGES)}")
+                print(f"   Or it might be an unsupported/mistyped NLTK language. Please try again.")
+        elif sw_choice == "3":
+            custom_path = file_io.get_filename_from_user("Enter path to custom stop word file")
+            if custom_path:
+                stop_word_config = {"type": "custom", "path": custom_path}
+                break
+            else:
+                print("⚠️ No custom file path provided. Returning to stop word option selection.")
+        elif sw_choice == "4":
+            stop_word_config = {"type": "none"}
             break
         else:
-            print("⚠️ Invalid choice. Please enter 'yes' or 'no'.")
+            print("⚠️ Invalid choice. Please enter 1-4.")
             
-    return num_words, enable_stop_words
+    return num_words, stop_word_config
 
 # =============================================================================
 # MAIN SCRIPT LOGIC
 # =============================================================================
-
 def run_comprehensive_test() -> bool:
-    """Run comprehensive testing of all components."""
-    display.print_header("🧪 COMPREHENSIVE TESTING SUITE 🧪") # Updated
-    
-    test_results: Dict[str, bool] = {
-        'file_io': False,
-        'text_processing': False,
-        'analysis': False,
-        'display': False
-    }
-    
-    # Test 1: File I/O
-    display.print_section("📁 Testing File I/O System")
-    # This is harder to test without actual file operations or mocking.
-    # For now, we'll keep it as a conceptual check.
-    # A more robust test would involve creating a temp file, reading it, and verifying content.
+    display.print_header("🧪 COMPREHENSIVE TESTING SUITE 🧪")
+    test_results: Dict[str, bool] = {'file_io': False, 'text_processing': False, 'analysis': False, 'display': False}
     try:
-        # Create a dummy sample file for testing read operations
         dummy_file_path = cfg.SCRIPT_DIRECTORY / "test_dummy_file.txt"
-        with open(dummy_file_path, "w", encoding="utf-8") as f:
-            f.write("Hello test world.")
-        
+        with open(dummy_file_path, "w", encoding="utf-8") as f: f.write("Hello test world.")
         if callable(file_io.read_file) and file_io.read_file(dummy_file_path) == "Hello test world.":
-            print("✅ File I/O (read_file) basic test passed.")
-            test_results['file_io'] = True
-        else:
-            print("❌ File I/O (read_file) basic test failed.")
-        os.remove(dummy_file_path) # Clean up dummy file
-    except Exception as e:
-        print(f"❌ File I/O test error: {e}")
-        if 'dummy_file_path' in locals() and dummy_file_path.exists():
-            os.remove(dummy_file_path)
-
-
-    # Test 2: Text Processing
-    display.print_section("🔄 Testing Text Processing Pipeline")
+            print("✅ File I/O (read_file) basic test passed."); test_results['file_io'] = True
+        else: print("❌ File I/O (read_file) basic test failed.")
+        os.remove(dummy_file_path)
+    except Exception as e: print(f"❌ File I/O test error: {e}"); _ = locals().get('dummy_file_path'); os.remove(_) if _ and _.exists() else None
+    
     try:
         test_text_proc: str = "  Hello, World! This is a test... with THE test words.  "
-        expected_tokens_no_sw = ['hello', 'world', 'this', 'is', 'a', 'test', 'with', 'the', 'test', 'words']
-        expected_tokens_with_sw = ['hello', 'world', 'test', 'test', 'words'] # Assuming 'this', 'is', 'a', 'with', 'the' are stop words
-
-        # Test cleaning (for word tokenization, basic)
         cleaned_for_words = tp.clean_text_for_word_tokenization(test_text_proc, advanced=False)
-        assert cleaned_for_words == "hello world this is a test with the test words", f"Basic cleaning failed: {cleaned_for_words}"
-        
-        # Test tokenization
+        assert cleaned_for_words == "hello world this is a test with the test words"
         tokens = tp.tokenize_text(cleaned_for_words)
-        assert tokens == expected_tokens_no_sw, f"Tokenization failed: {tokens}"
+        assert tokens == ['hello', 'world', 'this', 'is', 'a', 'test', 'with', 'the', 'test', 'words']
         
-        # Test stop word removal
-        # tp.remove_stop_words now returns a tuple (filtered_tokens, count_removed)
-        filtered_tokens, removed_count_test = tp.remove_stop_words(tokens)
-        assert filtered_tokens == expected_tokens_with_sw, f"Stop word removal failed: expected {expected_tokens_with_sw}, got {filtered_tokens}"
-        # Optionally, assert on removed_count_test if we have a specific expectation for it
-        # For this test string "hello world this is a test with the test words"
-        # and stop words like ['this', 'is', 'a', 'with', 'the'], count should be 5
-        assert removed_count_test == 5, f"Stop word removal count failed: expected 5, got {removed_count_test}"
+        # Test remove_stop_words with default English list from config
+        filtered_tokens, removed_count_test = tp.remove_stop_words(tokens, cfg.STOP_WORDS) 
+        assert filtered_tokens == ['hello', 'world', 'test', 'test', 'words']
+        assert removed_count_test == 5
         
-        # Test count_words (which includes cleaning and tokenizing)
-        counts_no_sw = tp.count_words(test_text_proc, use_stop_words=False)
-        assert counts_no_sw['test'] == 2 and counts_no_sw['hello'] == 1, "count_words (no stop words) failed"
+        # Test count_words: no stop words (empty set)
+        counts_no_sw = tp.count_words(test_text_proc, active_stop_words=set()) 
+        assert counts_no_sw['test'] == 2 and counts_no_sw['hello'] == 1
         
-        counts_with_sw = tp.count_words(test_text_proc, use_stop_words=True)
-        assert counts_with_sw['test'] == 2 and 'is' not in counts_with_sw, "count_words (with stop words) failed"
-        
-        print("✅ Text processing functions passed assertions.")
-        test_results['text_processing'] = True
-    except AssertionError as e:
-        print(f"❌ Text processing assertion failed: {e}")
-    except Exception as e:
-        print(f"❌ Text processing error: {e}")
+        # Test count_words: with default stop words
+        counts_with_sw = tp.count_words(test_text_proc, active_stop_words=cfg.STOP_WORDS) 
+        assert counts_with_sw['test'] == 2 and 'is' not in counts_with_sw
+        print("✅ Text processing functions passed assertions."); test_results['text_processing'] = True
+    except AssertionError as e: print(f"❌ Text processing assertion failed: {e}")
+    except Exception as e: print(f"❌ Text processing error: {e}")
 
-    # Test 3: Analysis
-    display.print_section("📊 Testing Analysis Functions")
     try:
         test_text_analysis: str = "First sentence. Second sentence is a bit longer, yes it is!"
-        # Expected: 2 sentences.
-        # Sentence 1: "First sentence" -> 2 words
-        # Sentence 2: "Second sentence is a bit longer yes it is" -> 9 words
-        # Total words (for sentence analysis) = 11. Avg = 5.5
-        
-        # Test count_sentences
-        num_sentences = analysis.count_sentences(test_text_analysis)
-        assert num_sentences == 2, f"count_sentences failed: expected 2, got {num_sentences}"
-
-        # Test analyze_sentences
+        assert analysis.count_sentences(test_text_analysis) == 2
         sentence_analysis_res = analysis.analyze_sentences(test_text_analysis)
-        assert sentence_analysis_res['sentence_count'] == 2, "analyze_sentences: sentence_count failed"
-        assert sentence_analysis_res['average_words_per_sentence'] == 5.5, "analyze_sentences: average_words failed"
+        assert sentence_analysis_res['sentence_count'] == 2 and sentence_analysis_res['average_words_per_sentence'] == 5.5
         
-        # Test analyze_text_complete (a more integrated test)
-        complete_results = analysis.analyze_text_complete(test_text_analysis, use_stop_words=False, num_common_words_to_display=2)
-        assert not complete_results.get('error'), f"analyze_text_complete returned error: {complete_results.get('error')}" # Simplified
-        assert complete_results.get('general_stats', {}).get('sentence_count') == 2, "analyze_text_complete: general_stats.sentence_count failed"
-        # Word count from analyze_text_complete uses advanced cleaning, so it might differ from simple sentence word counts
-        # For "First sentence. Second sentence is a bit longer, yes it is!"
-        # Cleaned (adv): "first sentence second sentence is a bit longer yes it is"
-        # Tokens: ['first', 'sentence', 'second', 'sentence', 'is', 'a', 'bit', 'longer', 'yes', 'it', 'is'] (11 tokens)
-        assert complete_results.get('general_stats', {}).get('word_count') == 11, \
-            f"analyze_text_complete: general_stats.word_count failed. Expected 11, got {complete_results.get('general_stats', {}).get('word_count')}"
-        
-        print("✅ Analysis functions passed assertions.")
-        test_results['analysis'] = True
-    except AssertionError as e:
-        print(f"❌ Analysis assertion failed: {e}")
-    except Exception as e:
-        print(f"❌ Analysis error: {e}")
-    
-    # Test 4: Display (Conceptual check - ensure functions are callable)
-    display.print_section("🖥️ Testing Display Functions")
+        # Test analyze_text_complete with no stop words (empty set)
+        complete_results = analysis.analyze_text_complete(test_text_analysis, active_stop_words=set(), num_common_words_to_display=2)
+        assert not complete_results.get('error')
+        assert complete_results.get('general_stats', {}).get('sentence_count') == 2
+        assert complete_results.get('general_stats', {}).get('word_count') == 11
+        print("✅ Analysis functions passed assertions."); test_results['analysis'] = True
+    except AssertionError as e: print(f"❌ Analysis assertion failed: {e}")
+    except Exception as e: print(f"❌ Analysis error: {e}")
+
     try:
-        # Check if main display functions are callable
-        assert callable(display.display_complete_analysis)
-        assert callable(display.display_summary)
-        assert callable(display.display_word_length_analysis)
-        print("✅ Display functions are present and callable.")
-        test_results['display'] = True
-    except AssertionError:
-        print("❌ Core display functions not found or not callable.")
-    except Exception as e:
-        print(f"❌ Display functions check error: {e}")
+        assert callable(display.display_complete_analysis) and callable(display.display_summary) and callable(display.display_word_length_analysis)
+        print("✅ Display functions are present and callable."); test_results['display'] = True
+    except AssertionError: print("❌ Core display functions not found or not callable.")
+    except Exception as e: print(f"❌ Display functions check error: {e}")
         
     display.print_section("🎯 Test Results Summary")
     all_passed: bool = all(test_results.values())
-    for component, passed in test_results.items():
-        status: str = "✅ PASS" if passed else "❌ FAIL"
-        print(f"{component.replace('_', ' ').title()}: {status}")
-    
-    if all_passed:
-        print("\n🎉 All tests passed! Your text analyzer is ready!")
-    else:
-        print("\n⚠️ Some tests failed. Please review the errors above.")
+    for component, passed in test_results.items(): print(f"{component.replace('_', ' ').title()}: {'✅ PASS' if passed else '❌ FAIL'}")
+    print("\n🎉 All tests passed!" if all_passed else "\n⚠️ Some tests failed. Please review errors.")
     return all_passed
 
-
 def _handle_custom_file_option() -> None:
-    """Handles the logic for menu option 2: Analyze Custom Text File."""
-    custom_filepath_content = file_io.load_text_file() # Assumed to return only content for now
+    custom_filepath_content = file_io.load_text_file()
     if custom_filepath_content:
-        # Using "custom_analysis" as source_filename_hint as per instructions
         _perform_analysis_and_display(custom_filepath_content, "custom_analysis")
     else:
         print("❌ No content loaded from custom file. Returning to main menu.")
 
-
 def _handle_analyze_file_option() -> None:
-    """Handles the logic for menu option 1: Analyze Text File."""
     filepath_config: str = str(cfg.FIXED_TARGET_FILEPATH)
     print(f"ℹ️ Analyzing fixed file: {filepath_config}")
-
     is_valid_path, path_message = file_io.validate_file_path(filepath_config)
     if not is_valid_path:
-        print(f"❌ Error with fixed file path '{filepath_config}': {path_message}")
-        print(f"Please ensure '{cfg.FIXED_TARGET_FILENAME}' exists in the script directory.") 
-        print("Returning to main menu.")
-        return
-
+        print(f"❌ Error with fixed file path '{filepath_config}': {path_message}"); return
     content: Optional[str] = file_io.read_file(filepath_config) 
-    
-    if content is not None:
-        _perform_analysis_and_display(content, cfg.FIXED_TARGET_FILENAME)
-    else:
-        print(f"❌ No content loaded from '{filepath_config}' (file might be empty or unreadable). Returning to main menu.")
-        # No return here, as the function will end.
+    if content is not None: _perform_analysis_and_display(content, Path(cfg.FIXED_TARGET_FILENAME).name) # Use filename for hint
+    else: print(f"❌ No content loaded from '{filepath_config}'. Returning to main menu.")
 
 def main() -> None:
-    """Main execution function - Complete integrated application."""
-    display.print_header("🚀 TEXT ANALYZER - COMPLETE VERSION 🚀") # Updated
+    display.print_header("🚀 TEXT ANALYZER - COMPLETE VERSION 🚀")
     print("Welcome to the comprehensive text analysis tool!")
-    print("Built through Modules 3A-3E. Now enhancing with Module 4B features.")
     
     while True:
         try:
-            print("\n" + "="*50)
-            print("📋 Main Menu")
-            print("="*50)
-            print("1. 📊 Analyze Fixed Text File (s.txt)") 
-            print("2. 📂 Analyze Custom Text File") # New menu option
+            print("\n" + "="*50 + "\n📋 Main Menu\n" + "="*50)
+            print("1. 📊 Analyze Fixed Text File") 
+            print("2. 📂 Analyze Custom Text File")
             print("3. 🧪 Run System Tests")
             print("4. ❓ Help & Information")
             print("5. 🚪 Exit")
             print("="*50)
-            
             choice = input("Enter your choice (1-5): ").strip()
             
-            if choice == "1":
-                _handle_analyze_file_option()
-            
-            elif choice == "2": 
-                _handle_custom_file_option() # Call the new helper function
-
-            elif choice == "3":
-                run_comprehensive_test()
-            
+            if choice == "1": _handle_analyze_file_option()
+            elif choice == "2": _handle_custom_file_option()
+            elif choice == "3": run_comprehensive_test()
             elif choice == "4":
-                display.print_header("❓ HELP & INFORMATION ❓") # Updated
-                print("This text analyzer can process any UTF-8 text file and provide:")
-                print("• Word frequency analysis (optionally with stop word removal)")
+                display.print_header("❓ HELP & INFORMATION ❓")
+                print("This text analyzer can process text files and provide:")
+                print("• Word frequency analysis")
                 print("• Sentence structure analysis")
                 print("• Readability assessment")
                 print("• Pattern detection")
+                print("• Keyword Extraction (RAKE)")
                 print("• Professional formatting")
+                print("• Graphical plots for key metrics")
+                print("\nSupported file types:")
+                print("• Plain text files (.txt)")
+                print("• CSV files (.csv) - you'll be prompted for the column containing text.")
+                print("• JSON files (.json) - you'll be prompted for the key containing the text.")
+                print("\nStop Word Options:")
+                print("• Use default English list, NLTK list for other languages, custom file, or no stop words.")
                 print("\nFor best results:")
-                print("• Use plain text files (.txt)")
                 print("• Keep files under 10MB")
-                print("• Ensure UTF-8 encoding")
-                # print("• Place files in the same directory as this script or provide path") 
-            
-            elif choice == "5":
-                print("\n👋 Thank you for using Text Analyzer!")
-                print("🎉 Module 3 series complete! Module 4 enhancements started.")
-                break
-            
-            else:
-                print("❌ Invalid choice. Please enter 1-5.")
-        
-        except KeyboardInterrupt:
-            print("\n\n⚠️ Interrupted by user. Exiting.")
-            break 
-        except Exception as e:
-            print(f"\n❌ An unexpected error occurred in the main menu: {e}")
-            print("💡 Please try again or restart the application.")
-            # Consider whether to break or continue after a generic exception
-            # For robustness, might be better to log and continue, or offer to exit.
-            # For this educational script, continuing is fine.
+                print("• Ensure UTF-8 or compatible (iso-8859-1) encoding")
+            elif choice == "5": print("\n👋 Thank you for using Text Analyzer!"); break
+            else: print("❌ Invalid choice. Please enter 1-5.")
+        except KeyboardInterrupt: print("\n\n⚠️ Interrupted by user. Exiting."); break 
+        except Exception as e: print(f"\n❌ An unexpected error occurred: {e}"); print("💡 Please try again.")
 
 if __name__ == "__main__":
     main()

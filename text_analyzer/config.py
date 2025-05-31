@@ -4,7 +4,7 @@ Configuration constants for the Text Analyzer application.
 
 import re
 from pathlib import Path
-from typing import Set, Dict
+from typing import Set, Dict, List # Added List
 
 # =============================================================================
 # MODULE-LEVEL CONSTANTS
@@ -24,7 +24,7 @@ DEFAULT_RESULTS_FILENAME: str = "analysis_results.txt" # Relative to CWD or scri
 DEFAULT_SAMPLE_FILEPATH: Path = SCRIPT_DIRECTORY / DEFAULT_SAMPLE_FILENAME
 
 # Fixed target file for automatic analysis
-FIXED_TARGET_FILENAME: str = "../dict-sample.txt"
+FIXED_TARGET_FILENAME: str = "test_plot_sample.txt" # Temporarily changed for plotting test
 FIXED_TARGET_FILEPATH: Path = SCRIPT_DIRECTORY / FIXED_TARGET_FILENAME
 
 # Stop words set
@@ -74,3 +74,20 @@ COMMON_PATTERNS: Dict[str, str] = {
 }
 
 DEFAULT_PATTERN_MATCH_LIMIT: int = 10 # Limit the number of matches displayed for patterns
+
+# Plotting constants
+DEFAULT_PLOT_COLOR: str = 'skyblue'
+DEFAULT_PLOTS_DIR: str = "analysis_plots" # Default directory to save plots
+SENTIMENT_PLOT_COLORS: Dict[str, str] = {
+    'positive': 'mediumseagreen',
+    'neutral': 'lightskyblue',
+    'negative': 'lightcoral'
+}
+DEFAULT_NUM_KEYWORDS: int = 10 # Default number of keywords to extract/display
+SUPPORTED_NLTK_STOPWORD_LANGUAGES: List[str] = [
+    "arabic", "azerbaijani", "basque", "bengali", "catalan", "chinese", 
+    "danish", "dutch", "english", "finnish", "french", "german", "greek", 
+    "hebrew", "hinglish", "hungarian", "indonesian", "italian", "kazakh", 
+    "nepali", "norwegian", "portuguese", "romanian", "russian", "slovene", 
+    "spanish", "swedish", "tajik", "turkish"
+] # Added List to typing import for this
