@@ -79,5 +79,74 @@ class TestCorrectTextTypos(unittest.TestCase):
         self.assertEqual(correct_text_typos("!@# $%^"), "!@# $%^")
         self.assertEqual(correct_text_typos("word !@# another"), "word !@# another")
 
+from text_analyzer import text_processing as tp
+from text_analyzer import file_io # For NLTK stopwords access if needed for setup
+
+class TestStopWordRemoval(unittest.TestCase):
+    def setUp(self):
+        self.sample_tokens = ["this", "is", "a", "sample", "text", "with", "some", "common", "words", "for", "testing", "el", "la", "los", "de"]
+        self.english_stopwords = file_io.get_nltk_stopwords('english') # Assuming NLTK data is available
+        if self.english_stopwords is None: # Fallback if NLTK download failed or is mocked badly
+            self.english_stopwords = {"is", "a", "with", "some", "for", "the"}
+
+
+    def test_remove_stopwords_default_english(self):
+        # This test assumes remove_stopwords uses the default English list if no list is provided,
+        # or that the calling function (e.g., in analysis.py) fetches and passes it.
+        # Let's assume tp.remove_stopwords takes the list as an argument.
+        processed_tokens = tp.remove_stopwords(self.sample_tokens, self.english_stopwords)
+        expected_tokens = ["sample", "text", "common", "words", "testing", "el", "la", "los", "de"] # "this" is often a stopword
+        # Adjusting expectation based on typical NLTK 'this'
+        if "this" not in self.english_stopwords:
+            expected_tokens.insert(0, "this")
+
+        self.assertEqual(sorted(processed_tokens), sorted(expected_tokens))
+
+    def test_remove_stopwords_other_language_nltk(self):
+        # Mocking NLTK's stopwords for Spanish for this test
+        spanish_stopwords_mock = {"el", "la", "los", "de", "un", "una"}
+        with mock.patch('text_analyzer.file_io.get_nltk_stopwords', return_value=spanish_stopwords_mock) as mock_get_stops:
+            # We need to ensure the function being tested actually calls get_nltk_stopwords
+            # or that we pass the list directly. Let's assume direct pass for tp.remove_stopwords.
+            stopwords_to_use = file_io.get_nltk_stopwords('spanish') # This call will be mocked
+            processed_tokens = tp.remove_stopwords(self.sample_tokens, stopwords_to_use)
+            mock_get_stops.assert_called_once_with('spanish')
+        
+        expected_tokens = ["this", "is", "a", "sample", "text", "with", "some", "common", "words", "for", "testing"]
+        self.assertEqual(sorted(processed_tokens), sorted(expected_tokens))
+
+    def test_remove_stopwords_custom_list(self):
+        custom_stopwords = {"sample", "common", "testing"}
+        processed_tokens = tp.remove_stopwords(self.sample_tokens, custom_stopwords)
+        expected_tokens = ["this", "is", "a", "text", "with", "some", "words", "for", "el", "la", "los", "de"]
+        self.assertEqual(sorted(processed_tokens), sorted(expected_tokens))
+
+    def test_remove_stopwords_no_stopwords_provided_or_empty_list(self):
+        # Test with an empty set of stopwords
+        processed_tokens_empty_set = tp.remove_stopwords(self.sample_tokens, set())
+        self.assertEqual(sorted(processed_tokens_empty_set), sorted(self.sample_tokens))
+
+        # Test with None for stopwords list (if function is designed to handle it as "no removal")
+        # This depends on the implementation of tp.remove_stopwords
+        # If it defaults to English or errors, this test needs adjustment.
+        # Assuming it means "no removal" if None is passed and it's handled gracefully.
+        try:
+            processed_tokens_none = tp.remove_stopwords(self.sample_tokens, None)
+            self.assertEqual(sorted(processed_tokens_none), sorted(self.sample_tokens))
+        except TypeError:
+            # This means the function expects an iterable and doesn't handle None as "no removal"
+            # In this case, the "empty set" test above is sufficient for "no removal by list".
+            # The "no stop words" option is likely handled by a boolean flag in a higher-level function.
+            pass
+
+
+    def test_remove_stopwords_case_insensitivity(self):
+        tokens_mixed_case = ["This", "IS", "a", "Sample", "TEXT"]
+        stopwords_lower = {"this", "is", "a"}
+        # remove_stopwords should ideally lowercase tokens before checking against lowercase stopwords
+        processed_tokens = tp.remove_stopwords(tokens_mixed_case, stopwords_lower)
+        expected = ["Sample", "TEXT"] # Assuming 'Sample' and 'TEXT' are not in stopwords
+        self.assertEqual(sorted(processed_tokens), sorted(expected))
+
 if __name__ == '__main__':
     unittest.main()

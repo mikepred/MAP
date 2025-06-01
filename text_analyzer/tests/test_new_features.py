@@ -146,6 +146,46 @@ class TestAnalysisOptimizations(unittest.TestCase):
         cfg.DEFAULT_PATTERN_MATCH_LIMIT = original_cfg_defaults['DEFAULT_PATTERN_MATCH_LIMIT']
         cfg.COMMON_PATTERNS = original_cfg_defaults['COMMON_PATTERNS']
 
+    @mock.patch('text_analyzer.analysis.Rake')
+    def test_extract_keywords_rake_success(self, MockRake):
+        if not analysis.RAKE_AVAILABLE:
+            self.skipTest("RAKE library (rake-nltk) not available.")
+
+        mock_rake_instance = MockRake.return_value
+        # Rake().extract_keywords_from_text() doesn't return anything.
+        # Rake().get_ranked_phrases_with_scores() returns the keywords.
+        mock_rake_instance.get_ranked_phrases_with_scores.return_value = [
+            (12.5, "important keyword"),
+            (8.0, "another phrase")
+        ]
+        
+        sample_text = "This text has an important keyword and another phrase."
+        keywords = analysis.extract_keywords_rake(sample_text, num_keywords=2)
+
+        MockRake.assert_called_once() # Ensure Rake was instantiated
+        mock_rake_instance.extract_keywords_from_text.assert_called_once_with(sample_text)
+        mock_rake_instance.get_ranked_phrases_with_scores.assert_called_once()
+        
+        self.assertEqual(len(keywords), 2)
+        self.assertEqual(keywords[0], (12.5, "important keyword"))
+        self.assertEqual(keywords[1], (8.0, "another phrase"))
+
+    def test_extract_keywords_rake_empty_text(self):
+        if not analysis.RAKE_AVAILABLE:
+            self.skipTest("RAKE library not available.")
+        
+        # Suppress print for "No keywords found" message
+        with mock.patch('builtins.print'):
+            keywords = analysis.extract_keywords_rake("", num_keywords=5)
+        self.assertEqual(keywords, [])
+
+    @mock.patch('text_analyzer.analysis.RAKE_AVAILABLE', False)
+    def test_extract_keywords_rake_library_unavailable(self):
+        with mock.patch('builtins.print') as mock_print: # Suppress print for error message
+            keywords = analysis.extract_keywords_rake("Some text.", num_keywords=5)
+        self.assertEqual(keywords, [])
+        mock_print.assert_any_call("RAKE keyword extraction is not available. Please install rake-nltk.")
+
 
 class TestDisplayFeatures(unittest.TestCase):
     def setUp(self):
@@ -191,6 +231,84 @@ class TestDisplayFeatures(unittest.TestCase):
         with mock.patch('builtins.print'):
             result = display.generate_word_cloud(Counter({'test': 1}), self.test_output_dir)
         self.assertIsNone(result)
+
+    @mock.patch('matplotlib.pyplot.figure')
+    @mock.patch('matplotlib.pyplot.bar')
+    @mock.patch('matplotlib.pyplot.title')
+    @mock.patch('matplotlib.pyplot.xlabel')
+    @mock.patch('matplotlib.pyplot.ylabel')
+    @mock.patch('matplotlib.pyplot.xticks')
+    @mock.patch('matplotlib.pyplot.tight_layout')
+    @mock.patch('matplotlib.pyplot.savefig')
+    @mock.patch('matplotlib.pyplot.close')
+    def test_plot_word_frequencies_calls_matplotlib(self, mock_close, mock_savefig, mock_tight_layout, mock_xticks, mock_ylabel, mock_xlabel, mock_title, mock_bar, mock_figure):
+        sample_freq = Counter({'test': 5, 'example': 3, 'another': 10})
+        filename_base = str(self.test_output_dir / "word_freq_plot")
+        
+        returned_path = display.plot_word_frequencies(sample_freq, 2, filename_base)
+
+        mock_figure.assert_called_once()
+        mock_bar.assert_called_once()
+        mock_title.assert_called_once()
+        mock_xlabel.assert_called_once()
+        mock_ylabel.assert_called_once()
+        mock_xticks.assert_called_once()
+        mock_tight_layout.assert_called_once()
+        mock_savefig.assert_called_once_with(filename_base + "_top_2.png")
+        mock_close.assert_called_once()
+        self.assertEqual(returned_path, filename_base + "_top_2.png")
+
+    @mock.patch('matplotlib.pyplot.figure')
+    @mock.patch('matplotlib.pyplot.hist')
+    @mock.patch('matplotlib.pyplot.title')
+    @mock.patch('matplotlib.pyplot.xlabel')
+    @mock.patch('matplotlib.pyplot.ylabel')
+    @mock.patch('matplotlib.pyplot.tight_layout')
+    @mock.patch('matplotlib.pyplot.savefig')
+    @mock.patch('matplotlib.pyplot.close')
+    def test_plot_word_length_distribution_calls_matplotlib(self, mock_close, mock_savefig, mock_tight_layout, mock_ylabel, mock_xlabel, mock_title, mock_hist, mock_figure):
+        word_lengths = [1, 2, 2, 3, 3, 3, 4, 4, 5]
+        filename_base = str(self.test_output_dir / "word_len_plot")
+
+        returned_path = display.plot_word_length_distribution(word_lengths, filename_base)
+        
+        mock_figure.assert_called_once()
+        mock_hist.assert_called_once()
+        mock_title.assert_called_once()
+        mock_xlabel.assert_called_once()
+        mock_ylabel.assert_called_once()
+        mock_tight_layout.assert_called_once()
+        mock_savefig.assert_called_once_with(filename_base + "_dist.png")
+        mock_close.assert_called_once()
+        self.assertEqual(returned_path, filename_base + "_dist.png")
+
+    @mock.patch('matplotlib.pyplot.figure')
+    @mock.patch('matplotlib.pyplot.bar') # Assuming bar chart for sentiment
+    @mock.patch('matplotlib.pyplot.title')
+    @mock.patch('matplotlib.pyplot.xlabel')
+    @mock.patch('matplotlib.pyplot.ylabel')
+    @mock.patch('matplotlib.pyplot.tight_layout')
+    @mock.patch('matplotlib.pyplot.savefig')
+    @mock.patch('matplotlib.pyplot.close')
+    def test_plot_sentiment_distribution_calls_matplotlib(self, mock_close, mock_savefig, mock_tight_layout, mock_ylabel, mock_xlabel, mock_title, mock_bar, mock_figure):
+        # This test assumes plot_sentiment_distribution takes a dictionary of sentiment scores
+        # The actual implementation might take raw scores or processed data.
+        # For this example, let's assume it takes a dictionary like VADER's output.
+        sentiment_scores = {'neg': 0.1, 'neu': 0.6, 'pos': 0.3, 'compound': 0.75}
+        filename_base = str(self.test_output_dir / "sentiment_plot")
+
+        returned_path = display.plot_sentiment_distribution(sentiment_scores, filename_base)
+
+        mock_figure.assert_called_once()
+        mock_bar.assert_called_once() # Or hist, depending on implementation
+        mock_title.assert_called_once()
+        # xlabel/ylabel might not be called if the plot is simple
+        # mock_xlabel.assert_called_once()
+        # mock_ylabel.assert_called_once()
+        mock_tight_layout.assert_called_once()
+        mock_savefig.assert_called_once_with(filename_base + "_dist.png")
+        mock_close.assert_called_once()
+        self.assertEqual(returned_path, filename_base + "_dist.png")
 
 
 class TestFileIOFeatures(unittest.TestCase):
@@ -279,6 +397,43 @@ class TestFileIOFeatures(unittest.TestCase):
             file_io.save_analysis_results(self.sample_results, output_filename + ".dat", format_choice='dat')
         mock_save_txt.assert_called_once_with(self.sample_results, Path(output_filename + ".dat.txt")) # Check suffix adjustment
 
+    @mock.patch('nltk.corpus.stopwords.words')
+    def test_get_nltk_stopwords_success(self, mock_nltk_stopwords):
+        mock_nltk_stopwords.return_value = ['stop', 'word', 'list']
+        stopwords = file_io.get_nltk_stopwords('english')
+        self.assertEqual(stopwords, ['stop', 'word', 'list'])
+        mock_nltk_stopwords.assert_called_once_with('english')
+
+    @mock.patch('nltk.corpus.stopwords.words', side_effect=LookupError("NLTK resource not found"))
+    def test_get_nltk_stopwords_resource_not_found(self, mock_nltk_stopwords):
+        with mock.patch('builtins.print') as mock_print:
+            stopwords = file_io.get_nltk_stopwords('fantasy_language')
+        self.assertIsNone(stopwords)
+        mock_print.assert_any_call(mock.ANY) # Check that some error was printed
+
+    def test_load_custom_stopwords_success(self):
+        custom_stopwords_content = "custom\nstop\nword\n"
+        stopwords_filepath = self.test_output_dir / "custom_stops.txt"
+        with open(stopwords_filepath, 'w') as f:
+            f.write(custom_stopwords_content)
+        
+        stopwords = file_io.load_custom_stopwords(str(stopwords_filepath))
+        self.assertEqual(stopwords, {"custom", "stop", "word"})
+
+    def test_load_custom_stopwords_file_not_found(self):
+        with mock.patch('builtins.print') as mock_print:
+            stopwords = file_io.load_custom_stopwords(str(self.test_output_dir / "non_existent_stops.txt"))
+        self.assertIsNone(stopwords)
+        mock_print.assert_any_call(mock.ANY)
+
+    def test_load_custom_stopwords_empty_file(self):
+        stopwords_filepath = self.test_output_dir / "empty_stops.txt"
+        with open(stopwords_filepath, 'w') as f:
+            f.write("") # Empty file
+        
+        stopwords = file_io.load_custom_stopwords(str(stopwords_filepath))
+        self.assertEqual(stopwords, set())
+
 if __name__ == '__main__':
     unittest.main(argv=['first-arg-is-ignored'], exit=False)
 
@@ -287,6 +442,104 @@ if __name__ == '__main__':
 # suite.addTest(TestAnalysisOptimizations('test_get_nlp_model_loads_and_caches'))
 # runner = unittest.TextTestRunner()
 # runner.run(suite)
+
+    def test_load_text_from_csv_success_specific_column(self):
+        csv_content = "id,text_content,other_data\n1,Hello world,data1\n2,Another line,data2"
+        csv_filepath = self.test_output_dir / "sample.csv"
+        with open(csv_filepath, 'w', newline='') as f:
+            f.write(csv_content)
+
+        loaded_text = file_io.load_text_from_csv(str(csv_filepath), text_column_name="text_content")
+        self.assertEqual(loaded_text, "Hello world\nAnother line")
+
+    def test_load_text_from_csv_success_default_column(self):
+        csv_content = "First column text\nSome more text"
+        csv_filepath = self.test_output_dir / "sample_default.csv"
+        with open(csv_filepath, 'w', newline='') as f:
+            f.write(csv_content)
+        
+        loaded_text = file_io.load_text_from_csv(str(csv_filepath)) # Default column (index 0)
+        self.assertEqual(loaded_text, "First column text\nSome more text")
+
+    def test_load_text_from_csv_different_delimiter(self):
+        csv_content = "id;text_content;other_data\n1;Hello;data1\n2;World;data2"
+        csv_filepath = self.test_output_dir / "sample_semi.csv"
+        with open(csv_filepath, 'w', newline='') as f:
+            f.write(csv_content)
+
+        loaded_text = file_io.load_text_from_csv(str(csv_filepath), text_column_name="text_content", delimiter=';')
+        self.assertEqual(loaded_text, "Hello\nWorld")
+
+    def test_load_text_from_csv_column_not_found(self):
+        csv_content = "id,data\n1,val1"
+        csv_filepath = self.test_output_dir / "sample_bad_col.csv"
+        with open(csv_filepath, 'w', newline='') as f:
+            f.write(csv_content)
+        
+        with mock.patch('builtins.print') as mock_print: # Suppress error print
+            loaded_text = file_io.load_text_from_csv(str(csv_filepath), text_column_name="non_existent_column")
+        self.assertIsNone(loaded_text)
+        mock_print.assert_called()
+
+    def test_load_text_from_csv_file_not_found(self):
+        with mock.patch('builtins.print') as mock_print: # Suppress error print
+            loaded_text = file_io.load_text_from_csv(str(self.test_output_dir / "non_existent.csv"))
+        self.assertIsNone(loaded_text)
+        mock_print.assert_called()
+
+    def test_load_text_from_json_success_specific_key(self):
+        json_content = {"title": "My Doc", "content": "This is the main text."}
+        json_filepath = self.test_output_dir / "sample.json"
+        with open(json_filepath, 'w') as f:
+            json.dump(json_content, f)
+
+        loaded_text = file_io.load_text_from_json(str(json_filepath), text_key="content")
+        self.assertEqual(loaded_text, "This is the main text.")
+
+    def test_load_text_from_json_success_nested_key(self):
+        json_content = {"document": {"metadata": {"title": "Nested"}, "body": "Text from nested key."}}
+        json_filepath = self.test_output_dir / "sample_nested.json"
+        with open(json_filepath, 'w') as f:
+            json.dump(json_content, f)
+        
+        loaded_text = file_io.load_text_from_json(str(json_filepath), text_key="document.body")
+        self.assertEqual(loaded_text, "Text from nested key.")
+
+    def test_load_text_from_json_list_of_strings(self):
+        json_content = {"paragraphs": ["First paragraph.", "Second paragraph."]}
+        json_filepath = self.test_output_dir / "sample_list.json"
+        with open(json_filepath, 'w') as f:
+            json.dump(json_content, f)
+
+        loaded_text = file_io.load_text_from_json(str(json_filepath), text_key="paragraphs")
+        self.assertEqual(loaded_text, "First paragraph.\nSecond paragraph.")
+        
+    def test_load_text_from_json_key_not_found(self):
+        json_content = {"title": "My Doc"}
+        json_filepath = self.test_output_dir / "sample_bad_key.json"
+        with open(json_filepath, 'w') as f:
+            json.dump(json_content, f)
+
+        with mock.patch('builtins.print') as mock_print:
+            loaded_text = file_io.load_text_from_json(str(json_filepath), text_key="content")
+        self.assertIsNone(loaded_text)
+        mock_print.assert_called()
+
+    def test_load_text_from_json_malformed(self):
+        json_filepath = self.test_output_dir / "sample_malformed.json"
+        with open(json_filepath, 'w') as f:
+            f.write("{'invalid_json': ") # Malformed
+
+        with mock.patch('builtins.print') as mock_print:
+            loaded_text = file_io.load_text_from_json(str(json_filepath), text_key="content")
+        self.assertIsNone(loaded_text)
+        mock_print.assert_called()
+
+    def test_load_text_from_json_file_not_found(self):
+        with mock.patch('builtins.print') as mock_print:
+            loaded_text = file_io.load_text_from_json(str(self.test_output_dir / "non_existent.json"))
+        self.assertIsNone(loaded_text)
+        mock_print.assert_called()
 
 # To run all tests in this file from command line:
 # python -m unittest text_analyzer/tests/test_new_features.py

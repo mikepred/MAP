@@ -1,4 +1,7 @@
 import unittest
+from unittest import mock
+import os
+import tempfile
 from collections import Counter
 from text_analyzer import analysis
 from text_analyzer import text_processing as tp
@@ -294,6 +297,82 @@ class TestAnalysisIntegration(unittest.TestCase):
         self.assertIsNotNone(empty_results.get('error')) # Should indicate no text or error
         # Ensure all keys are still present due to default structures
         self.assertTrue(all(key in empty_results for key in ['ngram_frequencies', 'sentiment_analysis', 'pos_analysis', 'ner_analysis']))
+
+    @mock.patch('text_analyzer.file_io.load_custom_stopwords')
+    @mock.patch('text_analyzer.file_io.get_nltk_stopwords')
+    def test_analyze_text_complete_with_dynamic_stopwords(self, mock_get_nltk_stopwords, mock_load_custom_stopwords):
+        test_text = "Este es un texto de prueba con algunas palabras comunes para el análisis."
+        # "este", "es", "un", "de", "con", "algunas", "para", "el" are common Spanish stopwords.
+        
+        # 1. Test with NLTK Spanish stopwords
+        mock_get_nltk_stopwords.return_value = {"este", "es", "un", "de", "con", "algunas", "para", "el"}
+        results_nltk_es = analysis.analyze_text_complete(
+            test_text,
+            use_stop_words=True,
+            stop_words_list_type='nltk',
+            nltk_stop_words_lang='spanish'
+        )
+        mock_get_nltk_stopwords.assert_called_once_with('spanish')
+        # Expected remaining words: "texto", "prueba", "palabras", "comunes", "análisis." (punctuation might be handled)
+        # Word frequencies should reflect this.
+        # Let's check a key word that should remain and one that should be gone.
+        self.assertIn("texto", results_nltk_es['word_analysis']['full_word_counts_obj'])
+        self.assertNotIn("este", results_nltk_es['word_analysis']['full_word_counts_obj'])
+        mock_get_nltk_stopwords.reset_mock()
+
+        # 2. Test with custom stopwords
+        custom_stops_content = "texto\nprueba\n"
+        # Create a temporary custom stopwords file
+        with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".txt") as tmp_file:
+            tmp_file.write(custom_stops_content)
+            custom_stopwords_path = tmp_file.name
+        
+        mock_load_custom_stopwords.return_value = {"texto", "prueba"}
+        results_custom = analysis.analyze_text_complete(
+            test_text,
+            use_stop_words=True,
+            stop_words_list_type='custom',
+            custom_stop_words_path=custom_stopwords_path
+        )
+        mock_load_custom_stopwords.assert_called_once_with(custom_stopwords_path)
+        self.assertIn("este", results_custom['word_analysis']['full_word_counts_obj']) # Should remain
+        self.assertNotIn("texto", results_custom['word_analysis']['full_word_counts_obj']) # Should be removed
+        mock_load_custom_stopwords.reset_mock()
+        os.remove(custom_stopwords_path) # Clean up temp file
+
+        # 3. Test with use_stop_words = False
+        # No mocks needed here as stopwords functions shouldn't be called if use_stop_words is False.
+        results_no_stops = analysis.analyze_text_complete(
+            test_text,
+            use_stop_words=False
+        )
+        self.assertIn("este", results_no_stops['word_analysis']['full_word_counts_obj'])
+        self.assertIn("texto", results_no_stops['word_analysis']['full_word_counts_obj'])
+        mock_get_nltk_stopwords.assert_not_called()
+        mock_load_custom_stopwords.assert_not_called()
+
+        # 4. Test with default English stopwords (assuming the default behavior if lang not specified for nltk)
+        # This might require ensuring the default NLTK English list is available or mocked.
+        # For this specific test_text (Spanish), English stopwords won't remove much.
+        # Let's use an English text for this part.
+        english_test_text = "this is a test text with some common words"
+        # NLTK English stopwords typically include "this", "is", "a", "with", "some"
+        mock_get_nltk_stopwords.return_value = {"this", "is", "a", "with", "some"} # Mocking for consistency
+        results_nltk_en_default = analysis.analyze_text_complete(
+            english_test_text,
+            use_stop_words=True,
+            stop_words_list_type='nltk', # Default lang should be 'english'
+            nltk_stop_words_lang='english' # Explicitly for clarity in test
+        )
+        # If nltk_stop_words_lang defaults to 'english' in analyze_text_complete when type is 'nltk'
+        # and lang is not provided, then the call would be to 'english'.
+        mock_get_nltk_stopwords.assert_called_once_with('english')
+        self.assertIn("test", results_nltk_en_default['word_analysis']['full_word_counts_obj'])
+        self.assertIn("text", results_nltk_en_default['word_analysis']['full_word_counts_obj'])
+        self.assertIn("common", results_nltk_en_default['word_analysis']['full_word_counts_obj'])
+        self.assertIn("words", results_nltk_en_default['word_analysis']['full_word_counts_obj'])
+        self.assertNotIn("this", results_nltk_en_default['word_analysis']['full_word_counts_obj'])
+        self.assertNotIn("is", results_nltk_en_default['word_analysis']['full_word_counts_obj'])
 
 
 if __name__ == '__main__':

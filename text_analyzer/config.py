@@ -24,8 +24,8 @@ DEFAULT_RESULTS_FILENAME: str = "analysis_results.txt" # Relative to CWD or scri
 DEFAULT_SAMPLE_FILEPATH: Path = SCRIPT_DIRECTORY / DEFAULT_SAMPLE_FILENAME
 
 # Fixed target file for automatic analysis
-FIXED_TARGET_FILENAME: str = "sample.txt" # Reverted from test_plot_sample.txt to a general default
-FIXED_TARGET_FILEPATH: Path = SCRIPT_DIRECTORY / FIXED_TARGET_FILENAME
+FIXED_TARGET_FILENAME: str = "../dict-sample.txt" # Default for general use, points to project root
+FIXED_TARGET_FILEPATH: Path = SCRIPT_DIRECTORY.parent / "dict-sample.txt" # Correctly path to project root
 
 # Stop words set
 STOP_WORDS: Set[str] = {
