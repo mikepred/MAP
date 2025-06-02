@@ -5,7 +5,7 @@ These functions take processed text data and derive higher-level insights.
 
 import re
 from collections import Counter, defaultdict
-from typing import Optional, List, Dict, Tuple, Any, Set # Added Set
+from typing import Optional, List, Dict, Tuple, Any, Set, Iterable # Added Set and Iterable
 
 from . import config as cfg
 from . import text_processing as tp 

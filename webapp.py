@@ -270,6 +270,10 @@ def analyze_route(): # Renamed from 'analyze' to avoid conflict with the module
         return render_template('index.html', results=None, error_message=error_message_str)
 
     remove_stopwords_flag = request.form.get('remove_stopwords') == 'true'
+    
+    active_stop_words_set: Optional[Set[str]] = None
+    if remove_stopwords_flag:
+        active_stop_words_set = ta_config.STOP_WORDS
 
     # Process user-defined patterns
     user_defined_patterns = []
@@ -299,7 +303,7 @@ def analyze_route(): # Renamed from 'analyze' to avoid conflict with the module
 
     analysis_results_dict = analysis.analyze_text_complete(
         text=text_content,
-        use_stop_words=remove_stopwords_flag,
+        active_stop_words=active_stop_words_set,
         num_common_words_to_display=top_n,
         user_patterns=user_defined_patterns
     )

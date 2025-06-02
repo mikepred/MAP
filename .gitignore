@@ -16,3 +16,4 @@ venv.bak/
 *.swp
 *.swo
 .env
+ienv/
