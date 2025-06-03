@@ -17,3 +17,12 @@ venv.bak/
 *.swo
 .env
 .venv
+
+# Generated files
+text_analyzer/analysis_plots/
+
+# Web Application specific
+web_application/__pycache__/
+web_application/*.pyc
+web_application/venv/
+web_application/.env

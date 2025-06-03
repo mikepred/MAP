@@ -35,15 +35,15 @@ This provides a menu-driven interface in your terminal.
 1.  **Ensure Prerequisites:**
     *   Python 3.7+ installed.
     *   Navigate to the project's root directory (e.g., `MAP/`).
-    *   Install dependencies:
+    *   Install dependencies from the root `requirements.txt`:
         ```bash
-        pip install -r text_analyzer/requirements.txt
+        pip install -r requirements.txt
         ```
 
 2.  **Run the CLI Script:**
     From the project's root directory, execute:
     ```bash
-    python text_analyzer/analyzer.py
+    python -m text_analyzer.analyzer
     ```
     Or, if you are inside the `text_analyzer` directory:
     ```bash
@@ -70,19 +70,18 @@ This launches a web-based interface that you can access in your browser.
     ```
 
 2.  **Install Dependencies (inside the virtual environment):**
+    Install dependencies from the root `requirements.txt`:
     ```bash
-    pip install -r text_analyzer/requirements.txt
-    # The webapp might have additional dependencies, ensure Flask is listed or add it
-    # pip install Flask  (if not already in requirements.txt and needed by webapp.py)
+    pip install -r requirements.txt
     ```
 
 3.  **Run the Web Application:**
     From the project's root directory:
     ```bash
-    python webapp.py
+    python web_application/app.py
     ```
 
-4.  **Access in Browser:** Open your web browser and navigate to the URL provided in the terminal (usually `http://127.0.0.1:5000`).
+4.  **Access in Browser:** Open your web browser and navigate to the URL provided in the terminal (usually `http://127.0.0.1:5000` or a similar address).
     The Web GUI now includes interactive charts and features to visualize and explore your text:
       * Word Frequencies (Top N words): A bar chart displaying the most common words. *Click on a word in this chart to see example sentences where it appears.*
       * Sentiment Score Distribution (Positive, Neutral, Negative): A pie chart.
@@ -101,9 +100,9 @@ This launches a local desktop application using Tkinter.
 1.  **Ensure Prerequisites:**
     *   Python 3.7+ installed (Tkinter is usually included).
     *   Navigate to the project's root directory.
-    *   Install dependencies:
+    *   Install dependencies from the root `requirements.txt`:
         ```bash
-        pip install -r text_analyzer/requirements.txt
+        pip install -r requirements.txt
         ```
 
 2.  **Run the Desktop GUI Script:**
@@ -151,22 +150,27 @@ By exploring and utilizing this `text_analyzer` tool, you will:
 
 ## 📂 Project Structure
 
-The `text_analyzer` package (primarily within the `text_analyzer/` directory) and associated files are organized as follows:
+The project is organized as follows:
 
-- `text_analyzer/analyzer.py`: The main executable script for the command-line interface (CLI). It provides a menu-driven interface and orchestrates the different analysis modules.
-- `webapp.py` (in project root): The main script for launching the Web Graphical User Interface (GUI).
-- `text_analyzer/gui.py`: The script for launching the local Desktop Graphical User Interface (GUI) using Tkinter.
-- `text_analyzer/config.py`: Stores all configuration settings for the application. This includes default file paths, lists of stop words, regular expressions for text cleaning and pattern matching, and limits for displaying results.
-- `text_analyzer/file_io.py`: Handles all file input and output operations for the CLI and core logic.
-- `text_analyzer/text_processing.py`: Contains functions dedicated to preparing text for analysis (cleaning, tokenization, stop word removal).
-- `text_analyzer/analysis.py`: Includes the core functions for performing various text analyses (word frequencies, sentence statistics, readability, patterns).
-- `text_analyzer/display.py`: Responsible for formatting and presenting the analysis results to the console for the CLI.
-- `text_analyzer/__init__.py`: An empty file that signals to Python that the `text_analyzer` directory should be treated as a package.
-- `text_analyzer/requirements.txt`: Lists the external Python libraries and dependencies required for the project to run correctly.
-- `text_analyzer/sample.txt` (or `s.txt`): Sample text files for quick analysis.
-- `templates/` (in project root): HTML templates for the `webapp.py`.
-- `static/` (in project root): CSS files for the `webapp.py`.
-- `.clinerules/`: This directory contains lesson plans and guides designed to help understand the project's structure, functionality, and how to explore it effectively.
+- `web_application/`: Contains the Flask web application.
+    - `app.py`: Main script for launching the Web GUI.
+    - `templates/`: HTML templates for the web application.
+    - `static/`: CSS and other static files for the web application.
+    - `tests/`: Unit tests for the web application.
+    - `wsgi.py`: WSGI entry point for deployment.
+- `text_analyzer/`: Contains the core text analysis logic and CLI/Desktop GUI.
+    - `analyzer.py`: Main executable script for the command-line interface (CLI).
+    - `gui.py`: Script for launching the local Desktop GUI (Tkinter).
+    - `config.py`: Stores all configuration settings.
+    - `file_io.py`: Handles file input/output.
+    - `text_processing.py`: Functions for text preparation.
+    - `analysis.py`: Core analysis functions.
+    * `display.py`: Formats and presents CLI results.
+    * `__init__.py`: Makes `text_analyzer` a Python package.
+    * `sample.txt`, `s.txt`, etc.: Sample text files.
+    * `tests/`: Unit tests for the core analyzer.
+- `requirements.txt` (in project root): Lists all Python dependencies for the entire project.
+- `.clinerules/` (within `text_analyzer/`): Contains lesson plans and guides.
 
 ## ✨ Core Functionality (Common across interfaces)
 

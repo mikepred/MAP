@@ -1,7 +1,0 @@
-Flask
-nltk
-spacy
-textstat
-pyspellchecker
-matplotlib
-rake-nltk

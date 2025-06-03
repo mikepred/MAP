@@ -3,10 +3,11 @@ import io
 import sys
 import os
 
-# Add this at the beginning of test_webapp.py to ensure text_analyzer is found
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
+# Add this at the beginning of test_app.py to ensure project root is in path
+# This allows finding 'web_application.app' and 'text_analyzer'
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-from webapp import app # Import the Flask app instance from your webapp.py
+from web_application.app import app # Import the Flask app instance
 from text_analyzer import config as ta_config # For default values
 
 class WebAppTests(unittest.TestCase):

@@ -2,7 +2,7 @@
 
 This document covers the technologies used in the project, the development setup, technical constraints, dependencies, and tool usage patterns for each component.
 
-## Text Analyzer (`analyzer.py`)
+## Text Analyzer (CLI & Core Logic - `text_analyzer/`)
 
 ### Technologies Used (Text Analyzer)
 
@@ -28,7 +28,7 @@ This document covers the technologies used in the project, the development setup
 
 * **Python Installation**: Ensure Python 3.7+ is installed and accessible from the command line.
 * **Text Editor/IDE**: VS Code, PyCharm, Sublime Text, Atom, etc.
-* **Virtual Environment**: Recommended as per Module 3A of the lesson plan.
+* **Virtual Environment**: Recommended.
 
 ### Technical Constraints (Text Analyzer)
 
@@ -37,123 +37,55 @@ This document covers the technologies used in the project, the development setup
 
 ### Dependencies (Text Analyzer)
 
-* Primarily relies on Python's standard library for core Module 1-3 functionalities.
+* Primarily relies on Python's standard library for core functionalities.
 * **NLTK**: External dependency. Requires data packages like `punkt`, `stopwords`, `vader_lexicon`.
 * **spaCy**: External dependency. Requires language models like `en_core_web_sm`.
 * **matplotlib**: External dependency for plotting.
 * **textstat**: External dependency for readability scores.
 * **pyspellchecker**: External dependency for typo correction.
 * **rake-nltk**: External dependency for keyword extraction.
-* **NumPy**: Pinned to `<2.0` in `requirements.txt` to avoid binary incompatibility issues with `thinc` (a spaCy dependency) during deployment on platforms like Render. (Note: Check if this is still the case or if newer spaCy/thinc versions have resolved this).
+* **NumPy**: Pinned to `<2.0` in `requirements.txt` to avoid binary incompatibility issues with `thinc` (a spaCy dependency) during deployment on platforms like Render. (Note: This might need review based on current library versions).
+* All dependencies are managed in the root `requirements.txt`.
 
-### Tool Usage Patterns (Text Analyzer)
+### Tool Usage Patterns (Text Analyzer CLI - `text_analyzer/analyzer.py`)
 
 * Executed via `python -m text_analyzer.analyzer` (as a module to handle relative imports).
 * Reads from user-specified input files (.txt, .csv, .json) or a fixed default file.
 * Prompts for configurations (top words, stop word strategy, plot generation).
-* Outputs analysis results to the console, including textual reports and optionally saves graphical plots to an `analysis_plots` directory.
+* Outputs analysis results to the console, including textual reports and optionally saves graphical plots to an `analysis_plots` directory (which should be gitignored).
 * Can save textual analysis summary to a user-specified file.
 
-## Git Branch Visualizer (`branch_visualizer.py`)
+### Tool Usage Patterns (Text Analyzer Desktop GUI - `text_analyzer/gui.py`)
+* Executed via `python text_analyzer/gui.py`.
+* Provides a Tkinter-based graphical interface for the text analyzer functionalities.
 
-### Technologies Used (Git Branch Visualizer)
+## Web Application (`web_application/`)
+
+### Technologies Used (Web Application)
 
 * **Python**: Version 3.7 or higher.
-* **Standard Library**:
-  * `subprocess`: To execute external Git commands.
-  * `re`: For parsing Git log output.
-  * `os`: Used implicitly by `subprocess` for path context.
-  * `pathlib`: For path manipulations if extended (currently uses string for REPO_PATH).
-* **Git**: External command-line tool. The script assumes `git` is installed and in the system's PATH.
-* **Mermaid**: The script generates `gitGraph` syntax, which is a domain-specific language for Mermaid.js to render diagrams.
+* **Flask**: Web framework for building the application.
+* **HTML/CSS**: For structuring and styling the web pages (located in `web_application/templates/` and `web_application/static/`).
+* Utilizes the core logic from the `text_analyzer` package for analysis.
 
-### Development Setup (Git Branch Visualizer)
+### Development Setup (Web Application)
 
-* **Python Installation**: Python 3.7+ installed.
-* **Git Installation**: Git must be installed and configured in the system's PATH.
-* **Text Editor/IDE**: For viewing/editing the script.
-* **Mermaid Renderer (Optional, for viewing output)**:
-  * Online editors (e.g., mermaid.live).
-  * IDE extensions (e.g., Markdown Preview Mermaid Support for VS Code).
-  * Command-line tools for Mermaid.
+* **Python Installation**: Python 3.7+
+* **Virtual Environment**: Strongly recommended.
+* Dependencies listed in the root `requirements.txt`.
 
-### Technical Constraints (Git Branch Visualizer)
+### Technical Constraints (Web Application)
 
-* **Git Dependency**: Functionality is entirely dependent on the presence and correct operation of the `git` executable.
-* **Local Branch Focus**: The current visualization primarily focuses on local branches. Representation of remote branches is limited.
-* **Parsing Robustness**: The accuracy of the graph depends on the parsing logic for `git log` output, which might need adjustments for highly unusual Git histories or log formats.
-* **Graph Complexity**: Very large repositories with numerous branches and complex merge histories might result in overly dense or hard-to-read Mermaid diagrams.
+* Relies on the `text_analyzer` package for its core functionality.
+* Designed as a relatively simple web interface for the analyzer.
 
-### Dependencies (Git Branch Visualizer)
+### Dependencies (Web Application)
 
-* **External**: `git` command-line tool.
-* **Python**: Relies only on Python's standard library (`subprocess`, `re`, `os`).
+* **Flask**: Core web framework.
+* Other dependencies are inherited from the `text_analyzer` core logic as needed (NLTK, spaCy, etc.), all managed in the root `requirements.txt`.
 
-### Tool Usage Patterns (Git Branch Visualizer)
+### Tool Usage Patterns (Web Application - `web_application/app.py`)
 
-* Executed via `python branch_visualizer.py` from within a Git repository.
-* The script automatically uses the current working directory as the `REPO_PATH`.
-* Outputs the generated Mermaid `gitGraph` code to `branch_visualization.mermaid.txt`.
-* The content of `branch_visualization.mermaid.txt` can be copied into a Mermaid renderer to view the graph.
-
-## Overall Project/Repository Technical Context
-
-### Dependency Management
-
-* **Git Submodules**: The project utilizes Git submodules for managing external repository dependencies. For example, the `LLMs-from-scratch` directory is integrated as a submodule, allowing the project to track a specific version of this external code.
-
-## MCP Servers
-
-### Git MCP Server (`github.com/modelcontextprotocol/servers/tree/main/src/git`)
-
-*   **Tool Usage Pattern**: When using tools from this server (e.g., `git_status`, `git_add`, `git_commit`), the `repo_path` parameter **must be an absolute path** to the target repository. Relative paths may lead to errors due to the server's execution context.
-*   **Dependencies**: This server relies on the system's `git` command-line installation.
-
-### Memory MCP Server (`github.com/modelcontextprotocol/servers/tree/main/src/memory`)
-
-*   **Tool Usage Pattern**: This server provides knowledge graph functionality over stdio transport.
-*   **Dependencies**: Requires Node.js and NPM for package installation and execution.
-*   **Configuration Notes**: 
-    - Use `cmd` instead of `powershell` for more reliable execution
-    - Direct `npx` command is preferred over PowerShell script execution
-    - Recommended timeout of 120 seconds or higher to ensure stable connection
-*   **Troubleshooting**:
-    - If encountering "MCP error -1: Connection closed", try:
-      1. Using `cmd` as the command executor
-      2. Simplifying command args to `["/c", "npx", "-y", "@modelcontextprotocol/server-memory"]`
-      3. Increasing the timeout value in MCP settings
-
-## Self-Directed AI Engineering Education
-
-### Key Learning Resources
-The primary learning resources, including Sebastian Raschka's "Build a Large Language Model (From Scratch)," the "Generative AI with Python and PyTorch, Second Edition" PDF, and the "AI Engineering Master Curriculum," are detailed in `memory-bank/projectbrief.md`. This section focuses on the technologies associated with these resources and the overall learning process.
-
-*   **Technologies associated with Primary Technical Guide (Raschka):** Python, PyTorch, Jupyter Notebooks. Focuses on building Transformer components, attention mechanisms, GPT-like models, pretraining, and finetuning.
-*   **Technologies associated with Comprehensive Textbook (GenAI PDF):** Python, PyTorch. Covers a wide range of topics from deep learning fundamentals to advanced LLM applications and optimization.
-*   **Technologies associated with Inspirational Curriculum (AI Engineering Master Curriculum):** Broad overview, implies various technologies depending on the specific area of AI engineering.
-*   **Foundational Practical Exercise:**
-    *   The `text_analyzer` project (details above).
-
-### Development Setup (Self-Directed Learning)
-*   **Primary Language:** Python.
-*   **Core Libraries:** PyTorch, Hugging Face Transformers, NLTK, spaCy, Pandas, NumPy.
-*   **LLM Tooling:** LangChain, LangSmith.
-*   **Version Control:** Git, with `LLMs-from-scratch-main/` as a Git submodule.
-*   **Environment:** VS Code, with access to relevant files and ability to run Python scripts and Jupyter Notebooks.
-*   **MCP Servers:** Git MCP Server and Memory MCP Server for enhanced workflow and knowledge persistence.
-
-### Technical Constraints (Self-Directed Learning)
-*   Learning is self-paced and iterative.
-*   Computational resources for training very large models from scratch may be a constraint, leading to focus on understanding concepts, implementing smaller-scale versions, or leveraging pre-trained models for certain aspects.
-
-### Dependencies (Self-Directed Learning)
-*   Python 3.7+
-*   Specific Python packages as listed in `requirements.txt` for the `text_analyzer` and `LLMs-from-scratch-main/` projects.
-*   Additional packages as introduced by the "GenAI PDF" examples (e.g., `transformers`, `datasets`, `trl`, `langchain`).
-
-### Tool Usage Patterns (Self-Directed Learning)
-*   Reading and working through code examples from Raschka's book and the "GenAI PDF."
-*   Modifying and extending the `text_analyzer` project.
-*   Conceptually designing and planning components of "SAI."
-*   Using Cline (this AI assistant) for discussion, clarification, code assistance, and updating memory systems.
-*   Utilizing the MCP Knowledge Graph to structure and persist learned concepts.
+* Run via `python web_application/app.py` for local development.
+* Deployed using a WSGI server like Gunicorn (see `Procfile`, `wsgi.py`).
+* Provides a web-based GUI for text analysis, allowing file uploads and displaying results, including interactive charts.

@@ -7,7 +7,7 @@ services:
       /opt/render/project/src/.venv/bin/pip install -r requirements.txt
       /opt/render/project/src/.venv/bin/python -m spacy download en_core_web_sm
       /opt/render/project/src/.venv/bin/python -m nltk.downloader punkt stopwords
-    startCommand: gunicorn --worker-tmp-dir /dev/shm --bind :$PORT webapp:app
+    startCommand: gunicorn --worker-tmp-dir /dev/shm --bind :$PORT web_application.wsgi:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.0
