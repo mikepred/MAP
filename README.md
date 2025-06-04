@@ -74,7 +74,7 @@ This launches a web-based interface that you can access in your browser.
 3.  **Run the Web Application:**
     From the project's root directory:
     ```bash
-    python web_application/app.py
+    python -m web_application.app
     ```
 
 4.  **Access in Browser:** Open your web browser and navigate to the URL provided in the terminal (usually `http://127.0.0.1:5000` or a similar address).
@@ -104,7 +104,7 @@ This launches a local desktop application using Tkinter.
 2.  **Run the Desktop GUI Script:**
     From the project's root directory:
     ```bash
-    python text_analyzer/gui.py
+    python -m text_analyzer.gui
     ```
 
 ### Quick Start Tip: Follow the Comprehension Lesson Plan

@@ -56,7 +56,7 @@ This document covers the technologies used in the project, the development setup
 * Can save textual analysis summary to a user-specified file.
 
 ### Tool Usage Patterns (Text Analyzer Desktop GUI - `text_analyzer/gui.py`)
-* Executed via `python text_analyzer/gui.py`.
+* Executed via `python -m text_analyzer.gui`.
 * Provides a Tkinter-based graphical interface for the text analyzer functionalities.
 
 ## Web Application (`web_application/`)
@@ -86,6 +86,6 @@ This document covers the technologies used in the project, the development setup
 
 ### Tool Usage Patterns (Web Application - `web_application/app.py`)
 
-* Run via `python web_application/app.py` for local development.
+* Run via `python -m web_application.app` for local development.
 * Deployed using a WSGI server like Gunicorn (see `Procfile`, `wsgi.py`).
 * Provides a web-based GUI for text analysis, allowing file uploads and displaying results, including interactive charts.
