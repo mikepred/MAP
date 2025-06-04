@@ -45,10 +45,6 @@ This provides a menu-driven interface in your terminal.
     ```bash
     python -m text_analyzer.analyzer
     ```
-    Or, if you are inside the `text_analyzer` directory:
-    ```bash
-    python analyzer.py
-    ```
 
 3.  **Interact:** Follow the on-screen menu prompts to load a file and select analyses. The CLI also includes an option to run built-in system tests.
 
@@ -109,10 +105,6 @@ This launches a local desktop application using Tkinter.
     From the project's root directory:
     ```bash
     python text_analyzer/gui.py
-    ```
-    Or, if you are inside the `text_analyzer` directory:
-    ```bash
-    python gui.py
     ```
 
 ### Quick Start Tip: Follow the Comprehension Lesson Plan
